@@ -1,6 +1,4 @@
 # Logs
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -110,3 +108,6 @@ src/storage/*
 src/storage/trimmed/*
 !src/storage/trimmed/
 !src/storage/trimmed/README.md
+
+logs/*.log
+!logs/
