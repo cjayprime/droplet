@@ -11,8 +11,8 @@
     "lint": "eslint --fix .",
     "|uncomment for speaker errors|preinstall": "npm i -g windows-build-tools",
     "postinstall": "npm install --global pm2@4.5.6",
-    "production": "pm2 start npm --name \"Droplet Drop Service\" -- start",
-    "postproduction": "pm2 startup systemd"
+    "production": "pm2 stop \"Droplet Drop Service\" && pm2 start npm --name \"Droplet Drop Service\" -- start",
+    "postproduction": "pm2 startup systemd && pm2 list"
   },
   "dependencies": {
     "audio-decode": "^1.4.0",
