@@ -13,7 +13,7 @@
     "preproduction": "sudo npm install --global pm2@4.5.6",
     "production": "pm2 stop \"Droplet Drop Service\" && pm2 start npm --name \"Droplet Drop Service\" -- start",
     "postproduction": "npm run production:restartup && pm2 list",
-    "production:restartup": "sudo env PATH=$PATH:/usr/bin /home/nna_chijioke/drop-service/node_modules/pm2/bin/pm2 startup systemd -u nna_chijioke --hp /home/nna_chijioke"
+    "production:restartup": "sudo env PATH=$PATH:/usr/bin ~/drop-service/node_modules/pm2/bin/pm2 startup systemd -u $USER --hp ~"
   },
   "dependencies": {
     "audio-decode": "^1.4.0",
