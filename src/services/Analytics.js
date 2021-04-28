@@ -1,3 +1,5 @@
+import {createObjectCsvWriter} from 'csv-writer';
+
 import Authenticate from './Authenticate';
 
 import {Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, Category as CategoryModel} from '../models';
@@ -81,7 +83,11 @@ class Analytics {
 
       data.push({
         user_id,
-        interactions,
+        interactions: {
+          ...interactions,
+          'app-open': interactions['app-open'] || drops,
+          'app-close': interactions['app-close'] || drops
+        },
         listen,
         audio,
         drops,
@@ -96,7 +102,6 @@ class Analytics {
       return await this.analyze(data, userData.pageToken);
     }
 
-    // console.log(data);
     return {
       code: 200,
       data: {all: data},
@@ -146,6 +151,51 @@ class Analytics {
       data: {},
       message: 'Successfully recorded listen.',
     };
+  }
+
+  generateCSV = async () => {
+    const response = await this.analyze();
+    const data = response.data.all;
+    if (data.length > 0) {
+      const csvWriter = createObjectCsvWriter({
+        path: 'analytics.csv',
+        header: [
+          {id: 'user_id', title: 'User'},
+          {id: 'interactions.app-open', title: 'App Open'},
+          {id: 'interactions.app-close', title: 'App Close'},
+          {id: 'listen.comedy', title: 'Comedy Listen'},
+          {id: 'listen.convo', title: 'Convo Lsiten'},
+          {id: 'listen.asmr', title: 'Asmr Listen'},
+          {id: 'listen.music', title: 'Music Listen'},
+          {id: 'audio.recording', title: 'Drop Record'},
+          {id: 'audio.upload', title: 'Drop Upload'},
+          {id: 'drops', title: 'Drop Post'},
+          {id: 'likes', title: 'Drop Likes'},
+          {id: 'comments', title: 'Comments'},
+        ],
+      });
+
+      const newData = [...data];
+      newData.map(dataPoint => {
+        // const keys = dataPoint; // dataPoint is {user_id, interactions ...}
+        Object.keys(dataPoint).map(key => {
+          if (typeof dataPoint[key] === 'object') {
+            Object.keys(dataPoint[key]) // { interactions: {'app-open', 'app-close'} ... }
+              .map(innerPoint => dataPoint[key + '.' + innerPoint] = dataPoint[key][innerPoint]);
+          }
+        });
+
+        return {...dataPoint, };
+      });
+      console.log(newData);
+      csvWriter
+        .writeRecords(data)
+        .then(()=> console.log('The CSV file was written successfully'))
+        .catch(e => console.log('CSV Error:', e));
+    } else {
+      console.log('THERE WAS NO DATA');
+      return false;
+    }
   }
 }
 

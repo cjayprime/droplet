@@ -13,7 +13,7 @@ import {
   Error,
   NotFound,
 } from './shared';
-import { Cron } from './services';
+import { Cron, Analytics } from './services';
 
 dotenv.config();
 const app = express();
@@ -91,5 +91,9 @@ setTimeout(async () => {
     // const response = await request.post('/create').send({user_id: 101010, tag: 'b0b031bd-23cd-477a-a2dd-5f4078b1931d', caption: 'Done', category: 'music'}).set(headers);
     // const response = await request.get('/analytics').send();
     // console.log(response.body);
+
+    // const Analytics = require('./services/Analytics');
+    const analytics = new Analytics();
+    console.log(await analytics.generateCSV());
   }
 }, 1500);
