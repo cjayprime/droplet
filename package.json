@@ -10,7 +10,8 @@
     "create:JWTKeys": "openssl genrsa -out src/.private.pem 4096 && openssl rsa -in src/.private.pem -pubout > src/.public.pem",
     "lint": "eslint --fix .",
     "|uncomment for speaker errors|preinstall": "npm i -g windows-build-tools",
-    "production": "pm2 start npm --name \"Droplet Drop Service\" -- start"
+    "production": "pm2 start npm --name \"Droplet Drop Service\" -- start",
+    "postproduction": "pm2 startup systemd"
   },
   "dependencies": {
     "audio-decode": "^1.4.0",
