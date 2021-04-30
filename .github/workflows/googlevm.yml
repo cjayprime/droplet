@@ -1,0 +1,56 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# See sample at https://levelup.gitconnected.com/deploying-a-node-app-to-aws-elastic-beanstalk-using-github-actions-d64c7e486701
+
+name: Droplet API Node.js CI
+
+env:
+  APP_NAME: Droplet-Environment
+  PIPELINE_ID: ${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
+
+on:
+  push:
+    branches: [ master, staging ]
+  pull_request:
+    branches: [ master, staging ]
+
+jobs:
+  configure_vm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key -- Note that this isn't doing anything but kept for vestigial reasons
+        id: sshkeyinstallation
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          name: ${{ secrets.SSH_USERNAME }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
+          if_key_exists: replace
+
+      - name: SSH into the VM
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            sudo apt-get update
+            sudo apt-get install git nginx
+
+            npm run fix:speaker
+            yarn install
+            yarn production
+          host: ${{ secrets.SERVR_IP }}
+          user: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure the VM
+        run: |
+      
+      - name: Create environment variables
+      
+      - name: Fix speaker
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Start the app in production
+        run: yarn production
