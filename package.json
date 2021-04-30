@@ -11,11 +11,13 @@
     "lint": "eslint --fix .",
     "fix:speaker": "npm i -g windows-build-tools",
     "preproduction": "sudo npm install --global pm2@4.5.6",
-    "production": "pm2 stop \"Droplet Drop Service\" && pm2 start npm --name \"Droplet Drop Service\" -- start",
+    "production": "pm2 stop \"Droplet Drop Service\" && pm2 delete \"Droplet Drop Service\" && pm2 start npm --name \"Droplet Drop Service\" -- start && pm2 save",
     "postproduction": "npm run production:restartup && pm2 list",
     "production:restartup": "sudo env pm2 startup systemd -u $USER --hp ~"
   },
   "dependencies": {
+    "@sentry/node": "^6.3.4",
+    "@sentry/tracing": "^6.3.4",
     "audio-decode": "^1.4.0",
     "audiobuffer-to-wav": "^1.0.0",
     "cors": "^2.8.5",
