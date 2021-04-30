@@ -35,10 +35,13 @@ jobs:
             sudo apt-get update
             sudo apt-get install git nginx
 
-            npm run fix:speaker
+            npm install --global yarn
+
+            yarn production:prep:install
+            yarn fix:speaker
             yarn install
             yarn production
-          host: ${{ secrets.SERVR_IP }}
+          host: ${{ secrets.SERVER_IP }}
           user: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
