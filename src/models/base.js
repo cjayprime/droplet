@@ -1,4 +1,4 @@
-import {Sequelize, DataTypes as SequelizeDataTypes} from 'sequelize';
+import { Sequelize, DataTypes as SequelizeDataTypes } from 'sequelize';
 
 import allConfigs from './config/config';
 

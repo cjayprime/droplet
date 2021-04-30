@@ -1,8 +1,8 @@
-import {createObjectCsvWriter} from 'csv-writer';
+import { createObjectCsvWriter } from 'csv-writer';
 
 import Authenticate from './Authenticate';
 
-import {Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, Category as CategoryModel} from '../models';
+import { Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, Category as CategoryModel } from '../models';
 
 const authenticate = new Authenticate();
 class Analytics {
@@ -20,12 +20,12 @@ class Analytics {
       const interactions = {};
       await Promise.all(
         ['app-open', 'app-close'].map(async (type) => {
-          interactions[type] = await InteractionModel.count({where: {type, user_id}});
+          interactions[type] = await InteractionModel.count({ where: { type, user_id } });
         })
       );
 
       // Get total listens per category
-      const categories = await CategoryModel.findAll({attributes: ['name', 'category_id'], where: {status: '1'}});
+      const categories = await CategoryModel.findAll({ attributes: ['name', 'category_id'], where: { status: '1' } });
       const listen = {};
       await Promise.all(categories.map(async category => {
         const values = category.dataValues;
@@ -49,12 +49,12 @@ class Analytics {
       const audio = {};
       await Promise.all(
         ['upload', 'recording'].map(async (source) => {
-          audio[source] = await AudioModel.count({where: {user_id, source}});
+          audio[source] = await AudioModel.count({ where: { user_id, source } });
         })
       );
 
       // Get total drops
-      let drops = await DropModel.count({where: {user_id}});
+      let drops = await DropModel.count({ where: { user_id } });
       if (drops === 0) {
         const dropsSnapshot = await authenticate.admin.firestore()
           .collection('Drops')
@@ -104,7 +104,7 @@ class Analytics {
 
     return {
       code: 200,
-      data: {all: data},
+      data: { all: data },
       message: 'Successfully recorded listen.',
     };
   }
@@ -160,18 +160,18 @@ class Analytics {
       const csvWriter = createObjectCsvWriter({
         path: 'analytics.csv',
         header: [
-          {id: 'user_id', title: 'User'},
-          {id: 'interactions.app-open', title: 'App Open'},
-          {id: 'interactions.app-close', title: 'App Close'},
-          {id: 'listen.comedy', title: 'Comedy Listen'},
-          {id: 'listen.convo', title: 'Convo Lsiten'},
-          {id: 'listen.asmr', title: 'Asmr Listen'},
-          {id: 'listen.music', title: 'Music Listen'},
-          {id: 'audio.recording', title: 'Drop Record'},
-          {id: 'audio.upload', title: 'Drop Upload'},
-          {id: 'drops', title: 'Drop Post'},
-          {id: 'likes', title: 'Drop Likes'},
-          {id: 'comments', title: 'Comments'},
+          { id: 'user_id', title: 'User' },
+          { id: 'interactions.app-open', title: 'App Open' },
+          { id: 'interactions.app-close', title: 'App Close' },
+          { id: 'listen.comedy', title: 'Comedy Listen' },
+          { id: 'listen.convo', title: 'Convo Lsiten' },
+          { id: 'listen.asmr', title: 'Asmr Listen' },
+          { id: 'listen.music', title: 'Music Listen' },
+          { id: 'audio.recording', title: 'Drop Record' },
+          { id: 'audio.upload', title: 'Drop Upload' },
+          { id: 'drops', title: 'Drop Post' },
+          { id: 'likes', title: 'Drop Likes' },
+          { id: 'comments', title: 'Comments' },
         ],
       });
 
@@ -185,7 +185,7 @@ class Analytics {
           }
         });
 
-        return {...dataPoint, };
+        return { ...dataPoint, };
       });
       console.log(newData);
       csvWriter

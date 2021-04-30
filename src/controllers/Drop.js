@@ -27,7 +27,7 @@ class DropController extends Controller {
       .withMessage('must be a number.'),
 
   	this.action(async (req, res, next) => {
-      const {body: {tag, start, end}} = req;
+      const { body: { tag, start, end } } = req;
   		const dropService = new DropService();
   		const response = await dropService.trim(tag, start, end);
       this.response(res, response.code, response.data, response.message);
@@ -54,7 +54,7 @@ class DropController extends Controller {
       .withMessage('must be a boolean.'),
 
   	this.action(async (req, res, next) => {
-      const {query: {tag, isTrimmed}} = req;
+      const { query: { tag, isTrimmed } } = req;
   		const dropService = new DropService();
   		const response = await dropService.download(res, tag, isTrimmed);
       if (response.alreadySent) {
@@ -87,7 +87,7 @@ class DropController extends Controller {
       .withMessage('must be a either "recording" or "upload".'),
 
   	this.action(async (req, res, next) => {
-      const {body: {user_id, recording, source}} = req;
+      const { body: { user_id, recording, source } } = req;
   		const dropService = new DropService();
   		const response = await dropService.validate(user_id, recording, source);
       this.response(res, response.code, response.data, response.message);
@@ -113,7 +113,7 @@ class DropController extends Controller {
       .withMessage('must be a valid tag.'),
 
   	this.action(async (req, res, next) => {
-      const {query: {tag, bars}} = req;
+      const { query: { tag, bars } } = req;
   		const dropService = new DropService();
   		const response = await dropService.waveform(tag, bars);
       this.response(res, response.code, response.data, response.message);
@@ -168,7 +168,7 @@ class DropController extends Controller {
       .withMessage('must be a boolean.'),
 
   	this.action(async (req, res, next) => {
-      const {body: {user_id, tag, caption, category, isTrimmed}} = req;
+      const { body: { user_id, tag, caption, category, isTrimmed } } = req;
   		const dropService = new DropService();
       // Get user_id from firebase
   		const response = await dropService.create(user_id, tag, caption, category, isTrimmed);

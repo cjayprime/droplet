@@ -1,4 +1,4 @@
-import sequelize, {DataTypes} from './base';
+import sequelize, { DataTypes } from './base';
 
 // class Drop extends Model {}
 // Drop.init({}, {});

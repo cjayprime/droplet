@@ -16,7 +16,7 @@ class AnalyticsController extends Controller {
       .withMessage('must be a valid interaction type.'),
 
     this.action(async (req, res, next) => {
-      const {body: {type, user_id}} = req;
+      const { body: { type, user_id } } = req;
       const anaylticsService = new AnalyticsService();
       const response = await anaylticsService.recordInteraction(type, user_id);
       this.response(res, response.code, response.data, response.message);

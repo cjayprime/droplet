@@ -1,4 +1,4 @@
-import sequelize, {DataTypes} from './base';
+import sequelize, { DataTypes } from './base';
 
 const Listen = sequelize.define('Listen', {
   listen_id: {

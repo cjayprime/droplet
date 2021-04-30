@@ -15,7 +15,7 @@ class Controller {
      * Curries to an express callback
      * 
      * @param {function}    Express.Action            callback to pass from a child class to express
-     * @param {object}      Express.Request           The express(http) response object
+     * @param {object}      Express.Request           The express(http) request object
      * @param {object}      Express.Response          The express(http) response object
      * @param {object}      Express.Next              The express(http) next callback
      * @returns {null} void

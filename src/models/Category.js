@@ -1,4 +1,4 @@
-import sequelize, {DataTypes} from './base';
+import sequelize, { DataTypes } from './base';
 
 const Category = sequelize.define('Category', {
   category_id: {

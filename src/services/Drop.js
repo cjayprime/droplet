@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import {Lame} from 'node-lame';
-import {v4 as uuidv4} from 'uuid';
-import {Storage} from '@google-cloud/storage';
+import { Lame } from 'node-lame';
+import { v4 as uuidv4 } from 'uuid';
+import { Storage } from '@google-cloud/storage';
 
 import AudioEngine from './AudioEngine';
 
-import {Audio as AudioModel, Drop as DropModel, Category as CategoryModel} from '../models';
+import { Audio as AudioModel, Drop as DropModel, Category as CategoryModel } from '../models';
 
 class Drop {
   recording = {
@@ -31,7 +31,7 @@ class Drop {
     if (start === end || !((start >= 0 && start <= end) || end > 0)){
       return {
         message: 'The audio range selected is invalid',
-        data: {start, end},
+        data: { start, end },
         code: 400,
       };
     }
@@ -72,7 +72,7 @@ class Drop {
         (async () => {
           await AudioModel.update({
             trimmed: '1',
-          }, {where: {tag}}).catch((e) => console.log('Couldn\'nt update trim to "1" for', tag, e));
+          }, { where: { tag } }).catch((e) => console.log('Couldn\'nt update trim to "1" for', tag, e));
         })();
         return true;
       })
@@ -85,7 +85,7 @@ class Drop {
       return {
         code: 200,
         message: 'Successfully trimmed your drop',
-        data: {start, end, tag},
+        data: { start, end, tag },
       };
     }
 
@@ -153,7 +153,7 @@ class Drop {
     if (!success){
       return {
         code: 400,
-        data: {tag, duration, code: 'too-long'},
+        data: { tag, duration, code: 'too-long' },
         message: 'We are unable to process the reqyest completely.',
       };
     }
@@ -167,18 +167,18 @@ class Drop {
       source,
       trimmed: '0',
     });
-    console.log({tag, duration});
+    console.log({ tag, duration });
     if (this.recording.max < duration) {
       return {
         code: 400, // 201,
-        data: {tag, duration, code: 'too-long'},
+        data: { tag, duration, code: 'too-long' },
         message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
       };
     }
 
     return {
       code: 200,
-      data: {tag, duration, code: 'valid'},
+      data: { tag, duration, code: 'valid' },
       message: 'The audio file is valid',
     };
   }
@@ -190,14 +190,14 @@ class Drop {
     if (waveform.length === 0){
       return {
         code: 400,
-        data: {waveform: []},
+        data: { waveform: [] },
         message: 'The waveform could not be generated',
       };
     }
 
     return {
       code: 200,
-      data: {waveform},
+      data: { waveform },
       message: 'Waveform successfully generated',
     };
   }
@@ -220,7 +220,7 @@ class Drop {
   }
 
   create = async (user_id, tag, caption, categoryName, isTrimmed) => {
-    const audio = await AudioModel.findOne({attributes: ['audio_id'], where: {tag}});
+    const audio = await AudioModel.findOne({ attributes: ['audio_id'], where: { tag } });
     if (audio === null){
       return {
         code: 400,
@@ -231,7 +231,7 @@ class Drop {
 
     let category_id = categoryName;
     if (isNaN(category_id)){
-      const category = await CategoryModel.findOne({attributes: ['category_id'], where: {name: categoryName}});
+      const category = await CategoryModel.findOne({ attributes: ['category_id'], where: { name: categoryName } });
       if (category.length === null){
         return {
           code: 400,
@@ -253,7 +253,7 @@ class Drop {
       return {
         code: 400,
         message: 'Unfortunately we failed to create your drop. Try again.',
-        data: {drop},
+        data: { drop },
       };
     }
 
@@ -278,7 +278,7 @@ class Drop {
     return {
       code: 200,
       message: 'Successfully created your drop.',
-      data: {drop},
+      data: { drop },
     };
   }
 }

@@ -34,9 +34,9 @@ const application = new Application({
 
     cors(),
 
-    express.urlencoded({extended: true}),
+    express.urlencoded({ extended: true }),
 
-    express.json({limit: '100mb'}),
+    express.json({ limit: '100mb' }),
 
     function devlog(req, _, next) {
       console.log('\n\n-- INCOMING REQUEST', req.method, req.originalUrl, req.body, req.query);
@@ -95,37 +95,5 @@ setTimeout(async () => {
     // const Analytics = require('./services/Analytics').default;
     // const analytics = new Analytics();
     // console.log(await analytics.generateCSV());
-
-    const Sentry = require('@sentry/node');
-    // or use es6 import statements
-    // import * as Sentry from '@sentry/node';
-
-    // const Tracing = require('@sentry/tracing');
-    // or use es6 import statements
-    // import * as Tracing from '@sentry/tracing';
-
-    Sentry.init({
-      dsn: 'https://9af2821d27d644f98959f8fca30c0cde@o596242.ingest.sentry.io/5742390',
-
-      // Set tracesSampleRate to 1.0 to capture 100%
-      // of transactions for performance monitoring.
-      // We recommend adjusting this value in production
-      tracesSampleRate: 1.0,
-    });
-
-    const transaction = Sentry.startTransaction({
-      op: 'test',
-      name: 'My First Test Transaction',
-    });
-
-    setTimeout(() => {
-      try {
-        foo();
-      } catch (e) {
-        Sentry.captureException(e);
-      } finally {
-        transaction.finish();
-      }
-    }, 99);
   }
 }, 1500);

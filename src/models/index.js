@@ -1,9 +1,9 @@
-export {default as Audio} from './Audio';
-export {default as Category} from './Category';
-export {default as Drop} from './Drop';
-export {default as Like} from './Like';
-export {default as Listen} from './Listen';
-export {default as Interaction} from './Interaction';
+export { default as Audio } from './Audio';
+export { default as Category } from './Category';
+export { default as Drop } from './Drop';
+export { default as Like } from './Like';
+export { default as Listen } from './Listen';
+export { default as Interaction } from './Interaction';
 
 // Category.hasMany(Drop, {
 //     foreignKey: 'category_id',

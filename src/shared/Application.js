@@ -1,7 +1,7 @@
 import nodeCron from 'node-cron';
 import cronstrue from 'cronstrue';
 
-import {Error} from '../shared';
+import { Error, Notify } from '../shared';
 
 class Application {
   app;
@@ -41,29 +41,33 @@ class Application {
   			`The server is now running at http://localhost:${this.port} for ${process.env.NODE_ENV}`
   		);
 
-      if (process.env.NODE_ENV === 'production'){
-        const throwError = (task) => {
-          throw new Error.make('The format of the cron job schedule string is invalid for the task: ' + task, 'CronJobError', false);
-        };
-        const timezone = 'Africa/Lagos';
-        Object.keys(this.cron).map(task => {
-          if (nodeCron.validate(this.cron[task].schedule)) {
-            console.log(
-              `The cron job '${task}' is now scheduled and will run ${cronstrue.toString(this.cron[task].schedule)}`,
-            );
-            nodeCron
-              .schedule(
-                this.cron[task].schedule,
-                () => {
-                  console.log('-- CRON ', this.cron[task].name || task);
-                  this.cron[task].action();
-                },
-                {timezone, scheduled: true},
-              ).start();
-          } else {
-            throwError(task);
-          }
-        });
+      try {
+        if (process.env.NODE_ENV === 'production'){
+          const throwError = (task) => {
+            throw new Error.make('The format of the cron job schedule string is invalid for the task: ' + task, 'CronJobError', false);
+          };
+          const timezone = 'Africa/Lagos';
+          Object.keys(this.cron).map(task => {
+            if (nodeCron.validate(this.cron[task].schedule)) {
+              console.log(
+                `The cron job '${task}' is now scheduled and will run ${cronstrue.toString(this.cron[task].schedule)}`,
+              );
+              nodeCron
+                .schedule(
+                  this.cron[task].schedule,
+                  () => {
+                    console.log('-- CRON ', this.cron[task].name || task);
+                    this.cron[task].action();
+                  },
+                  { timezone, scheduled: true },
+                ).start();
+            } else {
+              throwError(task);
+            }
+          });
+        }
+      } catch (e) {
+        Notify.error(e);
       }
   	});
   }

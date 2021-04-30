@@ -1,4 +1,4 @@
-import sequelize, {DataTypes} from './base';
+import sequelize, { DataTypes } from './base';
 
 const Interaction = sequelize.define('Interaction', {
   interaction_id: {

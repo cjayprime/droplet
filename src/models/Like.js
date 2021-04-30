@@ -1,4 +1,4 @@
-import sequelize, {DataTypes} from './base';
+import sequelize, { DataTypes } from './base';
 
 const Like = sequelize.define('Like', {
   like_id: {

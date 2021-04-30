@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import audioDecode from 'audio-decode';
-import {AudioContext} from 'web-audio-api';
+import { AudioContext } from 'web-audio-api';
 import audioBufferToWav from 'audiobuffer-to-wav';
 
 /**

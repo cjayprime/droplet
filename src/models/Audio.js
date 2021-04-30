@@ -1,4 +1,4 @@
-import sequelize, {DataTypes} from './base';
+import sequelize, { DataTypes } from './base';
 
 const Audio = sequelize.define('Audio', {
   audio_id: {

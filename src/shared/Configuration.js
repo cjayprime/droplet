@@ -11,7 +11,7 @@ class Configuration {
     	try {
     		privateKey = fs.readFileSync(
     			path.join(__dirname, '../.private.pem'),
-    			{encoding: 'utf8'}
+    			{ encoding: 'utf8' }
     		);
     	} catch {
     		privateKey = 'OMO x 1000000';
@@ -28,7 +28,7 @@ class Configuration {
     	try {
     		publicKey = fs.readFileSync(
     			path.join(__dirname, '../.public.pem'),
-    			{encoding: 'utf8'}
+    			{ encoding: 'utf8' }
     		);
     	} catch {
     		publicKey = 'OMO x 1000000';

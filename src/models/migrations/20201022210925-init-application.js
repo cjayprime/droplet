@@ -1,12 +1,12 @@
 import sequelize from '../base';
-import {Audio, Category, Drop, Like, Listen, Interaction} from '..';
+import { Audio, Category, Drop, Like, Listen, Interaction } from '..';
 
 const models = [Category, Audio, Drop, Like, Listen, Interaction];
 const categories = [
-  {name: 'convo', color: '#52A7F3'},
-  {name: 'music', color: '#B15EE1'},
-  {name: 'comedy', color: '#FDB446'},
-  {name: 'asmr', color: '#3AC67B'},
+  { name: 'convo', color: '#52A7F3' },
+  { name: 'music', color: '#B15EE1' },
+  { name: 'comedy', color: '#FDB446' },
+  { name: 'asmr', color: '#3AC67B' },
 ];
 const migration = {
   up: async (queryInterface/*, Sequelize*/) => {

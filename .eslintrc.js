@@ -30,6 +30,8 @@ module.exports = {
     semi: [
       'error',
       'always'
-    ]
+    ],
+    'object-curly-spacing': ['error', 'always'],
+    // 'max-len': ['error', { 'code': 80, 'tabWidth': 4, 'comments': 80, 'ignoreComments': false, 'ignoreTrailingComments': false, 'ignoreStrings': false, 'ignoreTemplateLiterals': true, 'ignoreRegExpLiterals': true }],
   },
 };
