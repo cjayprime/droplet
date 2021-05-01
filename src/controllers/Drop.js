@@ -56,7 +56,7 @@ class DropController extends Controller {
   	this.action(async (req, res, next) => {
       const { query: { tag, isTrimmed } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.download(res, tag, isTrimmed);
+  		const response = await dropService.download(res, tag, isTrimmed == 'true');
       if (response.alreadySent) {
         return;
       }
