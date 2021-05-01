@@ -221,75 +221,71 @@ class Drop {
   }
 
   create = async (user_id, tag, caption, categoryName, isTrimmed) => {
-    try {
-      const audio = await AudioModel.findOne({ attributes: ['audio_id'], where: { tag } });
-      if (audio === null){
+    const audio = await AudioModel.findOne({ attributes: ['audio_id'], where: { tag } });
+    if (audio === null){
+      return {
+        code: 400,
+        message: 'The tag was not found.',
+        data: {},
+      };
+    }
+
+    let category_id = categoryName;
+    if (isNaN(category_id)){
+      const category = await CategoryModel.findOne({ attributes: ['category_id'], where: { name: categoryName } });
+      if (category.length === null){
         return {
           code: 400,
-          message: 'The tag was not found.',
+          message: 'The category does not exist.',
           data: {},
         };
       }
+      category_id = category.category_id;
+    }
 
-      let category_id = categoryName;
-      if (isNaN(category_id)){
-        const category = await CategoryModel.findOne({ attributes: ['category_id'], where: { name: categoryName } });
-        if (category.length === null){
-          return {
-            code: 400,
-            message: 'The category does not exist.',
-            data: {},
-          };
-        }
-        category_id = category.category_id;
-      }
-
-      const drop = await DropModel.create({
-        user_id,
-        audio_id: audio.audio_id,
-        category_id,
-        caption,
-        date: new Date(),
-      });
-      if (drop === null){
-        return {
-          code: 400,
-          message: 'Unfortunately we failed to create your drop. Try again.',
-          data: { drop },
-        };
-      }
-
-      const pathToFile = path.join(
-        __dirname,
-        '../../google-services.json',
-      );
-      if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
-      }
-
-      try {
-        const storage = new Storage({
-          projectId: process.env.GOOGLE_PROJECT_ID,
-          keyFilename: pathToFile,
-        });
-        const file = AudioEngine.directory(tag, isTrimmed);
-        await storage.bucket(process.env.GOOGLE_BUCKET_NAME).upload(file, {
-          destination: tag,
-        });
-        await storage.bucket(process.env.GOOGLE_BUCKET_NAME).file(file).makePublic();
-      } catch (e) {
-        Notify.error(e);
-        Notify.info('Unable to save to Google bucket, see the issue on Sentry.');
-      }
-
+    const drop = await DropModel.create({
+      user_id,
+      audio_id: audio.audio_id,
+      category_id,
+      caption,
+      date: new Date(),
+    });
+    if (drop === null){
       return {
-        code: 200,
-        message: 'Successfully created your drop.',
+        code: 400,
+        message: 'Unfortunately we failed to create your drop. Try again.',
         data: { drop },
       };
+    }
+
+    const pathToFile = path.join(
+      __dirname,
+      '../../google-services.json',
+    );
+    if (!fs.existsSync(pathToFile)){
+      await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
+    }
+
+    try {
+      const storage = new Storage({
+        projectId: process.env.GOOGLE_PROJECT_ID,
+        keyFilename: pathToFile,
+      });
+      const file = AudioEngine.directory(tag, isTrimmed);
+      const bucketFile = await storage.bucket(process.env.GOOGLE_BUCKET_NAME);
+      await bucketFile.upload(file, {
+        destination: tag,
+      });
     } catch (e) {
       Notify.error(e);
+      Notify.info('Unable to save to Google bucket, see the issue on Sentry.');
     }
+
+    return {
+      code: 200,
+      message: 'Successfully created your drop.',
+      data: { drop },
+    };
   }
 }
 
