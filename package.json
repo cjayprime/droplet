@@ -5,7 +5,7 @@
     "dev:start": "nodemon --ext pem,js,json --watch .env --watch . --exec \"npm run start\"",
     "prestart": "npm run migrations",
     "start": "node --trace-warnings -r esm src/index.js",
-    "postinstall": "pip3 install -r src/services/AudioEngine/Filters/requirements.txt",
+    "preinstall": "pip3 install -r src/services/AudioEngine/Filters/requirements.txt",
     "migrations": "node --trace-warnings -r esm ./node_modules/sequelize-cli/lib/sequelize db:migrate --config src/models/config/config.js --migrations-path src/models/migrations --models-path src/models",
     "make:model": "node --trace-warnings -r esm ./node_modules/sequelize-cli/lib/sequelize model:generate --name EditThisModel --attributes editThis:string,alsoEditThis:string,andThis:string --config src/models/config/config.js --migrations-path src/models/migrations --models-path src/models",
     "create:JWTKeys": "test ! -e src/.private.pem && openssl genrsa -out src/.private.pem 4096 && openssl rsa -in src/.private.pem -pubout > src/.public.pem",
