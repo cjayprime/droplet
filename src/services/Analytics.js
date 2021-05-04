@@ -177,7 +177,6 @@ class Analytics {
 
       const newData = [...data];
       newData.map(dataPoint => {
-        // const keys = dataPoint; // dataPoint is {user_id, interactions ...}
         Object.keys(dataPoint).map(key => {
           if (typeof dataPoint[key] === 'object') {
             Object.keys(dataPoint[key]) // { interactions: {'app-open', 'app-close'} ... }

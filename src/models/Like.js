@@ -1,6 +1,6 @@
 import sequelize, { DataTypes } from './base';
 
-const Like = sequelize.define('Like', {
+const Like = sequelize.define('like', {
   like_id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,

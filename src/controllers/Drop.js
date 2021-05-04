@@ -1,4 +1,4 @@
-import { body, query } from 'express-validator';
+import { body, query, param } from 'express-validator';
 
 import Controller from './base';
 
@@ -172,6 +172,60 @@ class DropController extends Controller {
   		const dropService = new DropService();
       // Get user_id from firebase
   		const response = await dropService.create(user_id, tag, caption, category, isTrimmed);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  feed = [
+  	query('limit')
+  		.isInt()
+  		.withMessage('must be a valid number.'),
+
+    query('offset')
+      .isInt()
+      .withMessage('must be a valid number.'),
+
+    param('user_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.')
+      .optional(),
+
+  	this.action(async (req, res, next) => {
+      const { query: { limit, offset }, params: { user_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.feed(user_id, limit, offset);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  single = [
+    param('tagORdrop_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.')
+      .optional(),
+
+  	this.action(async (req, res, next) => {
+      const { params: { tagORdrop_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.single(tagORdrop_id);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

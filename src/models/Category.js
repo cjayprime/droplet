@@ -1,6 +1,6 @@
 import sequelize, { DataTypes } from './base';
 
-const Category = sequelize.define('Category', {
+const Category = sequelize.define('category', {
   category_id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,
