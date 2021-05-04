@@ -17,7 +17,6 @@ const options = {
   'timezone': '+00:00', // for writing to database
   'migrationStorage': 'sequelize',
   'migrationStorageTableName': 'migration',
-  // 'logging': true,
 };
 
 module.exports = {

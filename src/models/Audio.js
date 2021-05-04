@@ -1,6 +1,6 @@
 import sequelize, { DataTypes } from './base';
 
-const Audio = sequelize.define('Audio', {
+const Audio = sequelize.define('audio', {
   audio_id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,
@@ -14,6 +14,7 @@ const Audio = sequelize.define('Audio', {
     type: DataTypes.UUID,
     allowNull: false,
     unique: true,
+    // validate: false,
   },
   duration: {
     type: DataTypes.INTEGER,

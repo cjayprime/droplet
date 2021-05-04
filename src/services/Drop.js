@@ -3,6 +3,7 @@ import path from 'path';
 import { Lame } from 'node-lame';
 import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@google-cloud/storage';
+import { Op } from 'sequelize';
 
 import AudioEngine from './AudioEngine';
 
@@ -57,7 +58,6 @@ class Drop {
     // ------
 
     // CONVERT BACK TO MP3 AND SEND, WITH A NEW DROP ID
-    // TODO: Lame appears slow, find an alternative
     const mp3File = AudioEngine.directory(tag, true);
     // NOTE: Lame will create the file
     const encoder = new Lame({
@@ -73,7 +73,7 @@ class Drop {
         (async () => {
           await AudioModel.update({
             trimmed: '1',
-          }, { where: { tag } }).catch((e) => console.log('Couldn\'nt update trim to "1" for', tag, e));
+          }, { where: { tag } }).catch((e) => console.log('Couldn\'t update trim to "1" for', tag, e));
         })();
         return true;
       })
@@ -220,7 +220,18 @@ class Drop {
     };
   }
 
-  create = async (user_id, tag, caption, categoryName, isTrimmed) => {
+  /**
+   * Creates a new drop
+   * 
+   * @param {BigInt}  user_id 
+   * @param {UUID}    tag
+   * @param {String}  caption 
+   * @param {String}  categoryName    A category name or id
+   * @param {Boolean} isTrimmed  
+   * @param {Date}    date            A JS Date object to use in creating drops
+   * @returns ResponseObject
+   */
+  create = async (user_id, tag, caption, categoryName, isTrimmed, date) => {
     const audio = await AudioModel.findOne({ attributes: ['audio_id'], where: { tag } });
     if (audio === null){
       return {
@@ -248,7 +259,7 @@ class Drop {
       audio_id: audio.audio_id,
       category_id,
       caption,
-      date: new Date(),
+      date: date || new Date(),
     });
     if (drop === null){
       return {
@@ -258,6 +269,47 @@ class Drop {
       };
     }
 
+    // const pathToFile = path.join(
+    //   __dirname,
+    //   '../../google-services.json',
+    // );
+    // if (!fs.existsSync(pathToFile)){
+    //   await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
+    // }
+
+    // try {
+    //   const storage = new Storage({
+    //     projectId: process.env.GOOGLE_PROJECT_ID,
+    //     keyFilename: pathToFile,
+    //   });
+    //   const file = AudioEngine.directory(tag, isTrimmed);
+    //   const bucketFile = await storage.bucket(process.env.GOOGLE_BUCKET_NAME);
+    //   await bucketFile.upload(file, {
+    //     destination: tag,
+    //   });
+    // } catch (e) {
+    //   Notify.error(e);
+    //   Notify.info('UPLOAD-ERROR: Unable to save to Google bucket, see the issue on Sentry.');
+    // }
+    const file = AudioEngine.directory(tag, isTrimmed);
+    Drop.bucket('upload', tag, file);
+
+    return {
+      code: 200,
+      message: 'Successfully created your drop.',
+      data: { drop },
+    };
+  }
+
+  /**
+   * Upload/Download a file to/from Droplet's bucket (currently at GCP)
+   * 
+   * @param {String} command     Action to take on the file and fileName parameters (possible values are upload and download)
+   * @param {String} fileName    When uploading this mustn't be a full path, just a tag/name
+   * @param {String} file        When uploading this is the full path, when downloading it's just the tag/name previously uploaded
+   * @returns 
+   */
+  static bucket = async (command = 'upload', fileName, file) => {
     const pathToFile = path.join(
       __dirname,
       '../../google-services.json',
@@ -271,21 +323,69 @@ class Drop {
         projectId: process.env.GOOGLE_PROJECT_ID,
         keyFilename: pathToFile,
       });
-      const file = AudioEngine.directory(tag, isTrimmed);
       const bucketFile = await storage.bucket(process.env.GOOGLE_BUCKET_NAME);
-      await bucketFile.upload(file, {
-        destination: tag,
-      });
+      const options = {
+        destination: fileName,
+      };
+      if (command === 'upload'){
+        return await bucketFile.upload(file, options);
+      } else {
+        return await bucketFile.file(file).download(options);
+      }
     } catch (e) {
       Notify.error(e);
-      Notify.info('Unable to save to Google bucket, see the issue on Sentry.');
+      Notify.info('UPLOAD-ERROR: Unable to save to Google bucket, see the issue on Sentry.');
+    }
+  }
+
+  feed = async (user_id, limit, offset, opt) => {
+    let options = opt;
+    if (!options) {
+      options = { limit: parseInt(limit, 10), offset: parseInt(offset, 10), include: [{ model: AudioModel, required: true }] };
+      if (user_id) {
+        options.where = { user_id };
+      }
     }
 
+    AudioModel.hasOne(DropModel, {
+      foreignKey: 'audio_id',
+    });
+    DropModel.belongsTo(AudioModel,{
+      foreignKey: 'audio_id',
+    });
+    const drops = await DropModel.findAll(options);
+    if (drops === null) {
+      return {
+        code: 200,
+        message: 'There are no drops to display within this range.',
+        data: { drops: [] },
+      };
+    }
+
+    const dropsArray = drops.map(drop => {
+      const dropData = drop.get();
+      return { ...dropData, audio: { ...dropData.audio.get() } };
+    });
     return {
       code: 200,
-      message: 'Successfully created your drop.',
-      data: { drop },
+      message: 'Successfully loaded drops.',
+      data: { drops: [...dropsArray] },
     };
+  }
+
+  single = async (tagORdrop_id) => {
+    const tag = tagORdrop_id;
+    let options = {
+      include: [{ model: AudioModel, required: true }],
+      where: {
+        [Op.or]: [
+          { '$audio.tag$': tag },
+          { drop_id: tag },
+        ]
+      }
+    };
+
+    return await this.feed(null, null, null, options);
   }
 }
 

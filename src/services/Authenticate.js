@@ -14,19 +14,21 @@ class Authenticate {
   }
 
   init = async () => {
-    const pathToFile = path.join(
-      __dirname,
-      '../../firebase-services.json',
-    );
-    if (!fs.existsSync(pathToFile)){
-      await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+    if (firebaseAdmin.apps.length === 0) {
+      const pathToFile = path.join(
+        __dirname,
+        '../../firebase-services.json',
+      );
+      if (!fs.existsSync(pathToFile)){
+        await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+      }
+      const firebaseConfig = {
+        databaseURL: 'https://' + process.env.GOOGLE_PROJECT_ID + '.firebaseio.com',
+        credential: firebaseAdmin.credential.cert(pathToFile),
+      };
+      // Initialize Firebase
+      this.app = firebaseAdmin.initializeApp(firebaseConfig);
     }
-    const firebaseConfig = {
-      databaseURL: 'https://' + process.env.GOOGLE_PROJECT_ID + '.firebaseio.com',
-      credential: firebaseAdmin.credential.cert(pathToFile),
-    };
-    // Initialize Firebase
-    this.app = firebaseAdmin.initializeApp(firebaseConfig);
   }
 
   getAllUsers = async (limit, offset) => {

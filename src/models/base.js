@@ -15,7 +15,9 @@ const sequelize = new Sequelize(
     define: {
       freezeTableName: true,
     },
-    logging: false,
+    logging: function (str) {
+      console.log('\n-- SQL:', str, '\n');
+    },
   }
 );
 

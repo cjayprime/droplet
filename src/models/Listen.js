@@ -1,6 +1,6 @@
 import sequelize, { DataTypes } from './base';
 
-const Listen = sequelize.define('Listen', {
+const Listen = sequelize.define('listen', {
   listen_id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,
