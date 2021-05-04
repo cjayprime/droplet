@@ -11,7 +11,7 @@
     "create:JWTKeys": "test ! -e src/.private.pem && openssl genrsa -out src/.private.pem 4096 && openssl rsa -in src/.private.pem -pubout > src/.public.pem",
     "lint": "eslint --fix .",
     "fix:speaker": "sudo apt-get install nodejs-legacy",
-    "preproduction": "npm run create:JWTKeys && sudo npm install --global pm2@4.5.6 && pm2 start npm --name \"Droplet Drop Service\" -- start",
+    "preproduction": "npm run create:JWTKeys | sudo npm install --global pm2@4.5.6 && pm2 start npm --name \"Droplet Drop Service\" -- start",
     "production": "pm2 stop \"Droplet Drop Service\" && pm2 delete \"Droplet Drop Service\" && pm2 start npm --name \"Droplet Drop Service\" -- start && pm2 save",
     "postproduction": "npm run production:restartup && pm2 list && pm2 log",
     "production:restartup": "sudo env pm2 startup systemd -u $USER --hp ~",
