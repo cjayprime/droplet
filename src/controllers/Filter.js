@@ -14,18 +14,30 @@ class FilterController extends Controller {
    * @return {void} void
    */
   duet = [
-    body('user_id')
+    body('current.user_id')
       .notEmpty()
       .withMessage('must be a valid user_id.'),
 
-    body('tags')
-      .isArray({ min: 2 })
-      .withMessage('must be an array, with a minimum length of 2, containing valid tags.'),
+    body('current.tag')
+      .isUUID(4)
+      .withMessage('must be a valid tag.'),
+
+    body('current.isTrimmed')
+      .isBoolean()
+      .withMessage('must be a boolean.'),
+
+    body('owner.user_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.'),
+
+    body('owner.tag')
+      .isUUID(4)
+      .withMessage('must be a valid tag.'),
 
   	this.action(async (req, res, next) => {
-      const { body: { user_id, tags } } = req;
+      const { body: { current, owner } } = req;
   		const audioEngine = new AudioEngine();
-  		const response = await audioEngine.filter.duet(user_id, tags);
+  		const response = await audioEngine.filter.duet(current, owner);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

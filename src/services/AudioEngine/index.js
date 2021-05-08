@@ -40,8 +40,8 @@ class AudioEngine {
     ) + filename + '.' + (extension || 'mp3')
   );
 
-  static getFile = async (tag, filter, extension) => {
-    const drop = AudioEngine.directory(tag, null, filter, extension);
+  static getFile = async (tag, isTrimmed, filter, extension) => {
+    const drop = AudioEngine.directory(tag, isTrimmed, filter, extension);
     if (!fs.existsSync(drop)){
       return false;
     }
@@ -50,9 +50,9 @@ class AudioEngine {
     return recording;
   };
 
-  storeFile = async (tag, filter, extension) => {
+  storeFile = async (tag, isTrimmed, filter, extension) => {
     const url = await new Promise((resolve, reject) => {
-      const file = AudioEngine.directory(tag, null, filter, extension);
+      const file = AudioEngine.directory(tag, isTrimmed, filter, extension);
       // const newFile = extension ? file.replace('mp3', extension) : file;
       fs.writeFile(
         file,

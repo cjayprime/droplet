@@ -1,4 +1,4 @@
-import { body, query, param } from 'express-validator';
+import { oneOf, body, query, param } from 'express-validator';
 
 import Controller from './base';
 
@@ -82,9 +82,14 @@ class DropController extends Controller {
       .notEmpty()
   		.withMessage('must be a valid recording file.'),
 
-    body('source')
-      .notEmpty()
-      .withMessage('must be a either "recording" or "upload".'),
+    oneOf([
+      body('source')
+        .equals('recording')
+        .withMessage('must be a either "recording" or "upload".'),
+      body('source')
+        .equals('upload')
+        .withMessage('must be a either "recording" or "upload".')
+    ]),
 
   	this.action(async (req, res, next) => {
       const { body: { user_id, recording, source } } = req;
@@ -170,8 +175,46 @@ class DropController extends Controller {
   	this.action(async (req, res, next) => {
       const { body: { user_id, tag, caption, category, isTrimmed } } = req;
   		const dropService = new DropService();
-      // Get user_id from firebase
   		const response = await dropService.create(user_id, tag, caption, category, isTrimmed);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  single = [
+    param('tagORdrop_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.'),
+
+  	this.action(async (req, res, next) => {
+      const { params: { tagORdrop_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.single(tagORdrop_id);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  featured = [
+  	this.action(async (_, res, next) => {
+  		const dropService = new DropService();
+  		const response = await dropService.featured();
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -199,33 +242,20 @@ class DropController extends Controller {
       .withMessage('must be a valid user_id.')
       .optional(),
 
-  	this.action(async (req, res, next) => {
-      const { query: { limit, offset }, params: { user_id } } = req;
-  		const dropService = new DropService();
-  		const response = await dropService.feed(user_id, limit, offset);
-      this.response(res, response.code, response.data, response.message);
-  		next();
-  	})
-  ];
-
-  /**
-   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
-   *
-   * @param {Express.Response}    res     Express[.response] response object
-   * @param {Express.Request}     req     Express[.request] request object
-   * @param {Express.next}        next    Express callback to move to the next middleware
-   * @return {void} void
-   */
-  single = [
-    param('tagORdrop_id')
+    query('category')
       .notEmpty()
-      .withMessage('must be a valid user_id.')
+      .withMessage('must be a valid category (id or name).')
+      .optional(),
+
+    query('category.*')
+      .isAlphanumeric()
+      .withMessage('must be a valid category (id or name).')
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { params: { tagORdrop_id } } = req;
+      const { query: { limit, offset, category }, params: { user_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.single(tagORdrop_id);
+  		const response = await dropService.feed(user_id, limit, offset, null, typeof category === 'string' ? [category] : category);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

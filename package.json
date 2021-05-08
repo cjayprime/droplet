@@ -23,6 +23,7 @@
     "@sentry/tracing": "^6.3.4",
     "audio-decode": "^1.4.0",
     "audiobuffer-to-wav": "^1.0.0",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "cronstrue": "^1.112.0",
     "csv-writer": "^1.6.0",

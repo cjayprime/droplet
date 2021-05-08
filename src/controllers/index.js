@@ -9,9 +9,10 @@ const filter = new Filter();
 export default {
   public: [
     // Drop
-    { method: 'GET', path: '/user/:user_id', action: drop.feed },
     { method: 'GET', path: '/drops', action: drop.feed },
+    { method: 'GET', path: '/drops/user/:user_id', action: drop.feed },
     { method: 'GET', path: '/drops/:tagORdrop_id', action: drop.single },
+    { method: 'GET', path: '/featured', action: drop.featured },
     { method: 'GET', path: '/categories', action: drop.getCategories },
     { method: 'GET', path: '/download', action: drop.download },
     { method: 'GET', path: '/waveform', action: drop.waveform },
@@ -20,8 +21,9 @@ export default {
     { method: 'PUT', path: '/trim', action: drop.trim },
 
     // Analytics
-    { method: 'POST', path: '/analytics/interaction', action: analytics.recordInteraction },
-    { method: 'POST', path: '/analytics/listen', action: analytics.recordListen },
+    { method: 'POST', path: '/listen', action: analytics.recordListen },
+    { method: 'POST', path: '/like', action: analytics.recordLike },
+    { method: 'POST', path: '/interaction', action: analytics.recordInteraction },
     { method: 'GET', path: '/analytics', action: analytics.analyze },
 
     // Filters

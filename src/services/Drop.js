@@ -6,8 +6,9 @@ import { Storage } from '@google-cloud/storage';
 import { Op } from 'sequelize';
 
 import AudioEngine from './AudioEngine';
+import UserService from './User';
 
-import { Audio as AudioModel, Drop as DropModel, Category as CategoryModel } from '../models';
+import { User as UserModel, Audio as AudioModel, Drop as DropModel, Category as CategoryModel, Like as LikeModel, Listen as ListenModel } from '../models';
 import { Notify } from '../shared';
 
 class Drop {
@@ -85,7 +86,7 @@ class Drop {
     if (resolved){
       return {
         code: 200,
-        message: 'Successfully trimmed your drop',
+        message: 'Successfully trimmed your drop, you can now download it (GET /download?isTrimmed=true&tag=' + tag + ')',
         data: { start, end, tag },
       };
     }
@@ -138,10 +139,24 @@ class Drop {
    * @returns ResponseObject
    */
   validate = async (user_id, recording, source) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    if (user === null) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
     const audioEngine = new AudioEngine(recording);
     const duration = await audioEngine.getDuration();
-
-    if (duration <= this.recording.min) {
+    if (!duration) {
+      return {
+        code: 400,
+        data: {},
+        message: 'Sorry, we could not process the file.',
+      };
+    } else if (duration <= this.recording.min) {
       return {
         code: 400,
         data: {},
@@ -186,6 +201,13 @@ class Drop {
 
   waveform = async (tag, bars) => {
     const recording = await AudioEngine.getFile(tag);
+    if (!recording) {
+      return {
+        code: 404,
+        message: 'We were unable to find the file.',
+        data: {},
+      };
+    }
     const audioEngine = new AudioEngine(recording, 'buffer');
     const waveform = await audioEngine.getWaveform(bars, 'full-width-per-second');
     if (waveform.length === 0){
@@ -244,7 +266,7 @@ class Drop {
     let category_id = categoryName;
     if (isNaN(category_id)){
       const category = await CategoryModel.findOne({ attributes: ['category_id'], where: { name: categoryName } });
-      if (category.length === null){
+      if (category === null){
         return {
           code: 400,
           message: 'The category does not exist.',
@@ -254,8 +276,27 @@ class Drop {
       category_id = category.category_id;
     }
 
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    if (user === null) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
+    const file = AudioEngine.directory(tag, isTrimmed);
+    const uploaded = await Drop.bucket('upload', tag, file);
+    if (!uploaded) {
+      return {
+        code: 400,
+        message: 'Unable to store the drop.',
+        data: {},
+      };
+    }
+
     const drop = await DropModel.create({
-      user_id,
+      user_id: user.user_id,
       audio_id: audio.audio_id,
       category_id,
       caption,
@@ -268,31 +309,6 @@ class Drop {
         data: { drop },
       };
     }
-
-    // const pathToFile = path.join(
-    //   __dirname,
-    //   '../../google-services.json',
-    // );
-    // if (!fs.existsSync(pathToFile)){
-    //   await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
-    // }
-
-    // try {
-    //   const storage = new Storage({
-    //     projectId: process.env.GOOGLE_PROJECT_ID,
-    //     keyFilename: pathToFile,
-    //   });
-    //   const file = AudioEngine.directory(tag, isTrimmed);
-    //   const bucketFile = await storage.bucket(process.env.GOOGLE_BUCKET_NAME);
-    //   await bucketFile.upload(file, {
-    //     destination: tag,
-    //   });
-    // } catch (e) {
-    //   Notify.error(e);
-    //   Notify.info('UPLOAD-ERROR: Unable to save to Google bucket, see the issue on Sentry.');
-    // }
-    const file = AudioEngine.directory(tag, isTrimmed);
-    Drop.bucket('upload', tag, file);
 
     return {
       code: 200,
@@ -328,55 +344,36 @@ class Drop {
         destination: fileName,
       };
       if (command === 'upload'){
-        return await bucketFile.upload(file, options);
+        await bucketFile.upload(file, options);
       } else {
-        return await bucketFile.file(file).download(options);
+        await bucketFile.file(file).download(options);
       }
+      return true;
     } catch (e) {
       Notify.error(e);
       Notify.info('UPLOAD-ERROR: Unable to save to Google bucket, see the issue on Sentry.');
+      return false;
     }
   }
 
-  feed = async (user_id, limit, offset, opt) => {
-    let options = opt;
-    if (!options) {
-      options = { limit: parseInt(limit, 10), offset: parseInt(offset, 10), include: [{ model: AudioModel, required: true }] };
-      if (user_id) {
-        options.where = { user_id };
-      }
-    }
-
-    AudioModel.hasOne(DropModel, {
-      foreignKey: 'audio_id',
-    });
-    DropModel.belongsTo(AudioModel,{
-      foreignKey: 'audio_id',
-    });
-    const drops = await DropModel.findAll(options);
-    if (drops === null) {
-      return {
-        code: 200,
-        message: 'There are no drops to display within this range.',
-        data: { drops: [] },
-      };
-    }
-
-    const dropsArray = drops.map(drop => {
-      const dropData = drop.get();
-      return { ...dropData, audio: { ...dropData.audio.get() } };
-    });
+  featured = () => {
     return {
       code: 200,
-      message: 'Successfully loaded drops.',
-      data: { drops: [...dropsArray] },
+      data: {
+        users: {
+          'mobile12': { 'category': 'asmr', 'desc': 'Sample bio1' },
+          'mobile3': { 'category': 'convo', 'desc': 'Sample bio2' },
+          'ishan': { 'category': 'comedy', 'desc': 'Sample bio3' }
+        }
+      },
+      message: 'Successfully retrieved the featured list'
     };
   }
 
   single = async (tagORdrop_id) => {
     const tag = tagORdrop_id;
     let options = {
-      include: [{ model: AudioModel, required: true }],
+      include: UserService.includeForUser,
       where: {
         [Op.or]: [
           { '$audio.tag$': tag },
@@ -386,6 +383,70 @@ class Drop {
     };
 
     return await this.feed(null, null, null, options);
+  }
+
+  feed = async (user_id, limit, offset, opt, category) => {
+    let options = opt;
+    if (!options) {
+      const where = category ? { [Op.or]: { '$category.name$': { [Op.in]: category }, category_id: { [Op.in]: category } } } : {}; 
+      options = {
+        where,
+        include: UserService.includeForUser,
+        limit: parseInt(limit, 10),
+        offset: parseInt(offset, 10),
+      };
+      if (user_id) {
+        options.where = {
+          ...where, 
+          ...UserService.searchForUser(user_id)
+        };
+      }
+    }
+
+    UserService.associateForUser();
+    const drops = await DropModel.findAll(options);
+    if (drops === null) {
+      return {
+        code: 200,
+        message: 'There are no drops to display within this range.',
+        data: { drops: [] },
+      };
+    }
+
+    UserService.generateAssociation(UserModel, LikeModel);
+    UserService.generateAssociation(UserModel, ListenModel);
+    const dropsArray = await Promise.all(
+      drops.map(async drop => {
+        const dropData = drop.get();
+        // Likes
+        // Count all likes (whether or not it's the user making this request)
+        const likes = await LikeModel.count({
+          where: { drop_id: dropData.drop_id },
+        });
+        // Get the like for only the user making this request
+        const liked = await LikeModel.findOne({
+          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(user_id) },
+          include: [{ model: UserModel, required: true }],
+        });
+        
+        // Listens
+        // Count all listens (whether or not it's the user making this request)
+        const listens = await ListenModel.count({
+          where: { drop_id: dropData.drop_id },
+        });
+        // Get the listens for only the user making this request
+        const listened = await ListenModel.findOne({
+          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(user_id) },
+          include: [{ model: UserModel, required: true }],
+        });
+        return { ...dropData, likes: likes, liked: liked && liked.status === '1', listens, listened: !!listened };
+      })
+    );
+    return {
+      code: 200,
+      message: 'Successfully loaded drops.',
+      data: { drops: [...dropsArray] },
+    };
   }
 }
 

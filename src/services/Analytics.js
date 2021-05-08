@@ -1,8 +1,9 @@
 import { createObjectCsvWriter } from 'csv-writer';
 
 import Authenticate from './Authenticate';
+import UserService from './User';
 
-import { Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, Category as CategoryModel } from '../models';
+import { Like as LikeModel, User as UserModel, Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, Category as CategoryModel } from '../models';
 
 const authenticate = new Authenticate();
 class Analytics {
@@ -132,8 +133,17 @@ class Analytics {
   }
 
   recordListen = async (user_id, drop_id) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    if (user === null) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
     const newInteraction = await ListenModel.create({
-      user_id: user_id === 'NO_ACCOUNT' ? 0 : user_id,
+      user_id: user.user_id,
       drop_id,
       date: new Date(),
     });
@@ -150,6 +160,41 @@ class Analytics {
       code: 200,
       data: {},
       message: 'Successfully recorded listen.',
+    };
+  }
+
+  recordLike = async (uid, drop_id) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
+    if (user === null) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
+    // If you've previously liked then this is an unlike action
+    const user_id = user.user_id;
+    const like = await LikeModel.findOne({ where: { user_id, drop_id } });
+    const [newInteraction] = await LikeModel.upsert({
+      user_id,
+      drop_id,
+      status: like.status === '1' ? '0' : '1',
+      date: new Date(),
+    });
+
+    if (newInteraction.drop_id != drop_id) {
+      return {
+        code: 400,
+        data: {},
+        message: 'Unable to record like.',
+      };
+    }
+
+    return {
+      code: 200,
+      data: { liked: like.status !== '1' },
+      message: 'Successfully recorded the ' + (like.status === '1' ? 'unlike' : 'like') + '.',
     };
   }
 
