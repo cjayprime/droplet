@@ -7,13 +7,16 @@ const Like = sequelize.define('like', {
     primaryKey: true,
   },
   user_id: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.BIGINT,
     allowNull: false,
+    references: { model: 'user', key: 'user_id' },
+    unique: 'one_user_like_per_drop',
   },
   drop_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: { model: 'drop', key: 'drop_id' },
+    unique: 'one_user_like_per_drop',
   },
   status: {
     type: DataTypes.ENUM('0', '1'),
@@ -26,12 +29,6 @@ const Like = sequelize.define('like', {
 }, {
   tableName: 'like',
   timestamps: false,
-  indexes: [
-    {
-      unique: false,
-      fields: ['user_id'],
-    },
-  ],
 });
 
 export default Like;

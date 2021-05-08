@@ -1,26 +1,34 @@
 import { PythonShell } from 'python-shell';
-import { v4 as uuidv4 } from 'uuid';
 
 import AudioEngine from '../..';
 import DropService from '../../../Drop';
+import UserService from '../../../User';
 
-import { Audio as AudioModel, Filter as FilterModel, FilterUsage as FilterUsageModel } from '../../../../models';
+import { User as UserModel, Audio as AudioModel, Filter as FilterModel, FilterUsage as FilterUsageModel } from '../../../../models';
 
 class Duet {
   /**
    * Retrieves the wav format of a file stored in Droplet's bucket
    * If 1 file is invalid the entire process fails
    * 
-   * @param {String} tag 
+   * @param {String} tag          The tag to generate a wav for duetting
+   * @param {String} isTrimmed    If the duet is attempting to use the trimmed version of the audio (if undefined will check bucket storage)
    * @returns 
    */
-  getWav = async (tag) => {
-    // Download the file to appropriate directory
-    const fileName = await AudioEngine.directory(tag, false, 'duet');
-    await DropService.bucket('download', fileName, tag);
+  getWav = async (tag, isTrimmed) => {
+    let buffer;
+    if (isTrimmed === true || isTrimmed === false) {
+      // Check for the file in the trim OR root storage directory
+      buffer = await AudioEngine.getFile(tag, isTrimmed);
+    } else {
+      // Download the file to appropriate directory
+      const fileName = await AudioEngine.directory(tag);
+      await DropService.bucket('download', fileName, tag);
+      // Get the downloaded file
+      buffer = await AudioEngine.getFile(tag);
+    }
 
-    // Get the downloaded file
-    const buffer = await AudioEngine.getFile(tag, 'duet');
+    // console.log('Buffer', buffer);
     if (!buffer) {
       return {
         error: `Unable to find the drop: ${tag}`,
@@ -37,35 +45,66 @@ class Duet {
         tag,
       };
     }
-        
-    // NOTE:
-    // This will save with a .mp3 extension, although the format/content is .wav
+
+    // Create a new file with .wav format from the buffer
     audioEngine.buffer = Buffer.from(audioData.wav);
-    const file = await audioEngine.storeFile(tag, 'duet', 'wav');
+    const file = await audioEngine.storeFile(tag, isTrimmed, null, 'wav');
     if (!file) {
       return {
         error: `Unable to handle file for drop: ${tag}.`,
         tag,
       };
     }
-    return { wav: audioData.wav, file };
+    return { /*wav: audioData.wav,*/ file };
   }
 
-  init = async (user_id, tags) => {
-    if (!Array.isArray(tags) || (Array.isArray(tags) && tags.length !== 2)) {
+  /**
+   * 
+   * @param {Object} current    Has a shape of {user_id, tag}, NOTE: The tag references a local audio file ALWAYS
+   * @param {Object} owner      Has a shape of {user_id, tag}, NOTE: The tag references a remote audio file ALWAYS
+   * @returns 
+   */
+  init = async (current, owner) => {
+    if (!current.user_id || !owner.user_id || !current.tag || !owner.tag) {
       return {
         code: 400,
-        message: 'The tags array provided must be of a length of 2.',
-        data: { tag: tags[0] },
+        message: 'You must provide an object with a shape of'+
+                  '{current: {tag: UUID, user_id: ID}, owner: {tag: UUID, user_id: ID}}.',
+        data: {},
       };
     }
 
-    // Loop through `tags` and load their fileNames (as wav)
-    // because the duet feature only supports wav
-    const fileNames = [];
+    UserService.generateAssociation(UserModel, AudioModel);
+    const ownerAudio = await AudioModel.findOne({
+      attributes: ['audio_id'],
+      where: {
+        ...UserService.searchForUser(owner.user_id),
+        tag: owner.tag,
+      },
+      include: [{ model: UserModel, required: true }],
+    });
+    const currentAudio = await AudioModel.findOne({
+      attributes: ['audio_id', 'user_id'],
+      where: {
+        ...UserService.searchForUser(current.user_id),
+        tag: current.tag,
+      },
+      include: [{ model: UserModel, required: true }],
+    });
+    if (!currentAudio || !ownerAudio) {
+      return {
+        code: 422,
+        message: 'Couldn\'t ascertain ownership of this drop.',
+        data: { tag },
+      };
+    }
+    
+    // Loop through `tags` and load their filePaths (as wav)
+    // because the duet feature only supports wav (including format)
+    const filePaths = [];
     const tagsResult = await Promise.all(
-      tags.map(async (_, i) => {
-        const wavData = await this.getWav(tags[i]);
+      [{ ...current }, { ...owner }].map(async (audio, i) => {
+        const wavData = await this.getWav(audio.tag, audio.isTrimmed);
         if (wavData.error){
           return {
             code: 400,
@@ -73,23 +112,25 @@ class Duet {
             data: { tag: wavData.tag },
           };
         }
-        fileNames[i] = wavData.file;
+        filePaths[i] = wavData.file;
       })
     );
+    // If there are no errors tagResult will resolve to a falsy value
     const errIndex = tagsResult.findIndex(tagRes => !!tagRes);
     if (errIndex !== -1) {
       return tagsResult[errIndex];
     }
 
-    const tag = uuidv4();
-    let taggedFile = await AudioEngine.directory(tag, false, 'duet');
-    taggedFile = taggedFile.replace('mp3', 'wav');
+    // Create the new duet file
+    const tag = current.tag;
+    const duetFilePath = await AudioEngine.directory(tag, false, 'duet', 'wav');
 
+    // Generate the duet
     const result = await new Promise((resolve, reject) => {
       let options = {
         mode: 'text',
         scriptPath: __dirname,
-        args: [fileNames[0], fileNames[1], taggedFile]
+        args: [filePaths[0], filePaths[1], duetFilePath],
       };
       PythonShell.run('duet_feature.py', options, function (err, results) {
         if (err) {
@@ -99,7 +140,7 @@ class Duet {
       });
     });
 
-    console.log('results: %j', result);
+    console.log('RESULT:', result);
     if (result[0] !== 'success') {
       return {
         code: 400,
@@ -108,36 +149,20 @@ class Duet {
       };
     }
 
-    await DropService.bucket('upload', tag, taggedFile);
-    const audioEngine = new AudioEngine();
-    audioEngine.buffer = await AudioEngine.getFile(tag, 'duet', 'wav');
-    const data = await audioEngine.getProcessedData();
-    if (!data) {
-      return {
-        code: 400,
-        message: 'A parsing error occurred while trying to create a duet.',
-        data: { tag },
-      };
-    }
-    const audio = await AudioModel.create({
-      user_id,
-      tag,
-      duration: data.duration,
-      filesize: data._data.length,
-      source: 'recording',
-      trimmed: '0',
-      date: new Date(),
-    });
+    // Save the duet
     const filter = await FilterModel.findOne({
       attributes: ['filter_id'],
-      where: { name: 'duet' }
+      where: { name: 'duet' },
     });
     await FilterUsageModel.create({
-      user_id: audio.user_id,
-      audio_id: audio.audio_id,
+      user_id: currentAudio.user_id,
+      owner_audio_id: ownerAudio.audio_id,
+      audio_id: currentAudio.audio_id,
       filter_id: filter.filter_id,
       date: new Date(),
     });
+    // console.log('\n\nINIT LOG', currentAudio.user_id, currentAudio.audio_id, ownerAudio.user_id, filter, filePaths, duetFilePath, result, '\n\n');
+    // return { code: 301, message: 'TEST', data: {} };
     return {
       code: 200,
       message: 'Successfully created a duet',

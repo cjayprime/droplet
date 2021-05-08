@@ -7,8 +7,9 @@ const Listen = sequelize.define('listen', {
     primaryKey: true,
   },
   user_id: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.BIGINT,
     allowNull: false,
+    references: { model: 'user', key: 'user_id' },
   },
   drop_id: {
     type: DataTypes.BIGINT,
@@ -22,12 +23,6 @@ const Listen = sequelize.define('listen', {
 }, {
   tableName: 'listen',
   timestamps: false,
-  indexes: [
-    {
-      unique: false,
-      fields: ['user_id'],
-    },
-  ],
 });
 
 export default Listen;

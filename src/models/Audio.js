@@ -7,8 +7,9 @@ const Audio = sequelize.define('audio', {
     primaryKey: true
   },
   user_id: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.BIGINT,
     allowNull: false,
+    references: { model: 'user', key: 'user_id' },
   },
   tag: {
     type: DataTypes.UUID,
@@ -40,10 +41,6 @@ const Audio = sequelize.define('audio', {
   tableName: 'audio',
   timestamps: false,
   indexes: [
-    {
-      unique: false,
-      fields: ['user_id'],
-    },
     {
       unique: false,
       fields: ['source'],

@@ -7,8 +7,14 @@ const FilterUsage = sequelize.define('filter_usage', {
     primaryKey: true,
   },
   user_id: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.BIGINT,
     allowNull: false,
+    references: { model: 'user', key: 'user_id' },
+  },
+  owner_audio_id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    references: { model: 'audio', key: 'audio_id' },
   },
   audio_id: {
     type: DataTypes.BIGINT,
@@ -27,12 +33,6 @@ const FilterUsage = sequelize.define('filter_usage', {
 }, {
   tableName: 'filter_usage',
   timestamps: false,
-  indexes: [
-    {
-      unique: false,
-      fields: ['user_id'],
-    },
-  ],
 });
 
 export default FilterUsage;

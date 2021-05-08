@@ -10,8 +10,9 @@ const Drop = sequelize.define('drop', {
     primaryKey: true,
   },
   user_id: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.BIGINT,
     allowNull: false,
+    references: { model: 'user', key: 'user_id' },
   },
   audio_id: {
     type: DataTypes.BIGINT,
@@ -34,12 +35,6 @@ const Drop = sequelize.define('drop', {
 }, {
   tableName: 'drop',
   timestamps: false,
-  indexes: [
-    {
-      unique: false,
-      fields: ['user_id'],
-    },
-  ],
 });
 
 export default Drop;

@@ -6,6 +6,7 @@ export { default as Listen } from './Listen';
 export { default as Interaction } from './Interaction';
 export { default as Filter } from './Filter';
 export { default as FilterUsage } from './FilterUsage';
+export { default as User } from './User';
 
 // Category.hasMany(Drop, {
 //     foreignKey: 'category_id',
