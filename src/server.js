@@ -72,8 +72,8 @@ export default application;
 setTimeout(async () => {
   if (process.env.NODE_ENV === 'development') {
     // Change any value here to test instantly in development
-    // const supertest = require('supertest');
-    // const request = supertest(app);
+    const supertest = require('supertest');
+    const request = supertest(app);
     // const token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6Im5uYWNoaWppb2tlQHlhaG9vLmNvbSIsIm1vYmlsZSI6bnVsbCwiY29kZSI6bnVsbCwiZmlyc3RuYW1lIjoiQ2hpamlva2UiLCJsYXN0bmFtZSI6Ik5uYSIsImJ2biI6bnVsbCwiY2FyZCI6bnVsbCwiYmFsYW5jZSI6MjAwLCJzdGF0dXMiOnRydWUsImRhdGUiOiIyMDIxLTAxLTExVDA3OjUzOjU1LjAwMFoiLCJpYXQiOjE2MTQxNzUxMDQsImV4cCI6NDc2OTkzNTEwNH0.ceibXPNoS4_O4cnSgyIpRjM9gvBlhoHS5NMDaXB2ROGEJ1MSgSqlp3OjeUmlJJO8CM40hGaxkICWcnmc-mWGiqCor1sqgf6AUvew9PEK26n4FJtSbIHA9H39v7FvghwpP1HRKv_570g5nD_X2Q6e8Ys52I-_8Q5aRoew4q9gHN45JDz495dQM_GbX88LImbsuzkQ1vxS-JvRR_Z1eOHHhgdGByuhIw166Q9feXoz5arB6_E7Aq4gB-Hy-pUlj0XXM9ebiFaTFI7tyO5jAoz7cAu1GOWdWUeiv1fS3XCkt2x0p8nX6Hex4LWKF8KgXPDFfxZz45zHMll9HyCfHQfYYWU1uNsaDIezc_NeFI7Jd8Snge5W5MPUPQwkUR-Asa6HA319qVhqL0fIX4uEQmAWz8rpFUMVGM5ag5qyPmDx6BYN9u02lfePCR7OTE4LZzzO7abqzF0hklAP6UkGVQRXJ2SW6oz43_DIWq21kVFX9CVDW4QzHe6XPLA48zJj5BJac59qW8sKkFQodtyHHnQEJW0GmCCPLu5KKyF3Gp5gnngHmvbmyyFcaDAdDn8kF9wU_wRLmhemLikLQY-x046qAvllVKKTRbE2vGnbYqqGPQAjNx5HbkYYUo2b_YlEW7VyhCJxm_HoXRVvvyLjM6SrwhaEp45Zwh2D5akhBzeo2Pg';
     // const headers = {
     //   'Authorization' : 'Bearer ' + token,
@@ -97,7 +97,8 @@ setTimeout(async () => {
     //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '00ba23bd-17e1-4001-aac0-87603c8ea18f', isTrimmed: true, },
     //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '00ba23bd-17e1-4001-aac0-87603c8ea18f' } }); //0b73a901-f4d3-4476-a3ac-cb2d343c228d
     // const response = await request.get('/featured').send();
-    // console.log(response.body);
+    const response = await request.post('/authenticate').send({ username: '', uid: '' });
+    console.log(response.body);
 
 
     // const Analytics = require('./services/Analytics').default;

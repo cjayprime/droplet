@@ -1,9 +1,11 @@
 import Drop from './Drop';
 import Analytics from './Analytics';
+import Authenticate from './Authenticate';
 import Filter from './Filter';
 
 const drop = new Drop();
 const analytics = new Analytics();
+const authenticate = new Authenticate();
 const filter = new Filter();
 
 export default {
@@ -30,7 +32,7 @@ export default {
     { method: 'POST', path: '/filter/duet', action: filter.duet },
 
     // Authenticate
-    // {method: 'POST', path: '/authenticate', action: authenticate.firebase},
+    { method: 'POST', path: '/authenticate', action: authenticate.firebase },
 
     // Health
     { method: 'GET', path: '/health', action: /*authenticate.health*/ (_, res, next) => {
