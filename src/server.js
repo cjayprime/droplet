@@ -101,6 +101,12 @@ setTimeout(async () => {
     // console.log(response.body);
 
 
+
+    // const jwt = require('jsonwebtoken');
+    // console.log(await jwt.verify(token, Configuration.privateKey(), {
+    //   algorithms: ['RS256'],
+    // }));
+
     // const Analytics = require('./services/Analytics').default;
     // const analytics = new Analytics();
     // console.log(await analytics.generateCSV());
