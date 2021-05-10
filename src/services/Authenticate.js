@@ -5,6 +5,9 @@ import path from 'path';
 // import 'firebase/database';
 import firebaseAdmin from 'firebase-admin';
 
+import { User as UserModel } from '../models';
+import { Configuration } from '../shared';
+
 class Authenticate {
   app;
   admin = firebaseAdmin;
@@ -33,6 +36,67 @@ class Authenticate {
 
   getAllUsers = async (limit, offset) => {
     return await firebaseAdmin.auth().listUsers(limit, offset);
+  }
+
+  /**
+   * Sign up/in a user
+   * -- How:
+   * Check the authentication server (currently firebase) if a user with `username`
+   * AND `uid` exist and are the same user. If they are then register the user, OR
+   * if they are registered, sign them into this service
+   * 
+   * @param {String} username   Username of a user
+   * @param {String} uid        UID of a user from the AuthService
+   */
+  authenticate = async (username, uid, type) => {
+    let authUser;
+    if (type === 'firebase') {
+      if (!this.app) {
+        this.init();
+      }
+
+      const userSnapshot = await this.admin.firestore()
+        .collection('Users')
+        .where('uid', '==', uid)
+        .where('username', '==', username)
+        .limit(1)
+        .get();
+      userSnapshot.forEach(doc => authUser = doc.data());
+    }
+
+    if (!authUser || (authUser.username !== username || authUser.uid !== uid)) {
+      return {
+        code: 401,
+        message: 'We were unable to authenticate a user that does not exist.',
+        data: {},
+      };
+    }
+
+    const [user, created] = await UserModel.upsert({
+      username,
+      uid,
+      date: new Date(),
+    });
+    if (user.username !== username || user.uid !== uid) {
+      return {
+        code: 422,
+        message: 'You are not allowed to make this request.',
+        data: {},
+      };
+    }
+
+    const token = Configuration.sign({
+      user_id: user.user_id,
+      username: user.username,
+      uid: user.uid,
+      date: user.date,
+    });
+    return {
+      code: 200,
+      message:  'Successfully authenticated the user, simply use '+
+                'the attached token in the Authentication header of a request.',
+      data: { token, created },
+    };
   }
 }
 

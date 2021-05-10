@@ -49,15 +49,3 @@ jobs:
           user: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Configure the VM
-        run: |
-      
-      - name: Create environment variables
-      
-      - name: Fix speaker
-
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Start the app in production
-        run: yarn production

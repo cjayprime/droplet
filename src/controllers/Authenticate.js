@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 
 import Controller from './base';
 
-import { Analytics as AnalyticsService } from '../services';
+import { Authenticate as AuthenticateService } from '../services';
 
 class AuthenticateController extends Controller {
   /**
@@ -20,8 +20,8 @@ class AuthenticateController extends Controller {
 
     this.action(async (req, res, next) => {
       const { body: { username, uid } } = req;
-      const anaylticsService = new AnalyticsService();
-      const response = await anaylticsService.authenticate(username, uid);
+      const authenticateService = new AuthenticateService();
+      const response = await authenticateService.authenticate(username, uid, 'firebase');
       this.response(res, response.code, response.data, response.message);
       next();
     })

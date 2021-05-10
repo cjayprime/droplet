@@ -38,7 +38,7 @@ class Configuration {
     }
 
     /**
-     * Passes a data to jwt.sign to sign and encode within a jwt
+     * Passes a data object to jwt.sign to sign and encode within a jwt
      * 
      * @see {jwt.sign}  
      */
