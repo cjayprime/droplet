@@ -37,7 +37,7 @@ jobs:
             sudo pip3 install -U pip
             suod pip3 install llvmlite==0.34.0
             sudo apt-get update
-            sudo apt-get install git nginx
+            sudo apt-get install git nginx ffmpeg
 
             npm install --global yarn
 

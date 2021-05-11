@@ -361,9 +361,26 @@ class Drop {
       code: 200,
       data: {
         users: {
-          'mobile12': { 'category': 'asmr', 'desc': 'Sample bio1' },
-          'mobile3': { 'category': 'convo', 'desc': 'Sample bio2' },
-          'ishan': { 'category': 'comedy', 'desc': 'Sample bio3' }
+          'arpi': {
+            'category': 'comedy',
+            'desc': 'guess'
+          },
+          'drelizabeth': {
+            'category': '',
+            'desc': 'Sample bio2'
+          },
+          'goodluigi': {
+            'category': 'music',
+            'desc': 'hello!'
+          },
+          'cyan': {
+            'category': 'convo',
+            'desc': 'stanford student and youtuber!'
+          },
+          'yanniet': {
+            'category': 'convo',
+            'desc': 'yannie is a composer at heart, and an ella fitzgerald lover'
+          },
         }
       },
       message: 'Successfully retrieved the featured list'
