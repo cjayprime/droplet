@@ -51,12 +51,19 @@ class DropController extends Controller {
 
     query('isTrimmed')
       .isBoolean()
-      .withMessage('must be a boolean.'),
+      .withMessage('must be a boolean.')
+      .optional(),
+
+    query('filter')
+      .isAlphanumeric()
+      .withMessage('must be a valid filter.')
+      .optional(),
 
   	this.action(async (req, res, next) => {
-      const { query: { tag, isTrimmed } } = req;
+      const { query: { tag, isTrimmed, filter } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.download(res, tag, isTrimmed == 'true');
+  		const response = await dropService.download(res, tag, isTrimmed == 'true', filter);
+      console.log('DONWLOADING', response);
       if (response.alreadySent) {
         return;
       }
