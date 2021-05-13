@@ -244,16 +244,24 @@ class Drop {
 
   /**
    * Creates a new drop
-   * 
-   * @param {BigInt}  user_id 
+   *
+   * @param {BigInt}  user_id
    * @param {UUID}    tag
-   * @param {String}  caption 
+   * @param {String}  caption
    * @param {String}  categoryName    A category name or id
-   * @param {Boolean} isTrimmed  
+   * @param {Boolean} isTrimmed
    * @param {Date}    date            A JS Date object to use in creating drops
    * @returns ResponseObject
    */
   create = async (user_id, tag, caption, categoryName, isTrimmed, date) => {
+    if (caption.length > 70) {
+      return {
+        code: 400,
+        message: 'The caption must be less than 70 characters.',
+        data: {},
+      };
+    }
+
     const audio = await AudioModel.findOne({ attributes: ['audio_id'], where: { tag } });
     if (audio === null){
       return {
@@ -319,11 +327,11 @@ class Drop {
 
   /**
    * Upload/Download a file to/from Droplet's bucket (currently at GCP)
-   * 
+   *
    * @param {String} command     Action to take on the file and fileName parameters (possible values are upload and download)
    * @param {String} fileName    When uploading this mustn't be a full path, just a tag/name
    * @param {String} file        When uploading this is the full path, when downloading it's just the tag/name previously uploaded
-   * @returns 
+   * @returns
    */
   static bucket = async (command = 'upload', fileName, file) => {
     const pathToFile = path.join(
@@ -405,7 +413,7 @@ class Drop {
   feed = async (user_id, limit, offset, opt, category) => {
     let options = opt;
     if (!options) {
-      const where = category ? { [Op.or]: { '$category.name$': { [Op.in]: category }, category_id: { [Op.in]: category } } } : {}; 
+      const where = category ? { [Op.or]: { '$category.name$': { [Op.in]: category }, category_id: { [Op.in]: category } } } : {};
       options = {
         where,
         include: UserService.includeForUser,
@@ -414,7 +422,7 @@ class Drop {
       };
       if (user_id) {
         options.where = {
-          ...where, 
+          ...where,
           ...UserService.searchForUser(user_id)
         };
       }
@@ -445,7 +453,7 @@ class Drop {
           where: { drop_id: dropData.drop_id, ...UserService.searchForUser(user_id) },
           include: [{ model: UserModel, required: true }],
         });
-        
+
         // Listens
         // Count all listens (whether or not it's the user making this request)
         const listens = await ListenModel.count({
