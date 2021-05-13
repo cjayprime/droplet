@@ -76,6 +76,7 @@ class Duet {
       };
     }
 
+    const tag = current.tag;
     // Ensure that the pairings are accurate i.e. the onwer of a
     // drop (`user_id`) is the same as the onwer of a tag (`tag`)
     UserService.generateAssociation(UserModel, AudioModel);
@@ -126,7 +127,6 @@ class Duet {
     }
 
     // Create the new duet file path
-    const tag = current.tag;
     const duetFilePath = await AudioEngine.directory(tag, false, 'duet', 'wav');
 
     // Generate the duet

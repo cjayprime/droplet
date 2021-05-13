@@ -421,6 +421,9 @@ class Drop {
         include: UserService.includeForUser,
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
+        order: [
+          ['drop_id', 'DESC'],
+        ],
       };
       if (user_id) {
         options.where = {
@@ -466,7 +469,7 @@ class Drop {
           where: { drop_id: dropData.drop_id, ...UserService.searchForUser(user_id) },
           include: [{ model: UserModel, required: true }],
         });
-        return { ...dropData, likes: likes, liked: liked && liked.status === '1', listens, listened: !!listened };
+        return { ...dropData, likes: likes, liked: !!(liked && liked.status === '1'), listens, listened: !!listened };
       })
     );
     return {
