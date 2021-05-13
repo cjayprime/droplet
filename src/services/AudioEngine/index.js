@@ -3,6 +3,7 @@ import path from 'path';
 import audioDecode from 'audio-decode';
 import { AudioContext } from 'web-audio-api';
 import audioBufferToWav from 'audiobuffer-to-wav';
+import { Lame } from 'node-lame';
 
 import { Duet } from './Filters';
 
@@ -186,8 +187,36 @@ class AudioEngine {
     }
   };
 
+  /**
+   * Convert a wav buffer
+   *
+   * @param {ArrayBuffer}   buffer    The buffer of the wav file
+   * @param {String}        storage   A file path to a wav file, it will be overwritten after conversion
+   * @returns
+   */
+  static toMp3 = async (buffer, storage) => {
+    const encoder = new Lame({
+      output: storage.replace(/\.wav$/, '.mp3'),
+      bitrate: 192,
+      'little-endian': true,
+      mp3Input: false,
+      quality: 9,
+    }).setBuffer(Buffer.from(buffer));
+
+    const resolved = await encoder.encode()
+      .then(() => {
+        return true;
+      })
+      .catch((e) => {
+        console.log('Error while converting to mp3:', e);
+        return false;
+      });
+
+    return resolved;
+  };
+
   filter = {
-    duet: new Duet().init,
+    duet: new Duet().make,
   };
 }
 

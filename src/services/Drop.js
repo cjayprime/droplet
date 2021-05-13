@@ -104,11 +104,13 @@ class Drop {
    * @param {Express.Response}  res         The Express Resonse object
    * @param {String}            tag         The tagged audio to download
    * @param {Boolean}           isTrimmed   If the trimmed version should be downloaded
+   * @param {Boolean}           filter      If to download the filter made from the audio (identified by `tag`)
    * @returns ResponseObject
    */
-  download = async (res, tag, isTrimmed) => {
+  download = async (res, tag, isTrimmed, filter) => {
     try {
-      const mp3File = await AudioEngine.directory(tag, isTrimmed);
+      const mp3File = await AudioEngine.directory(tag, isTrimmed, filter);
+      console.log('DOWNLOADING', mp3File, tag, isTrimmed, filter);
       if (!fs.existsSync(mp3File)){
         return {
           code: 404,
@@ -175,7 +177,7 @@ class Drop {
     }
 
     await AudioModel.create({
-      user_id,
+      user_id: user.user_id,
       tag,
       duration,
       filesize: audioEngine.size,

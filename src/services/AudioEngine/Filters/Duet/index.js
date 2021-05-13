@@ -1,3 +1,4 @@
+// import fs from 'fs';
 import { PythonShell } from 'python-shell';
 
 import AudioEngine from '../..';
@@ -10,10 +11,10 @@ class Duet {
   /**
    * Retrieves the wav format of a file stored in Droplet's bucket
    * If 1 file is invalid the entire process fails
-   * 
+   *
    * @param {String} tag          The tag to generate a wav for duetting
    * @param {String} isTrimmed    If the duet is attempting to use the trimmed version of the audio (if undefined will check bucket storage)
-   * @returns 
+   * @returns
    */
   getWav = async (tag, isTrimmed) => {
     let buffer;
@@ -59,12 +60,13 @@ class Duet {
   }
 
   /**
-   * 
-   * @param {Object} current    Has a shape of {user_id, tag}, NOTE: The tag references a local audio file ALWAYS
+   * Makes a duet
+   *
+   * @param {Object} current    Has a shape of {user_id, tag, isTrimmed}, NOTE: The tag references a local audio file ALWAYS
    * @param {Object} owner      Has a shape of {user_id, tag}, NOTE: The tag references a remote audio file ALWAYS
-   * @returns 
+   * @returns
    */
-  init = async (current, owner) => {
+  make = async (current, owner) => {
     if (!current.user_id || !owner.user_id || !current.tag || !owner.tag) {
       return {
         code: 400,
@@ -74,6 +76,8 @@ class Duet {
       };
     }
 
+    // Ensure that the pairings are accurate i.e. the onwer of a
+    // drop (`user_id`) is the same as the onwer of a tag (`tag`)
     UserService.generateAssociation(UserModel, AudioModel);
     const ownerAudio = await AudioModel.findOne({
       attributes: ['audio_id'],
@@ -98,7 +102,7 @@ class Duet {
         data: { tag },
       };
     }
-    
+
     // Loop through `tags` and load their filePaths (as wav)
     // because the duet feature only supports wav (including format)
     const filePaths = [];
@@ -121,7 +125,7 @@ class Duet {
       return tagsResult[errIndex];
     }
 
-    // Create the new duet file
+    // Create the new duet file path
     const tag = current.tag;
     const duetFilePath = await AudioEngine.directory(tag, false, 'duet', 'wav');
 
@@ -145,6 +149,17 @@ class Duet {
       return {
         code: 400,
         message: 'An error occurred while trying to create a duet.',
+        data: { tag },
+      };
+    }
+
+    const buffer = await AudioEngine.getFile(tag, false, 'duet', 'wav');
+    // const buffer = await fs.promises.readFile(duetFilePath)
+    const stored = await AudioEngine.toMp3(buffer, duetFilePath);
+    if (!stored) {
+      return {
+        code: 400,
+        message: 'File handling error.',
         data: { tag },
       };
     }
