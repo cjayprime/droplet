@@ -40,13 +40,11 @@ export default {
       next();
     } },
 
+    // Statuses Checker
     { method: 'GET', path: '/status', action: (req, res, next) => {
       res.status(req.query.status).send('RUNNING');
       next();
     } },
   ],
-  private: [
-    // Analytics
-    // {method: 'GET', path: '/analytics', action: user.analytics},
-  ],
+  private: [],
 };
