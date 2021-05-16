@@ -29,11 +29,12 @@ class Drop {
     const recording = await AudioEngine.getFile(tag);
     const audioEngine = new AudioEngine(recording, 'buffer');
     const data = await audioEngine.getProcessedData();
+    const duration = await audioEngine.getDuration(data);
 
     console.log('TRIM RANGE:', start, end);
-    if (start === end || !((start >= 0 && start <= end) || end > 0)){
+    if (start >= end || start >= duration || end > duration){
       return {
-        message: 'The audio range selected is invalid',
+        message: 'The trimming range selected is invalid.',
         data: { start, end },
         code: 400,
       };
@@ -110,7 +111,6 @@ class Drop {
   download = async (res, tag, isTrimmed, filter) => {
     try {
       const mp3File = await AudioEngine.directory(tag, isTrimmed, filter);
-      console.log('DOWNLOADING', mp3File, tag, isTrimmed, filter);
       if (!fs.existsSync(mp3File)){
         return {
           code: 404,
@@ -185,7 +185,6 @@ class Drop {
       source,
       trimmed: '0',
     });
-    console.log({ tag, duration });
     if (this.recording.max < duration) {
       return {
         code: 400, // 201,
