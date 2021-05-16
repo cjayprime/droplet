@@ -177,7 +177,7 @@ class Analytics {
     const user_id = user.user_id;
     const like = await LikeModel.findOne({ where: { user_id, drop_id } });
     const [newInteraction] = await LikeModel.upsert({
-      like_id: like.like_id,
+      like_id: like && like.like_id ? like.like_id : null,
       user_id,
       drop_id,
       status: like && like.status === '1' ? '0' : '1',
