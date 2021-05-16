@@ -259,9 +259,9 @@ class DropController extends Controller {
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { query: { limit, offset, category }, params: { user_id } } = req;
+      const { query: { limit, offset, category, user_id: UID }, params: { user_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.feed(user_id, limit, offset, null, typeof category === 'string' ? [category] : category);
+  		const response = await dropService.feed(user_id || UID, limit, offset, null, typeof category === 'string' ? [category] : category);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
