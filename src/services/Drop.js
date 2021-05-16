@@ -408,10 +408,10 @@ class Drop {
       }
     };
 
-    return await this.feed(null, null, null, options);
+    return await this.feed(null, null, null, null, options);
   }
 
-  feed = async (user_id, limit, offset, opt, category) => {
+  feed = async (signedInUserID, selectForUserID, limit, offset, opt, category) => {
     let options = opt;
     if (!options) {
       const where = category ? { [Op.or]: { '$category.name$': { [Op.in]: category }, category_id: { [Op.in]: category } } } : {};
@@ -424,10 +424,10 @@ class Drop {
           ['drop_id', 'DESC'],
         ],
       };
-      if (user_id) {
+      if (selectForUserID) {
         options.where = {
           ...where,
-          ...UserService.searchForUser(user_id)
+          ...UserService.searchForUser(selectForUserID)
         };
       }
     }
@@ -454,7 +454,7 @@ class Drop {
         });
         // Get the like for only the user making this request
         const liked = await LikeModel.findOne({
-          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(user_id) },
+          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
           include: [{ model: UserModel, required: true }],
         });
 
@@ -465,7 +465,7 @@ class Drop {
         });
         // Get the listens for only the user making this request
         const listened = await ListenModel.findOne({
-          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(user_id) },
+          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
           include: [{ model: UserModel, required: true }],
         });
         return { ...dropData, likes: likes, liked: !!(liked && liked.status === '1'), listens, listened: !!listened };
