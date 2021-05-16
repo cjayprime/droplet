@@ -106,8 +106,8 @@ class AudioEngine {
     return result;
   };
 
-  getDuration = async () => {
-    const data = await this.getProcessedData();
+  getDuration = async (dt) => {
+    const data = dt || await this.getProcessedData();
     if (!data) {
       return 0;
     }

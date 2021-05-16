@@ -63,7 +63,6 @@ class DropController extends Controller {
       const { query: { tag, isTrimmed, filter } } = req;
   		const dropService = new DropService();
   		const response = await dropService.download(res, tag, isTrimmed == 'true', filter);
-      console.log('DONWLOADING', response);
       if (response.alreadySent) {
         return;
       }
