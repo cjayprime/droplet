@@ -88,7 +88,7 @@ setTimeout(async () => {
     // const response = await request.get('/categories').send().set(headers);
     // const response = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: 'e73a0907-60e7-47ed-b278-917f401f93dc', caption: 'Done', category: 'music', isTrimmed: false }).set(headers);
     // const response = await request.post('/listen').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', drop_id: 1 }).set(headers);
-    // const response = await request.post('/like').send({ user_id: 1, drop_id: 1 }).set(headers);
+    // const response = await request.post('/like').send({ user_id: 'BHOqOcVUaVVbfRGT5ru3lYyLJTJ3', drop_id: 217 }).set(headers);
     // const response = await request.get('/drops?offset=0&limit=3').send().set(headers); // &category=comedy&category=convo
     // const response = await request.get('/drops/user/0sbfQ2A1DCU79XbPiuYpCy4NhAx2?offset=0&limit=10&category=comedy&category=convo').send().set(headers);
     // const response = await request.get('/drops/1'/*/drops/e73a0907-60e7-47ed-b278-917f401f93dc*/).send().set(headers);

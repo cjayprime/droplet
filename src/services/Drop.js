@@ -334,7 +334,7 @@ class Drop {
    * @param {String} file        When uploading this is the full path, when downloading it's just the tag/name previously uploaded
    * @returns
    */
-  static bucket = async (command = 'upload', fileName, file) => {
+  static bucket = async (command = 'upload', fileName, file, extension = 'mp3') => {
     const pathToFile = path.join(
       __dirname,
       '../../google-services.json',
@@ -353,9 +353,9 @@ class Drop {
         destination: fileName,
       };
       if (command === 'upload'){
-        await bucketFile.upload(file, options);
+        await bucketFile.upload(file + '.' + extension, options);
       } else {
-        await bucketFile.file(file).download(options);
+        await bucketFile.file(file + '.' + extension).download(options);
       }
       return true;
     } catch (e) {

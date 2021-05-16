@@ -177,9 +177,10 @@ class Analytics {
     const user_id = user.user_id;
     const like = await LikeModel.findOne({ where: { user_id, drop_id } });
     const [newInteraction] = await LikeModel.upsert({
+      like_id: like.like_id,
       user_id,
       drop_id,
-      status: like.status === '1' ? '0' : '1',
+      status: like && like.status === '1' ? '0' : '1',
       date: new Date(),
     });
 
@@ -193,8 +194,8 @@ class Analytics {
 
     return {
       code: 200,
-      data: { liked: like.status !== '1' },
-      message: 'Successfully recorded the ' + (like.status === '1' ? 'unlike' : 'like') + '.',
+      data: { liked: newInteraction.status === '1' },
+      message: 'Successfully recorded the ' + (newInteraction.status === '1' ? 'unlike' : 'like') + '.',
     };
   }
 
