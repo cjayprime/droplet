@@ -16,7 +16,7 @@ class Duet {
    * @param {String} isTrimmed    If the duet is attempting to use the trimmed version of the audio (if undefined will check bucket storage)
    * @returns
    */
-  getWav = async (tag, isTrimmed) => {
+  getWav = async (tag, isTrimmed, i) => {
     let buffer;
     if (isTrimmed === true || isTrimmed === false) {
       // Check for the file in the trim OR root storage directory
@@ -29,10 +29,9 @@ class Duet {
       buffer = await AudioEngine.getFile(tag);
     }
 
-    // console.log('Buffer', buffer);
     if (!buffer) {
       return {
-        error: `Unable to find the drop: ${tag}`,
+        error: `Unable to find the drop ${i} with tag: ${tag}${isTrimmed === true ? ', did you really trim it?' : ''}`,
         tag,
       };
     }
@@ -67,6 +66,14 @@ class Duet {
    * @returns
    */
   make = async (current, owner) => {
+    if (current.tag === owner.tag) {
+      return {
+        code: 400,
+        message: 'You must provide unique tags.',
+        data: {},
+      };
+    }
+
     if (!current.user_id || !owner.user_id || !current.tag || !owner.tag) {
       return {
         code: 400,
@@ -109,7 +116,7 @@ class Duet {
     const filePaths = [];
     const tagsResult = await Promise.all(
       [{ ...current }, { ...owner }].map(async (audio, i) => {
-        const wavData = await this.getWav(audio.tag, audio.isTrimmed);
+        const wavData = await this.getWav(audio.tag, audio.isTrimmed, i + 1);
         if (wavData.error){
           return {
             code: 400,
@@ -176,8 +183,7 @@ class Duet {
       filter_id: filter.filter_id,
       date: new Date(),
     });
-    // console.log('\n\nINIT LOG', currentAudio.user_id, currentAudio.audio_id, ownerAudio.user_id, filter, filePaths, duetFilePath, result, '\n\n');
-    // return { code: 301, message: 'TEST', data: {} };
+
     return {
       code: 200,
       message: 'Successfully created a duet',

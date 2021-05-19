@@ -259,7 +259,7 @@ class Drop {
       return {
         code: 400,
         message: 'The caption must be less than 70 characters.',
-        data: {},
+        data: { tag },
       };
     }
 
@@ -268,7 +268,7 @@ class Drop {
       return {
         code: 400,
         message: 'The tag was not found.',
-        data: {},
+        data: { tag },
       };
     }
 
@@ -279,7 +279,7 @@ class Drop {
         return {
           code: 400,
           message: 'The category does not exist.',
-          data: {},
+          data: { tag },
         };
       }
       category_id = category.category_id;
@@ -290,17 +290,7 @@ class Drop {
       return {
         code: 400,
         message: 'The user does not exist.',
-        data: {},
-      };
-    }
-
-    const file = AudioEngine.directory(tag, isTrimmed);
-    const uploaded = await Drop.bucket('upload', tag, file);
-    if (!uploaded) {
-      return {
-        code: 400,
-        message: 'Unable to store the drop.',
-        data: {},
+        data: { tag },
       };
     }
 
@@ -315,26 +305,38 @@ class Drop {
       return {
         code: 400,
         message: 'Unfortunately we failed to create your drop. Try again.',
-        data: { drop },
+        data: { drop, tag },
+      };
+    }
+
+    const fileName = AudioEngine.directory(tag, isTrimmed);
+    const uploaded = await Drop.bucket('upload', fileName, tag);
+    if (!uploaded) {
+      return {
+        code: 400,
+        message: 'Unable to store the drop.',
+        data: { tag },
       };
     }
 
     return {
       code: 200,
       message: 'Successfully created your drop.',
-      data: { drop },
+      data: { drop, tag },
     };
   }
 
   /**
    * Upload/Download a file to/from Droplet's bucket (currently at GCP)
    *
-   * @param {String} command     Action to take on the file and fileName parameters (possible values are upload and download)
-   * @param {String} fileName    When uploading this mustn't be a full path, just a tag/name
-   * @param {String} file        When uploading this is the full path, when downloading it's just the tag/name previously uploaded
+   * @param {String} command          Action to take on the file path and name passed as
+   *                                  parameters (possible values are upload and download)
+   * @param {String} localFilePath    The local file path, just a tag, including format
+   * @param {String} remoteFileName   The remote file name, just a tag, excluding format
    * @returns
    */
-  static bucket = async (command = 'upload', fileName, file, extension = 'mp3') => {
+  static bucket = async (command = 'upload', localFilePath, remoteFileName) => {
+    const extension = 'mp3';
     const pathToFile = path.join(
       __dirname,
       '../../google-services.json',
@@ -349,13 +351,17 @@ class Drop {
         keyFilename: pathToFile,
       });
       const bucketFile = await storage.bucket(process.env.GOOGLE_BUCKET_NAME);
-      const options = {
-        destination: fileName,
+      let options = {
+        destination: '',
       };
-      if (command === 'upload'){
-        await bucketFile.upload(file + '.' + extension, options);
+      if (command === 'upload') {
+        options.destination = remoteFileName + '.' + extension,
+        await bucketFile.upload(localFilePath, options);
+      } else if (command === 'download') {
+        options.destination = localFilePath;
+        await bucketFile.file(remoteFileName + '.' + extension).download(options);
       } else {
-        await bucketFile.file(file + '.' + extension).download(options);
+        return false;
       }
       return true;
     } catch (e) {
