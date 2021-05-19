@@ -86,14 +86,14 @@ setTimeout(async () => {
     // const response = await request.get('/download?tag=00ba23bd-17e1-4001-aac0-87603c8ea18f&isTrimmed=true').send().set(headers);
     // const response = await request.get('/waveform?tag=0c5ffe6f-5471-4612-bfe4-d6c93518a640&bars=10').send().set(headers);
     // const response = await request.get('/categories').send().set(headers);
-    // const response = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: 'e73a0907-60e7-47ed-b278-917f401f93dc', caption: 'Done', category: 'music', isTrimmed: false }).set(headers);
+    // const response = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '458103f1-a49b-4f8d-8f98-ee63ad4e3648', caption: 'Done', category: 'music', isTrimmed: false }).set(headers);
     // const response = await request.post('/listen').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', drop_id: 1 }).set(headers);
     // const response = await request.post('/like').send({ user_id: 'BHOqOcVUaVVbfRGT5ru3lYyLJTJ3', drop_id: 217 }).set(headers);
     // const response = await request.get('/drops?offset=0&limit=3').send().set(headers); // &category=comedy&category=convo
     // const response = await request.get('/drops/user/0sbfQ2A1DCU79XbPiuYpCy4NhAx2?offset=0&limit=10&category=comedy&category=convo').send().set(headers);
     // const response = await request.get('/drops/1'/*/drops/e73a0907-60e7-47ed-b278-917f401f93dc*/).send().set(headers);
     // const response = await request.post('/filter/duet').send({
-    //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '00ba23bd-17e1-4001-aac0-87603c8ea18f', isTrimmed: true, },
+    //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '458103f1-a49b-4f8d-8f98-ee63ad4e3648', isTrimmed: false, },
     //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '00ba23bd-17e1-4001-aac0-87603c8ea18f' }
     // }).set(headers); //0b73a901-f4d3-4476-a3ac-cb2d343c228d
     // const response = await request.get('/featured').send().set(headers);

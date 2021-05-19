@@ -32,13 +32,13 @@ class AudioEngine {
     }
   }
 
-  static directory = (filename, isTrimmed, filter, extension) => path.join(
+  static directory = (filename, isTrimmed, filter, extension = 'mp3') => path.join(
     __dirname,
     '../../storage/' + (
       filter ?
         'filters/' + filter + '/'
         : (isTrimmed ? 'trimmed/' : '')
-    ) + filename + '.' + (extension || 'mp3')
+    ) + filename + '.' + extension
   );
 
   static getFile = async (tag, isTrimmed, filter, extension) => {

@@ -111,9 +111,18 @@ class Analytics {
   }
 
   recordInteraction = async (type, user_id) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    if (user === null) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
     const newInteraction = await InteractionModel.create({
       type,
-      user_id: user_id === 'NO_ACCOUNT' ? 0 : user_id,
+      user_id: user_id === 'NO-ACCOUNT' ? 0 : user.user_id,
       date: new Date(),
     });
 
