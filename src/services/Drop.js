@@ -25,8 +25,8 @@ class Drop {
    * @param {*} end     The end time to stop the trim at (inclusive)
    * @returns
    */
-  trim = async (tag, start, end) => {
-    const recording = await AudioEngine.getFile(tag);
+  trim = async (tag, start, end, filter) => {
+    const recording = await AudioEngine.getFile(tag, null, filter);
     const audioEngine = new AudioEngine(recording, 'buffer');
     const data = await audioEngine.getProcessedData();
     const duration = await audioEngine.getDuration(data);

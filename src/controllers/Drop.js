@@ -26,10 +26,15 @@ class DropController extends Controller {
       .isInt()
       .withMessage('must be a number.'),
 
+    body('filter')
+      .isAlphanumeric()
+      .withMessage('must be a valid filter.')
+      .optional(),
+
   	this.action(async (req, res, next) => {
-      const { body: { tag, start, end } } = req;
+      const { body: { tag, start, end, filter } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.trim(tag, start, end);
+  		const response = await dropService.trim(tag, start, end, filter);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -179,8 +184,8 @@ class DropController extends Controller {
       .withMessage('must be a boolean.'),
 
     body('filter')
-      .notEmpty()
-      .withMessage('must be a boolean.')
+      .isAlphanumeric()
+      .withMessage('must be a valid filter.')
       .optional(),
 
   	this.action(async (req, res, next) => {
