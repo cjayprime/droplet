@@ -23,6 +23,7 @@ class Drop {
    * @param {*} tag     The audio tag to trim
    * @param {*} start   The start time to begin the trim from (inclusive)
    * @param {*} end     The end time to stop the trim at (inclusive)
+   * @param {*} filter  The filter to trim, rather than the original audio
    * @returns
    */
   trim = async (tag, start, end) => {
@@ -75,6 +76,7 @@ class Drop {
         (async () => {
           await AudioModel.update({
             trimmed: '1',
+            duration: end - start,
           }, { where: { tag } }).catch((e) => console.log('Couldn\'t update trim to "1" for', tag, e));
         })();
         return true;
@@ -200,8 +202,8 @@ class Drop {
     };
   }
 
-  waveform = async (tag, bars) => {
-    const recording = await AudioEngine.getFile(tag);
+  waveform = async (tag, bars, filter) => {
+    const recording = await AudioEngine.getFile(tag, null, filter);
     if (!recording) {
       return {
         code: 404,

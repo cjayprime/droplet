@@ -5,6 +5,45 @@ import Controller from './base';
 import { Drop as DropService } from '../services';
 
 class DropController extends Controller {
+  // {{{WIP}}}
+  // Needs a flag to allow mixing body, query and params functions
+  parameter = ({ ...args }, type) => {
+    const types = { body, query, param };
+    const params = {
+      user_id: types[type]('user_id')
+        .notEmpty()
+        .withMessage('must be a valid user_id.'),
+
+      tag: types[type]('tag')
+        .isUUID()
+        .withMessage('must be a valid tag.'),
+
+      isTrimmed: types[type]('isTrimmed')
+        .isBoolean()
+        .withMessage('must be a boolean.')
+        .optional(),
+
+      filter: types[type]('filter')
+        .isAlphanumeric()
+        .withMessage('must be a valid filter.')
+        .optional(),
+
+      category: types[type]('category')
+        .notEmpty()
+        .withMessage('must be a valid category (id or name).')
+        .optional(),
+
+      'category.*': types[type]('category.*')
+        .isAlphanumeric()
+        .withMessage('must be a valid category (id or name).')
+        .optional(),
+    };
+    const allParams = Object.keys(params);
+    const allArgs = Object.keys(args);
+    return allParams.map(param => params[allArgs.find(arg => arg === param)])
+      .filter(elem => !!elem);
+  }
+
   /**
    * Trims a user's audio file identified by `tag` from the second mark `start` to `end`
    *
@@ -123,10 +162,15 @@ class DropController extends Controller {
       .isInt()
       .withMessage('must be a valid tag.'),
 
+    query('filter')
+      .isAlphanumeric()
+      .withMessage('must be a valid filter.')
+      .optional(),
+
   	this.action(async (req, res, next) => {
-      const { query: { tag, bars } } = req;
+      const { query: { tag, bars, filter } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.waveform(tag, bars);
+  		const response = await dropService.waveform(tag, bars, filter);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
