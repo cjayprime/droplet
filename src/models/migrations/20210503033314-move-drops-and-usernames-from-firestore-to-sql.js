@@ -84,7 +84,7 @@ const migrations = {
               const audioEngine = new AudioEngine(buffer, 'binary');
               // Store the file and create a drop from it
               await audioEngine.storeFile(tag);
-              const newDrop = await dropService.create(user_id, tag, caption, category || 'convo', false, date);
+              const newDrop = await dropService.create(user_id, tag, caption, category || 'convo', false, null, date);
               if (newDrop.code !== 200){
                 Notify.info('Unable to migrate a drop ' + drop.id + ' from firestore to SQL. Failed to create drop.');
                 Notify.error(newDrop);

@@ -12,8 +12,6 @@ env:
 on:
   push:
     branches: [ master, staging ]
-  pull_request:
-    branches: [ master, staging ]
 
 jobs:
   configure_vm:
@@ -23,7 +21,7 @@ jobs:
         id: sshkeyinstallation
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PUBLIC_KEY }}
           name: ${{ secrets.SSH_USERNAME }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
           if_key_exists: replace
@@ -47,5 +45,4 @@ jobs:
             yarn production
           host: ${{ secrets.SERVER_IP }}
           user: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-
+          key: ${{ secrets.SSH_PUBLIC_KEY }}

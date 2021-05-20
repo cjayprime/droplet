@@ -178,10 +178,15 @@ class DropController extends Controller {
       .isBoolean()
       .withMessage('must be a boolean.'),
 
+    body('filter')
+      .notEmpty()
+      .withMessage('must be a boolean.')
+      .optional(),
+
   	this.action(async (req, res, next) => {
-      const { body: { user_id, tag, caption, category, isTrimmed } } = req;
+      const { body: { user_id, tag, caption, category, isTrimmed, filter } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.create(user_id, tag, caption, category, isTrimmed);
+  		const response = await dropService.create(user_id, tag, caption, category, isTrimmed, filter);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

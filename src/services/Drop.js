@@ -251,10 +251,11 @@ class Drop {
    * @param {String}  caption
    * @param {String}  categoryName    A category name or id
    * @param {Boolean} isTrimmed
+   * @param {Boolean} filter
    * @param {Date}    date            A JS Date object to use in creating drops
    * @returns ResponseObject
    */
-  create = async (user_id, tag, caption, categoryName, isTrimmed, date) => {
+  create = async (user_id, tag, caption, categoryName, isTrimmed, filter, date) => {
     if (caption.length > 70) {
       return {
         code: 400,
@@ -264,7 +265,7 @@ class Drop {
     }
 
     const audio = await AudioModel.findOne({ attributes: ['audio_id'], where: { tag } });
-    if (audio === null){
+    if (audio === null) {
       return {
         code: 400,
         message: 'The tag was not found.',
@@ -309,7 +310,7 @@ class Drop {
       };
     }
 
-    const fileName = AudioEngine.directory(tag, isTrimmed);
+    const fileName = AudioEngine.directory(tag, isTrimmed, filter);
     const uploaded = await Drop.bucket('upload', fileName, tag);
     if (!uploaded) {
       return {
