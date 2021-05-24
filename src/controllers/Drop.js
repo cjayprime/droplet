@@ -103,10 +103,15 @@ class DropController extends Controller {
       .withMessage('must be a valid filter.')
       .optional(),
 
+    query('extension')
+      .notEmpty()
+      .withMessage('must be a valid extension.')
+      .optional(),
+
   	this.action(async (req, res, next) => {
-      const { query: { tag, isTrimmed, filter } } = req;
+      const { query: { tag, isTrimmed, filter, extension } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.download(res, tag, isTrimmed == 'true', filter);
+  		const response = await dropService.download(res, tag, isTrimmed == 'true', filter, extension);
       if (response.alreadySent) {
         return;
       }

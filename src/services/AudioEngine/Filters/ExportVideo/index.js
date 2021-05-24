@@ -141,8 +141,8 @@ class ExportVideo {
     await this.files.remove(directory);
     return {
       code: 200,
-      message: 'The video has successfully been created.',
-      data: { file: process.env.NODE_ENV !== 'production' ? this.files.output(directory) : '', },
+      message: 'The video has successfully been created. To download it call /download?tag=' + tag + '&filter=export-video&extension=mp4',
+      data: { file: process.env.NODE_ENV !== 'production' ? this.files.output(directory) : '' },
     };
   }
 }
