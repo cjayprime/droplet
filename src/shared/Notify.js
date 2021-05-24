@@ -36,13 +36,12 @@ class Notify {
   }
 
   /**
-   * Send an error stack to error reporting output
+   * Send an error stack to the error reporting mechanism
    * 
    * @param {string} message The message to send
-   * @param {string} channel The slack channel to send to
    */
-  error(message/*, channel = 'computer-says-no', ...extras*/) {
-    console.log('Notify.error - This is a fatal level error that failed silently', message/*, extras*/);
+  error(err) {
+    console.log('\nNotify.error - This is a fatal level error that failed silently', err.message || err, '\n');
     if (process.env.NODE_ENV !== 'development') {
       Sentry.init({
         dsn: process.env.SENTRY_DNS,
@@ -56,9 +55,9 @@ class Notify {
 
       const transaction = Sentry.startTransaction({
         op: process.env.NODE_ENV,
-        name: message.name || message.code,
+        name: err.name || err.code,
       });
-      Sentry.captureException(message);
+      Sentry.captureException(err);
       transaction.finish();
     }
   }

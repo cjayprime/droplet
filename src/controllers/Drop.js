@@ -99,7 +99,7 @@ class DropController extends Controller {
       .optional(),
 
     query('filter')
-      .isAlphanumeric()
+      .isSlug()
       .withMessage('must be a valid filter.')
       .optional(),
 

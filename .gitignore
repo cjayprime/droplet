@@ -117,7 +117,12 @@ src/storage/filters/duet/*
 !src/storage/filters/duet
 !src/storage/filters/duet/README.md
 
+src/storage/filters/export-video/*
+!src/storage/filters/export-video
+!src/storage/filters/export-video/README.md
+
 logs/*.log
+*.log
 !logs/
 
 google-services.json
