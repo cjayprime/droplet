@@ -30,6 +30,7 @@ export default {
 
     // Filters
     { method: 'POST', path: '/filter/duet', action: filter.duet },
+    { method: 'POST', path: '/filter/export-video', action: filter.exportVideo },
 
     // Authenticate
     { method: 'POST', path: '/authenticate', action: authenticate.firebase },

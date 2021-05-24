@@ -42,6 +42,28 @@ class FilterController extends Controller {
   		next();
   	})
   ];
+
+  /**
+   * Create a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  exportVideo = [
+    body('drop_id')
+      .isInt()
+      .withMessage('must be a valid drop_id.'),
+
+  	this.action(async (req, res, next) => {
+      const { body: { drop_id } } = req;
+  		const audioEngine = new AudioEngine();
+  		const response = await audioEngine.filter.exportVideo(drop_id);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
 }
 
 export default FilterController;

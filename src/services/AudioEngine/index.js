@@ -5,7 +5,7 @@ import { AudioContext } from 'web-audio-api';
 import audioBufferToWav from 'audiobuffer-to-wav';
 import { Lame } from 'node-lame';
 
-import { Duet } from './Filters';
+import { Duet, ExportVideo } from './Filters';
 
 /**
  * AudioEngine
@@ -38,7 +38,7 @@ class AudioEngine {
       filter ?
         'filters/' + filter + '/'
         : (isTrimmed ? 'trimmed/' : '')
-    ) + filename + '.' + extension
+    ) + filename + (extension ? '.' + extension : '')
   );
 
   static getFile = async (tag, isTrimmed, filter, extension) => {
@@ -217,6 +217,7 @@ class AudioEngine {
 
   filter = {
     duet: new Duet().make,
+    exportVideo: new ExportVideo().make,
   };
 }
 

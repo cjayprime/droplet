@@ -5,6 +5,8 @@ import path from 'path';
 // import 'firebase/database';
 import firebaseAdmin from 'firebase-admin';
 
+import DropService from './Drop';
+
 import { User as UserModel } from '../models';
 import { Configuration } from '../shared';
 
@@ -38,6 +40,35 @@ class Authenticate {
     return await firebaseAdmin.auth().listUsers(limit, offset);
   }
 
+  getUser = async (username, uid) => {
+    if (!this.app) {
+      this.init();
+    }
+
+    const userSnapshot = await this.admin.firestore()
+      .collection('Users')
+      .where('uid', '==', uid)
+      .where('username', '==', username)
+      .limit(1)
+      .get();
+    let authUser;  
+    userSnapshot.forEach(doc => authUser = doc.data());
+    return authUser;
+  }
+
+  getProfilePicture = async (uid, localFilePath) => {
+    try {
+      const downloaded = await DropService.bucket('download', localFilePath, `profilepics/${uid}/avatar`, null, 'firebase');
+      if (downloaded) {
+        return localFilePath;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }
+
   /**
    * Sign up/in a user
    * -- How:
@@ -51,17 +82,7 @@ class Authenticate {
   authenticate = async (username, uid, type) => {
     let authUser;
     if (type === 'firebase') {
-      if (!this.app) {
-        this.init();
-      }
-
-      const userSnapshot = await this.admin.firestore()
-        .collection('Users')
-        .where('uid', '==', uid)
-        .where('username', '==', username)
-        .limit(1)
-        .get();
-      userSnapshot.forEach(doc => authUser = doc.data());
+      authUser = this.getUser(username, uid);
     }
 
     if (!authUser || (authUser.username !== username || authUser.uid !== uid)) {

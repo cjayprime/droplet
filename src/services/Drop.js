@@ -336,16 +336,31 @@ class Drop {
    *                                  parameters (possible values are upload and download)
    * @param {String} localFilePath    The local file path, just a tag, including format
    * @param {String} remoteFileName   The remote file name, just a tag, excluding format
+   * @param {String} extension        The extension to append when uploading/downloading
+   * @param {String} from             Where to upload/download from
    * @returns
    */
-  static bucket = async (command = 'upload', localFilePath, remoteFileName) => {
-    const extension = 'mp3';
-    const pathToFile = path.join(
-      __dirname,
-      '../../google-services.json',
-    );
-    if (!fs.existsSync(pathToFile)){
-      await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
+  static bucket = async (command = 'upload', localFilePath, remoteFileName, extension = 'mp3', from = 'gcp') => {
+    let pathToFile;
+    let bucket = '';
+    if (from === 'gcp') {
+      bucket = process.env.GOOGLE_BUCKET_NAME;
+      pathToFile = path.join(
+        __dirname,
+        '../../google-services.json',
+      );
+      if (!fs.existsSync(pathToFile)){
+        await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
+      }
+    } else if (from === 'firebase') {
+      bucket = process.env.FIREBASE_BUCKET_NAME;
+      pathToFile = path.join(
+        __dirname,
+        '../../firebase-services.json',
+      );
+      if (!fs.existsSync(pathToFile)){
+        await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+      }
     }
 
     try {
@@ -353,23 +368,23 @@ class Drop {
         projectId: process.env.GOOGLE_PROJECT_ID,
         keyFilename: pathToFile,
       });
-      const bucketFile = await storage.bucket(process.env.GOOGLE_BUCKET_NAME);
+      const bucketFile = await storage.bucket(bucket);
       let options = {
         destination: '',
       };
       if (command === 'upload') {
-        options.destination = remoteFileName + '.' + extension,
+        options.destination = remoteFileName + (extension ? '.' + extension : ''),
         await bucketFile.upload(localFilePath, options);
       } else if (command === 'download') {
         options.destination = localFilePath;
-        await bucketFile.file(remoteFileName + '.' + extension).download(options);
+        await bucketFile.file(remoteFileName + (extension ? '.' + extension : '')).download(options);
       } else {
         return false;
       }
       return true;
     } catch (e) {
       Notify.error(e);
-      Notify.info('UPLOAD-ERROR: Unable to save to Google bucket, see the issue on Sentry.');
+      Notify.info((command.toUpperCase()) + '-ERROR: Unable to ' + command + (command === 'upload' ? ' to' : ' from' ) + ' Google bucket, see the issue on Sentry.');
       return false;
     }
   }
@@ -456,6 +471,11 @@ class Drop {
     const dropsArray = await Promise.all(
       drops.map(async drop => {
         const dropData = drop.get();
+        // Filter
+        // A drop can have multiple filters applied to it
+        // drop LEFT JOIN filter_usage ON drop.audio_id = filter_usage.audio_id
+
+
         // Likes
         // Count all likes (whether or not it's the user making this request)
         const likes = await LikeModel.count({
