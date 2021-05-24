@@ -108,11 +108,12 @@ class Drop {
    * @param {String}            tag         The tagged audio to download
    * @param {Boolean}           isTrimmed   If the trimmed version should be downloaded
    * @param {Boolean}           filter      If to download the filter made from the audio (identified by `tag`)
+   * @param {Boolean}           extension   Download extension
    * @returns ResponseObject
    */
-  download = async (res, tag, isTrimmed, filter) => {
+  download = async (res, tag, isTrimmed, filter, extension) => {
     try {
-      const mp3File = await AudioEngine.directory(tag, isTrimmed, filter);
+      const mp3File = await AudioEngine.directory(tag, isTrimmed, filter, extension);
       if (!fs.existsSync(mp3File)){
         return {
           code: 404,
