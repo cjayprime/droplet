@@ -4,8 +4,7 @@
   "scripts": {
     "profile:start": "node --prof-process isolate-**********-****-v8.log > processed.txt",
     "dev:start": "nodemon --ext pem,js,json --watch .env --watch . --exec \"npm run start\"",
-    "prestart": "npm run migrations",
-    "start": "node --trace-warnings --prof -r esm src/index.js",
+    "start": "npm run migrations && node --trace-warnings --prof -r esm src/index.js",
     "preinstall": "pip3 install -r src/services/AudioEngine/Filters/requirements.txt",
     "migrations": "node --trace-warnings -r esm ./node_modules/sequelize-cli/lib/sequelize db:migrate --config src/models/config/config.js --migrations-path src/models/migrations --models-path src/models",
     "make:model": "node --trace-warnings -r esm ./node_modules/sequelize-cli/lib/sequelize model:generate --name EditThisModel --attributes editThis:string,alsoEditThis:string,andThis:string --config src/models/config/config.js --migrations-path src/models/migrations --models-path src/models",
