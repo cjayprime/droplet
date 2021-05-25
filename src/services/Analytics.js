@@ -3,7 +3,7 @@ import { createObjectCsvWriter } from 'csv-writer';
 import Authenticate from './Authenticate';
 import UserService from './User';
 
-import { Like as LikeModel, User as UserModel, Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, Category as CategoryModel } from '../models';
+import { Like as LikeModel, User as UserModel, Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, SubCloud as SubCloudModel } from '../models';
 
 const authenticate = new Authenticate();
 class Analytics {
@@ -25,25 +25,25 @@ class Analytics {
         })
       );
 
-      // Get total listens per category
-      const categories = await CategoryModel.findAll({ attributes: ['name', 'category_id'], where: { status: '1' } });
+      // Get total listens per cloud
+      const subClouds = await SubCloudModel.findAll({ attributes: ['name', 'sub_cloud_id'], where: { status: '1' } });
       const listen = {};
-      await Promise.all(categories.map(async category => {
-        const values = category.dataValues;
-        const [categoryName] = await DropModel.sequelize.query(
+      await Promise.all(subClouds.map(async subCloud => {
+        const values = subCloud.dataValues;
+        const [subCloudName] = await DropModel.sequelize.query(
           {
             query: `
-              SELECT COUNT(listens.categoryName) AS total FROM (
-                SELECT category.name AS categoryName FROM listen
+              SELECT COUNT(listens.subCloudName) AS total FROM (
+                SELECT sub_cloud.name AS subCloudName FROM listen
                 INNER JOIN \`drop\` ON listen.drop_id = \`drop\`.drop_id
-                INNER JOIN category ON category.category_id = \`drop\`.category_id AND listen.drop_id = \`drop\`.drop_id
-                WHERE listen.user_id = ? AND category.status = ? AND category.name = ?
+                INNER JOIN sub_cloud ON sub_cloud.sub_cloud_id = \`drop\`.sub_cloud_id AND listen.drop_id = \`drop\`.drop_id
+                WHERE listen.user_id = ? AND sub_cloud.status = ? AND sub_cloud.name = ?
               ) AS listens
             `,
             values: [user_id, '1', values.name],
           }
         );
-        listen[values.name] = categoryName[0].total;
+        listen[values.name] = subCloudName[0].total;
       }));
 
       // Get the total audio per source
@@ -165,9 +165,12 @@ class Analytics {
       };
     }
 
+    const listens = await LikeModel.count({
+      where: { drop_id: newInteraction.drop_id },
+    });
     return {
       code: 200,
-      data: {},
+      data: { listens },
       message: 'Successfully recorded listen.',
     };
   }
@@ -201,9 +204,12 @@ class Analytics {
       };
     }
 
+    const likes = await LikeModel.count({
+      where: { drop_id: like.drop_id },
+    });
     return {
       code: 200,
-      data: { liked: newInteraction.status === '1' },
+      data: { liked: newInteraction.status === '1', likes },
       message: 'Successfully recorded the ' + (newInteraction.status === '1' ? 'unlike' : 'like') + '.',
     };
   }

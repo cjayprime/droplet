@@ -1,16 +1,20 @@
 import sequelize, { DataTypes } from './base';
 
-const Category = sequelize.define('category', {
-  category_id: {
+const SubCloud = sequelize.define('sub_cloud', {
+  sub_cloud_id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,
     primaryKey: true,
+  },
+  cloud_id: {
+    type: DataTypes.BIGINT,
+    references: { model: 'cloud', key: 'cloud_id' },
   },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  color: {
+  description: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -23,8 +27,8 @@ const Category = sequelize.define('category', {
     allowNull: false,
   },
 }, {
-  tableName: 'category',
+  tableName: 'sub_cloud',
   timestamps: false,
 });
 
-export default Category;
+export default SubCloud;

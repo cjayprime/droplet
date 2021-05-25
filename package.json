@@ -17,7 +17,8 @@
     "postproduction": "npm run production:restartup && pm2 list",
     "production:restartup": "sudo env pm2 startup systemd -u $USER --hp ~",
     "production:prep:install": "git stash && git stash drop | echo \"Stashed and Dropped\"",
-    "NOTE": "It's important to leave the start in the preproduction script because build processes will fail if there is no pm2 app named \"Droplet Drop Service\""
+    "NOTE": "It's important to leave the start in the preproduction script because build processes will fail if there is no pm2 app named \"Droplet Drop Service\"",
+    "test": "jest"
   },
   "dependencies": {
     "@sentry/node": "^6.3.4",

@@ -1,16 +1,24 @@
 import { DataTypes } from '../base';
-import { Category, Audio, Drop, Like, Listen, Interaction, Filter, FilterUsage } from '..';
+import { Cloud, SubCloud, Audio, Drop, Like, Listen, Interaction, Filter, FilterUsage } from '..';
 
-const models = [Category, Audio, Drop, Like, Listen, Interaction, Filter, FilterUsage];
-const categories = [
-  { name: 'convo', color: '#52A7F3' },
-  { name: 'music', color: '#B15EE1' },
-  { name: 'comedy', color: '#FDB446' },
-  { name: 'asmr', color: '#3AC67B' },
+const models = [Cloud, SubCloud, Audio, Drop, Like, Listen, Interaction, Filter, FilterUsage];
+const clouds = [
+  { name: 'Blue', color: '#52A7F3', altColor: '#103D66' },
+  { name: 'Purple', color: '#B15EE1', altColor: '#2A0F3A' },
+  { name: 'Yellow', color: '#FDB446', altColor: '#5F4723' },
+  { name: 'Green', color: '#3AC67B', altColor: '#104B2B' },
+];
+const subClouds = [
+  { name: 'LoFi', cloud_id: 2, description: 'For your 2AM late night vibes.' },
+  { name: 'Poetry', cloud_id: 4, description: 'Voice your creatively crafted words.' },
+  { name: 'Crypto', cloud_id: 1, description: 'Your cryptocurrency community here 💎🙌' },
+  { name: 'Standford Students', cloud_id: 1, description: 'Class of 2025? Missed Connections? Chat with your friends or ask about campus life.' },
+  { name: 'Rant Zone', cloud_id: 3, description: 'Release the Karen 🤯 in you.' },
 ];
 const filters = [
   { name: 'duet', activeIcon: '', inActiveIcon: '' },
   { name: 'helium-voice', activeIcon: '', inActiveIcon: '' },
+  { name: 'export-video', activeIcon: '', inActiveIcon: '' },
 ];
 const migration = {
   up: async (queryInterface/*, Sequelize*/) => {
@@ -36,8 +44,8 @@ const migration = {
       },
     });
 
-    await queryInterface.createTable('category', {
-      category_id: {
+    await queryInterface.createTable('cloud', {
+      cloud_id: {
         type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
@@ -47,6 +55,38 @@ const migration = {
         allowNull: false,
       },
       color: {
+        type: DataTypes.STRING(7),
+        allowNull: false,
+      },
+      altColor: {
+        type: DataTypes.STRING(7),
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.ENUM('0', '1'),
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+    });
+
+    await queryInterface.createTable('sub_cloud', {
+      sub_cloud_id: {
+        type: DataTypes.BIGINT,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      cloud_id: {
+        type: DataTypes.BIGINT,
+        references: { model: 'cloud', key: 'cloud_id' },
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      description: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -114,10 +154,10 @@ const migration = {
         allowNull: false,
         references: { model: 'audio', key: 'audio_id' },
       },
-      category_id: {
+      sub_cloud_id: {
         type: DataTypes.BIGINT,
         allowNull: false,
-        references: { model: 'category', key: 'category_id' },
+        references: { model: 'sub_cloud', key: 'sub_cloud_id' },
       },
       caption: {
         type: DataTypes.STRING(70),
@@ -232,6 +272,11 @@ const migration = {
         autoIncrement: true,
         primaryKey: true,
       },
+      owner_user_id: {
+        type: DataTypes.BIGINT,
+        allowNull: true,
+        references: { model: 'user', key: 'user_id' },
+      },
       owner_audio_id: {
         type: DataTypes.BIGINT,
         allowNull: true,
@@ -258,15 +303,25 @@ const migration = {
       },
     });
 
-    await Promise.all(categories.map(async (category) => {
-      return await Category.create({
-        name: category.name,
-        color: category.color,
+    await Promise.all(clouds.map(async (cloud) => {
+      return await Cloud.create({
+        name: cloud.name,
+        color: cloud.color,
+        altColor: cloud.altColor,
         status: '1',
         date: new Date(),
       });
     }));
 
+    await Promise.all(subClouds.map(async (subCloud) => {
+      return await SubCloud.create({
+        cloud_id: subCloud.cloud_id,
+        name: subCloud.name,
+        description: subCloud.description,
+        status: '1',
+        date: new Date(),
+      });
+    }));
     
     await Promise.all(filters.map(async (filter) => {
       return await Filter.create({

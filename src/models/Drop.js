@@ -19,10 +19,10 @@ const Drop = sequelize.define('drop', {
     allowNull: false,
     references: { model: 'audio', key: 'audio_id' },
   },
-  category_id: {
+  sub_cloud_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
-    references: { model: 'category', key: 'category_id' },
+    references: { model: 'sub_cloud', key: 'sub_cloud_id' },
   },
   caption: {
     type: DataTypes.STRING(70),

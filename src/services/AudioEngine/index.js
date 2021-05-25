@@ -54,7 +54,6 @@ class AudioEngine {
   storeFile = async (tag, isTrimmed, filter, extension) => {
     const url = await new Promise((resolve, reject) => {
       const file = AudioEngine.directory(tag, isTrimmed, filter, extension);
-      // const newFile = extension ? file.replace('mp3', extension) : file;
       fs.writeFile(
         file,
         this.buffer,
@@ -68,6 +67,7 @@ class AudioEngine {
         },
       );
     });
+
     return url;
   };
 
@@ -111,7 +111,7 @@ class AudioEngine {
     if (!data) {
       return 0;
     }
-    this.duration = Math.round((data._data.length / data.numberOfChannels) / data.sampleRate);
+    this.duration = Math.round(1000 * ((data._data.length / data.numberOfChannels) / data.sampleRate));
     this.size = data._data.length;
     return this.duration;
   };

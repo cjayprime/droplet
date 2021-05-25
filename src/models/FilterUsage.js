@@ -11,6 +11,11 @@ const FilterUsage = sequelize.define('filter_usage', {
     allowNull: false,
     references: { model: 'user', key: 'user_id' },
   },
+  owner_user_id: {
+    type: DataTypes.BIGINT,
+    allowNull: true,
+    references: { model: 'user', key: 'user_id' },
+  },
   owner_audio_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
