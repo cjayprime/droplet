@@ -7,7 +7,7 @@ const Filter = sequelize.define('filter', {
     primaryKey: true,
   },
   name: {
-    type: DataTypes.ENUM('duet', 'helium-voice'),
+    type: DataTypes.STRING(30),
     allowNull: false,
   },
   activeIcon: {
