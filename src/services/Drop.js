@@ -8,7 +8,16 @@ import { Op } from 'sequelize';
 import AudioEngine from './AudioEngine';
 import UserService from './User';
 
-import { User as UserModel, Audio as AudioModel, Drop as DropModel, Category as CategoryModel, Like as LikeModel, Listen as ListenModel } from '../models';
+import {
+  User as UserModel,
+  Audio as AudioModel,
+  Drop as DropModel,
+  Cloud as CloudModel,
+  SubCloud as SubCloudModel,
+  Like as LikeModel,
+  Listen as ListenModel,
+  FilterUsage as FilterUsageModel,
+} from '../models';
 import { Notify } from '../shared';
 
 class Drop {
@@ -30,10 +39,10 @@ class Drop {
     const recording = await AudioEngine.getFile(tag, null, filter);
     const audioEngine = new AudioEngine(recording, 'buffer');
     const data = await audioEngine.getProcessedData();
-    const duration = await audioEngine.getDuration(data);
+    const duration = await audioEngine.getDuration(data) / 1000;
 
     console.log('TRIM RANGE:', start, end);
-    if (start >= end || start >= duration || end > duration){
+    if (start >= end || start >= duration || end > duration) {
       return {
         message: 'The trimming range selected is invalid.',
         data: { start, end },
@@ -76,7 +85,7 @@ class Drop {
         (async () => {
           await AudioModel.update({
             trimmed: '1',
-            duration: end - start,
+            duration: 1000 * (end - start),
           }, { where: { tag } }).catch((e) => console.log('Couldn\'t update trim to "1" for', tag, e));
         })();
         return true;
@@ -154,7 +163,7 @@ class Drop {
     }
 
     const audioEngine = new AudioEngine(recording);
-    const duration = await audioEngine.getDuration();
+    const duration = await audioEngine.getDuration() / 1000;
     if (!duration) {
       return {
         code: 400,
@@ -182,7 +191,7 @@ class Drop {
     await AudioModel.create({
       user_id: user.user_id,
       tag,
-      duration,
+      duration: duration * 1000,
       filesize: audioEngine.size,
       date: new Date(),
       source,
@@ -229,20 +238,37 @@ class Drop {
     };
   }
 
-  loadCategories = async () => {
-    const categories = await CategoryModel.findAll();
-    if (categories.length === 0) {
+  loadClouds = async () => {
+    const clouds = await CloudModel.findAll();
+    if (clouds.length === 0) {
       return {
         code: 400,
-        message: 'Categories weren\'t found',
+        message: 'No clouds were found',
         data: [],
       };
     }
 
     return {
       code: 200,
-      message: 'Categories successfully loaded',
-      data: categories,
+      message: 'Clouds successfully loaded',
+      data: clouds,
+    };
+  }
+
+  loadSubClouds = async () => {
+    const subClouds = await SubCloudModel.findAll();
+    if (subClouds.length === 0) {
+      return {
+        code: 400,
+        message: 'No sub clouds were found',
+        data: [],
+      };
+    }
+
+    return {
+      code: 200,
+      message: 'Sub clouds successfully loaded',
+      data: subClouds,
     };
   }
 
@@ -252,13 +278,13 @@ class Drop {
    * @param {BigInt}  user_id
    * @param {UUID}    tag
    * @param {String}  caption
-   * @param {String}  categoryName    A category name or id
-   * @param {Boolean} isTrimmed
+   * @param {String}  subCloudName    A sub cloud name or id
+   * @param {Boolean} isTrimmed   
    * @param {Boolean} filter
    * @param {Date}    date            A JS Date object to use in creating drops
    * @returns ResponseObject
    */
-  create = async (user_id, tag, caption, categoryName, isTrimmed, filter, date) => {
+  create = async (user_id, tag, caption, subCloudName, isTrimmed, filter, date) => {
     if (caption.length > 70) {
       return {
         code: 400,
@@ -276,17 +302,17 @@ class Drop {
       };
     }
 
-    let category_id = categoryName;
-    if (isNaN(category_id)){
-      const category = await CategoryModel.findOne({ attributes: ['category_id'], where: { name: categoryName } });
-      if (category === null){
+    let sub_cloud_id = subCloudName;
+    if (isNaN(sub_cloud_id)){
+      const cloud = await SubCloudModel.findOne({ attributes: ['cloud_id'], where: { name: subCloudName } });
+      if (cloud === null){
         return {
           code: 400,
-          message: 'The category does not exist.',
+          message: 'The sub cloud does not exist.',
           data: { tag },
         };
       }
-      category_id = category.category_id;
+      sub_cloud_id = cloud.cloud_id;
     }
 
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
@@ -301,7 +327,7 @@ class Drop {
     const drop = await DropModel.create({
       user_id: user.user_id,
       audio_id: audio.audio_id,
-      category_id,
+      sub_cloud_id,
       caption,
       date: date || new Date(),
     });
@@ -421,7 +447,7 @@ class Drop {
     };
   }
 
-  single = async (tagORdrop_id) => {
+  single = async (tagORdrop_id, user_id) => {
     const tag = tagORdrop_id;
     let options = {
       include: UserService.includeForUser,
@@ -429,20 +455,31 @@ class Drop {
         [Op.or]: [
           { '$audio.tag$': tag },
           { drop_id: tag },
-        ]
+        ],
       }
     };
 
-    return await this.feed(null, null, null, null, options);
+    return await this.feed(user_id, null, null, null, options);
   }
 
-  feed = async (signedInUserID, selectForUserID, limit, offset, opt, category) => {
+  /**
+   * 
+   * @param {*} signedInUserID 
+   * @param {*} selectForUserID 
+   * @param {*} limit 
+   * @param {*} offset 
+   * @param {*} opt 
+   * @param {Array|String} subCloud   A string or array of sub cloud names or ids 
+   * @returns 
+   */
+  feed = async (signedInUserID, selectForUserID, limit, offset, opt, subCloud) => {
     let options = opt;
     if (!options) {
-      const where = category ? { [Op.or]: { '$category.name$': { [Op.in]: category }, category_id: { [Op.in]: category } } } : {};
+      const where = subCloud ? { [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : {};
       options = {
         where,
-        include: UserService.includeForUser,
+        include: [...UserService.includeForUser, { model: FilterUsageModel, required: false }],
+        nest: true,
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
         order: [
@@ -458,6 +495,9 @@ class Drop {
     }
 
     UserService.associateForUser();
+    FilterUsageModel.hasMany(DropModel, { foreignKey: 'audio_id' });
+    DropModel.belongsTo(FilterUsageModel, { foreignKey: 'audio_id', targetKey: 'audio_id' });
+
     const drops = await DropModel.findAll(options);
     if (drops === null) {
       return {
@@ -472,10 +512,6 @@ class Drop {
     const dropsArray = await Promise.all(
       drops.map(async drop => {
         const dropData = drop.get();
-        // Filter
-        // A drop can have multiple filters applied to it
-        // drop LEFT JOIN filter_usage ON drop.audio_id = filter_usage.audio_id
-
 
         // Likes
         // Count all likes (whether or not it's the user making this request)
@@ -483,7 +519,7 @@ class Drop {
           where: { drop_id: dropData.drop_id },
         });
         // Get the like for only the user making this request
-        const liked = await LikeModel.findOne({
+        const liked = !signedInUserID ? false : await LikeModel.findOne({
           where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
           include: [{ model: UserModel, required: true }],
         });
@@ -494,11 +530,21 @@ class Drop {
           where: { drop_id: dropData.drop_id },
         });
         // Get the listens for only the user making this request
-        const listened = await ListenModel.findOne({
+        const listened = !signedInUserID ? false : await ListenModel.findOne({
           where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
           include: [{ model: UserModel, required: true }],
         });
-        return { ...dropData, likes: likes, liked: !!(liked && liked.status === '1'), listens, listened: !!listened };
+        return {
+          ...dropData,
+          audio: {
+            ...dropData.audio.get(),
+            duration: dropData.audio.get().duration / 1000,
+          },
+          likes: likes,
+          liked: !!(liked && liked.status === '1'),
+          listens,
+          listened: !!listened
+        };
       })
     );
     return {

@@ -87,7 +87,7 @@ class Duet {
     // drop (`user_id`) is the same as the onwer of a tag (`tag`)
     UserService.generateAssociation(UserModel, AudioModel);
     const ownerAudio = await AudioModel.findOne({
-      attributes: ['audio_id'],
+      attributes: ['audio_id', 'user_id'],
       where: {
         ...UserService.searchForUser(owner.user_id),
         tag: owner.tag,
@@ -178,6 +178,7 @@ class Duet {
     await FilterUsageModel.create({
       user_id: currentAudio.user_id,
       owner_audio_id: ownerAudio.audio_id,
+      owner_user_id: ownerAudio.user_id,
       audio_id: currentAudio.audio_id,
       filter_id: filter.filter_id,
       date: new Date(),

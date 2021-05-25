@@ -1,14 +1,12 @@
-// import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 
-import { User as UserModel, Audio as AudioModel, Category as CategoryModel, Drop as DropModel } from '../models';
-// import { Configuration } from '../shared';
+import { User as UserModel, Audio as AudioModel, SubCloud as SubCloudModel, Drop as DropModel } from '../models';
 
 class User {
   static includeForUser = [
     { model: UserModel, required: true },
     { model: AudioModel, required: true },
-    { model: CategoryModel, required: true },
+    { model: SubCloudModel, required: true },
   ];
 
   /**

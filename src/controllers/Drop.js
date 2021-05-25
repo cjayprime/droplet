@@ -28,14 +28,14 @@ class DropController extends Controller {
         .withMessage('must be a valid filter.')
         .optional(),
 
-      category: types[type]('category')
+      subCloud: types[type]('subCloud')
         .notEmpty()
-        .withMessage('must be a valid category (id or name).')
+        .withMessage('must be a valid subCloud (id or name).')
         .optional(),
 
-      'category.*': types[type]('category.*')
+      'subCloud.*': types[type]('subCloud.*')
         .isAlphanumeric()
-        .withMessage('must be a valid category (id or name).')
+        .withMessage('must be a valid subCloud (id or name).')
         .optional(),
     };
     const allParams = Object.keys(params);
@@ -187,17 +187,34 @@ class DropController extends Controller {
   ];
 
   /**
-   * Create a drop using it's tag, and specify the bars to plot in the waveform
+   * Get a list of all clouds
    *
    * @param {Express.Response}    res     Express[.response] response object
    * @param {Express.Request}     req     Express[.request] request object
    * @param {Express.next}        next    Express callback to move to the next middleware
    * @return {void} void
    */
-  getCategories = [
+  getClouds = [
   	this.action(async (_, res, next) => {
   		const dropService = new DropService();
-  		const response = await dropService.loadCategories();
+  		const response = await dropService.loadClouds();
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a list of all subclouds
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  getSubClouds = [
+  	this.action(async (_, res, next) => {
+  		const dropService = new DropService();
+  		const response = await dropService.loadSubClouds();
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -224,9 +241,9 @@ class DropController extends Controller {
       .notEmpty()
       .withMessage('must be a caption.'),
 
-  	body('category')
+  	body('subCloud')
       .notEmpty()
-      .withMessage('must be a valid category.'),
+      .withMessage('must be a valid sub cloud (id or name).'),
 
     body('isTrimmed')
       .isBoolean()
@@ -238,9 +255,9 @@ class DropController extends Controller {
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { body: { user_id, tag, caption, category, isTrimmed, filter } } = req;
+      const { body: { user_id, tag, caption, subCloud, isTrimmed, filter } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.create(user_id, tag, caption, category, isTrimmed, filter);
+  		const response = await dropService.create(user_id, tag, caption, subCloud, isTrimmed, filter);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -260,9 +277,9 @@ class DropController extends Controller {
       .withMessage('must be a valid user_id.'),
 
   	this.action(async (req, res, next) => {
-      const { params: { tagORdrop_id } } = req;
+      const { query: { user_id }, params: { tagORdrop_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.single(tagORdrop_id);
+  		const response = await dropService.single(tagORdrop_id, user_id);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -307,20 +324,20 @@ class DropController extends Controller {
       .withMessage('must be a valid user_id.')
       .optional(),
 
-    query('category')
+    query('subCloud')
       .notEmpty()
-      .withMessage('must be a valid category (id or name).')
+      .withMessage('must be a valid subCloud (id or name).')
       .optional(),
 
-    query('category.*')
+    query('subCloud.*')
       .isAlphanumeric()
-      .withMessage('must be a valid category (id or name).')
+      .withMessage('must be a valid subCloud (id or name).')
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { query: { limit, offset, category, user_id: UID }, params: { user_id } } = req;
+      const { query: { limit, offset, subCloud, user_id: UID }, params: { user_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.feed(UID, user_id, limit, offset, null, typeof category === 'string' ? [category] : category);
+  		const response = await dropService.feed(UID || user_id, user_id, limit, offset, null, typeof subCloud === 'string' ? [subCloud] : subCloud);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

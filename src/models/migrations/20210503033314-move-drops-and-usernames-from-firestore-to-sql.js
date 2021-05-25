@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Op } from 'sequelize';
 
 import { Authenticate, Drop as DropService, AudioEngine } from '../../services';
-import { User as UserModel, Audio as AudioModel, Like as LikeModel } from '..';
+import { User as UserModel, Audio as AudioModel, Like as LikeModel } from '../';
 import { Notify } from '../../shared';
 
 const migrations = {
@@ -31,7 +31,7 @@ const migrations = {
         await Promise.all(
           drops.map(async (aDrop, i) => {
             const drop = aDrop.data;
-            const { userInfo, caption, category, audioUrl, audioLength, timeStamp, likes } = drop;
+            const { userInfo, caption, category: subCloud, audioUrl, audioLength, timeStamp, likes } = drop;
             try {
               // Create a user
               const user = await UserModel.findOrCreate({
@@ -52,7 +52,7 @@ const migrations = {
               // Create an audio
               const tag = uuidv4();
               const timeParts = audioLength.split(':');
-              const duration = (+timeParts[0] * 3600) + (+timeParts[1] * 60) + +timeParts[2];
+              const duration = ((+timeParts[0] * 60) + (+timeParts[1]) + (+timeParts[2] / 100)) * 1000;
               const date = new Date(timeStamp);
               
               const dropService = new DropService();
@@ -84,7 +84,7 @@ const migrations = {
               const audioEngine = new AudioEngine(buffer, 'binary');
               // Store the file and create a drop from it
               await audioEngine.storeFile(tag);
-              const newDrop = await dropService.create(user_id, tag, caption, category || 'convo', false, null, date);
+              const newDrop = await dropService.create(user_id, tag, caption, subCloud === 'convo' ? 'Poetry' : subCloud === 'asmr' ? 'Rant Zone' : 'LoFi', false, null, date);
               if (newDrop.code !== 200){
                 Notify.info('Unable to migrate a drop ' + drop.id + ' from firestore to SQL. Failed to create drop.');
                 Notify.error(newDrop);
