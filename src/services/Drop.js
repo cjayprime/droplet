@@ -403,6 +403,10 @@ class Drop {
         options.destination = remoteFileName + (extension ? '.' + extension : ''),
         await bucketFile.upload(localFilePath, options);
       } else if (command === 'download') {
+        const exists = await bucketFile.file(remoteFileName + (extension ? '.' + extension : '')).exists();
+        if (!exists || !exists[0]) {
+          return false;
+        }
         options.destination = localFilePath;
         await bucketFile.file(remoteFileName + (extension ? '.' + extension : '')).download(options);
       } else {

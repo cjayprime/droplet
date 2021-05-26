@@ -21,11 +21,13 @@ class ExportVideo {
     intermediaryOutput: (directory) => (directory + '-intermediary-output.mp4'),
     profilePicture: (directory) => (directory + '.jpg'),
     audio: (directory) => (directory + '.mp3'),
-    remove: async  (directory) => {
+    remove: async  (directory, removeProfilePicture) => {
       // Remove intermediaryOutput
       await fs.promises.unlink(this.files.intermediaryOutput(directory));
       // Remove profilePicture
-      await fs.promises.unlink(this.files.profilePicture(directory));
+      if (!removeProfilePicture) {
+        await fs.promises.unlink(this.files.profilePicture(directory));
+      }
       // Remove audio
       await fs.promises.unlink(this.files.audio(directory));
     },
@@ -137,8 +139,7 @@ class ExportVideo {
       };
     }
 
-    // Save output file to the /storage/filters/export-video folder
-    await this.files.remove(directory);
+    await this.files.remove(directory, profilePicture === this.files.defaultProfilePicture);
     return {
       code: 200,
       message: 'The video has successfully been created. To download it call /download?tag=' + tag + '&filter=export-video&extension=mp4',
