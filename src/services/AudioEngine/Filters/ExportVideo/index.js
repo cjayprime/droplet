@@ -111,7 +111,7 @@ class ExportVideo {
     const username = drop.user.username;
     const caption = this.wordWrap(drop.caption.toLowerCase(), 40);
 
-    const command1 = `-y -nostats -i "${this.files.input}" -i "${profilePicture}" -i "${this.files.mask}" -filter_complex [0]drawtext="fontfile='${this.files.font('Bold')}':text='${username}': fontcolor=white: fontsize=44: line_spacing=20: box=1: boxcolor=black@0.0: boxborderw=5:x=(w-text_w)/2: y=580"[drawusername],[drawusername]drawtext="fontfile='${this.files.font('Regular')}':text='${caption}':fontcolor=white: fontsize=34: line_spacing=20: x=(w-text_w)/2: y=650"[drawcaption],[1]scale=185:185[dp];[2]alphaextract[alfa];[dp][alfa]alphamerge[makecircular],[drawcaption][makecircular]overlay=444:306[applyprofilepicture] -map "[applyprofilepicture]" -hide_banner -pix_fmt yuv420p -codec:a copy "${this.files.intermediaryOutput(directory)}"`;
+    const command1 = `-y -nostats -i "${this.files.input}" -i "${profilePicture}" -i "${this.files.mask}" -filter_complex [0]drawtext="fontfile='${this.files.font('Bold')}':text='${username}': fontcolor=white: fontsize=44: line_spacing=20: box=1: boxcolor=black@0.0: boxborderw=5:x=(w-text_w)/2: y=580"[drawusername],[drawusername]drawtext="fontfile='${this.files.font('Regular')}':text='${caption}':fontcolor=white: fontsize=34: line_spacing=20: x=(w-text_w)/2: y=650"[drawcaption],[1]scale=185:185[dp];[2]alphaextract[alfa];[dp][alfa]alphamerge[makecircular];[drawcaption][makecircular]overlay=444:306[applyprofilepicture] -map "[applyprofilepicture]" -hide_banner -pix_fmt yuv420p -codec:a copy "${this.files.intermediaryOutput(directory)}"`;
     const command2 = `-y -nostats -i "${this.files.intermediaryOutput(directory)}" -i "${this.files.audio(directory)}" -map 0:v -map 1:a -c:v copy -shortest -strict -2 "${this.files.output(directory)}"`;
 
     const success1 = await FFMpegCli.run(command1).then(() => {
@@ -122,6 +122,15 @@ class ExportVideo {
       return null;
     });
 
+    console.log('LOG 1:', success1);
+    if (!success1) {
+      return {
+        code: 400,
+        message: 'Unable to create the video. Failed while starting up.',
+        data: {},
+      };
+    }
+
     const success2 = await FFMpegCli.run(command2).then(() => {
       return true;
     }).catch(e => {
@@ -130,11 +139,11 @@ class ExportVideo {
       return null;
     });
 
-    console.log('LOG:', success1, success2);
-    if (!success1 || !success2) {
+    console.log('LOG 2:', success2);
+    if (!success2) {
       return {
         code: 400,
-        message: 'Unable to create the video.',
+        message: 'Unable to create the video. Failed while concluding.',
         data: {},
       };
     }

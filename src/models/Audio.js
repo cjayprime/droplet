@@ -15,7 +15,6 @@ const Audio = sequelize.define('audio', {
     type: DataTypes.UUID,
     allowNull: false,
     unique: true,
-    // validate: false,
   },
   duration: {
     type: DataTypes.INTEGER,

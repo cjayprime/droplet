@@ -16,7 +16,9 @@ const sequelize = new Sequelize(
       freezeTableName: true,
     },
     logging: function (str) {
-      console.log('\n-- SQL:', str, '\n');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('\n-- SQL:', str, '\n');
+      }
     },
   }
 );
