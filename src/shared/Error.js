@@ -19,7 +19,9 @@ class Error {
   		code = 401;
   		if (err.inner.name === 'TokenExpiredError') {
   			message = 'Your session has expired, kindly signin and try again.';
-  		} else {
+  		}  else if (req.headers.authorization) {
+        message = 'You provided corrupt authentication details.';
+      } else {
   			message = 'You are signed out, kindly signin and try again.';
   		}
   	} else if (res.headersSent) {
