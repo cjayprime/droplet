@@ -26,7 +26,7 @@ jobs:
     env:
       SERVER_IP: ${{ secrets.SERVER_IP_MASTER }}
       SSH_USERNAME: ${{ secrets.SSH_USERNAME_MASTER }}
-      SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY_MASTER }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_MASTER }}
     steps:
       - name: Testing runs
         run: echo ${GITHUB_REF_SHA}
@@ -56,7 +56,7 @@ jobs:
             yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
-          key: ${{ env.SSH_PUBLIC_KEY }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
 
   deploy_staging:
     runs-on: ubuntu-latest
@@ -64,7 +64,7 @@ jobs:
     env: 
       SERVER_IP: ${{ secrets.SERVER_IP_STAGING }}
       SSH_USERNAME: ${{ secrets.SSH_USERNAME_STAGING }}
-      SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY_STAGING }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
     steps:
       - name: Testing runs
         run: echo ${GITHUB_REF_SHA}
@@ -94,4 +94,4 @@ jobs:
             yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
-          key: ${{ env.SSH_PUBLIC_KEY }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
