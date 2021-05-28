@@ -34,7 +34,7 @@ scipy==1.5.4
 six==1.15.0
 SoundFile==0.10.3.post1
 threadpoolctl==2.1.0
-traitlets==5.0.5
+traitlets==4.3.3
 typing-extensions==3.7.4.3
 urllib3==1.26.4
 virtualenv==20.4.3
