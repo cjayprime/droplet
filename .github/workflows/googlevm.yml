@@ -46,7 +46,6 @@ jobs:
           # VM is Ubuntu 18.04
           script: |
             sudo apt update
-            echo "${{ env.SERVER_IP }}"
             sudo apt-get update
             sudo apt-get install -y python3.6=3.6.9-1~18.04ubuntu1.4 python3-pip=9.0.1-2.3~ubuntu1.18.04.4
             sudo pip3 install -U pip==21.1.2
@@ -222,6 +221,7 @@ jobs:
           # VM is Ubuntu 18.04
           script: |
             sudo apt update
+            echo "${{ env.SERVER_IP }}"
             sudo apt-get update
             sudo apt-get install -y python3.6=3.6.9-1~18.04ubuntu1.4 python3-pip=9.0.1-2.3~ubuntu1.18.04.4
             sudo pip3 install -U pip==21.1.2
