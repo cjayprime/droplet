@@ -228,6 +228,7 @@ jobs:
         if: ${{ success() }}
         with:
           command: |
+            cd ~/drop-service
             sudo npm install --global yarn
 
             sudo yarn production:prep:install
