@@ -46,12 +46,14 @@ jobs:
           # VM is Ubuntu 18.04
           script: |
             sudo apt update
+            echo "${{ env.SERVER_IP }}"
             sudo apt-get update
             sudo apt-get install -y python3.6=3.6.9-1~18.04ubuntu1.4 python3-pip=9.0.1-2.3~ubuntu1.18.04.4
             sudo pip3 install -U pip==21.1.2
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -70,8 +72,9 @@ jobs:
             sudo apt-get -y install nodejs=14.17.0-1nodesource1
             sudo apt install build-essential
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -86,8 +89,9 @@ jobs:
             cd ~/drop-service
             git checkout master | git pull origin master
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -120,8 +124,9 @@ jobs:
             SENTRY_DNS=${{ env.SENTRY_DNS }}
             EOF
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -138,8 +143,9 @@ jobs:
 
             sudo yarn production:prep:install
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -154,8 +160,9 @@ jobs:
             cd ~/drop-service
             sudo yarn install
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -171,8 +178,9 @@ jobs:
             cd ~/drop-service
             sudo yarn production
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -218,8 +226,9 @@ jobs:
             sudo apt-get install -y python3.6=3.6.9-1~18.04ubuntu1.4 python3-pip=9.0.1-2.3~ubuntu1.18.04.4
             sudo pip3 install -U pip==21.1.2
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -238,8 +247,9 @@ jobs:
             sudo apt-get -y install nodejs=14.17.0-1nodesource1
             sudo apt install build-essential
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -254,8 +264,9 @@ jobs:
             cd ~/drop-service
             git checkout staging | git pull origin staging
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -288,8 +299,9 @@ jobs:
             SENTRY_DNS=${{ env.SENTRY_DNS }}
             EOF
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -306,8 +318,9 @@ jobs:
 
             sudo yarn production:prep:install
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -322,8 +335,9 @@ jobs:
             cd ~/drop-service
             sudo yarn install
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
@@ -339,8 +353,9 @@ jobs:
             cd ~/drop-service
             sudo yarn production
           host: ${{ env.SERVER_IP }}
+          port: 22
           username: ${{ env.SSH_USERNAME }}
-          password: ''
+          password: ""
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
           timeout: 30s
