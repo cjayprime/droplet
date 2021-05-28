@@ -28,17 +28,12 @@ jobs:
       SSH_USERNAME: ${{ secrets.SSH_USERNAME_MASTER }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_MASTER }}
     steps:
-      - name: Testing runs
-        run: echo ${GITHUB_REF_SHA}
-          
       - name: SSH into the VM
         uses: fifsky/ssh-action@master
         if: ${{ success() }}
         with:
           # VM is Ubuntu 18.04
           command: |
-            test ! -e ~/drop-service && mkdir ~/drop-service
-            cd ~/drop-service
             sudo apt update
             sudo apt-get update
 
@@ -48,6 +43,10 @@ jobs:
             sudo apt-get install -y git=1:2.17.1-1ubuntu0.8 nginx=1.14.0-0ubuntu1.9 lame=3.100-2 ffmpeg=7:3.4.8-0ubuntu0.2
             curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
             sudo apt-get -y install nodejs=14.17.0-1nodesource1
+
+            test ! -e ~/drop-service && mkdir ~/drop-service
+            cd ~/drop-service
+            git pull origin master
 
             npm install --global yarn
 
@@ -66,17 +65,12 @@ jobs:
       SSH_USERNAME: ${{ secrets.SSH_USERNAME_STAGING }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
     steps:
-      - name: Testing runs
-        run: echo ${GITHUB_REF_SHA}
-          
       - name: SSH into the VM
         uses: fifsky/ssh-action@master
         if: ${{ success() }}
         with:
           # VM is Ubuntu 18.04
           command: |
-            test ! -e ~/drop-service && mkdir ~/drop-service
-            cd ~/drop-service
             sudo apt update
             sudo apt-get update
 
@@ -86,6 +80,10 @@ jobs:
             sudo apt-get install -y git=1:2.17.1-1ubuntu0.8 nginx=1.14.0-0ubuntu1.9 lame=3.100-2 ffmpeg=7:3.4.8-0ubuntu0.2
             curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
             sudo apt-get -y install nodejs=14.17.0-1nodesource1
+
+            test ! -e ~/drop-service && mkdir ~/drop-service
+            cd ~/drop-service
+            git pull origin staging
 
             npm install --global yarn
 
