@@ -53,6 +53,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Install Server Dependencies
         uses: appleboy/ssh-action@master
@@ -69,6 +70,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Checkout and Pull Changes
         uses: appleboy/ssh-action@master
@@ -81,6 +83,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Load Environment Variables
         uses: appleboy/ssh-action@master
@@ -111,6 +114,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Prepare Application Installation
         uses: appleboy/ssh-action@master
@@ -125,6 +129,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Install Application Dependencies
         uses: appleboy/ssh-action@master
@@ -137,6 +142,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
 
       - name: Launch Application
@@ -150,6 +156,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
 
 
@@ -193,6 +200,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Install Server Dependencies
         uses: appleboy/ssh-action@master
@@ -209,6 +217,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Checkout and Pull Changes
         uses: appleboy/ssh-action@master
@@ -221,6 +230,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Load Environment Variables
         uses: appleboy/ssh-action@master
@@ -251,6 +261,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Prepare Application Installation
         uses: appleboy/ssh-action@master
@@ -265,6 +276,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
       - name: Install Application Dependencies
         uses: appleboy/ssh-action@master
@@ -277,6 +289,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
 
 
       - name: Launch Application
@@ -290,3 +303,4 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script_stop: true
+          timeout: 300s
