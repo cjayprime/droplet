@@ -18,7 +18,7 @@ librosa==0.8.0
 llvmlite==0.32.1
 matplotlib-inline==0.1.2
 numba==0.47.0
-numpy==1.20.2
+numpy==1.19.5
 packaging==20.9
 parso==0.8.2
 pickleshare==0.7.5
