@@ -40,25 +40,25 @@ jobs:
       SENTRY_DNS: ${{ secrets.SENTRY_DNS_MASTER }}
     steps:
       - name: Install Python3
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
           # VM is Ubuntu 18.04
-          command: |
+          script: |
             sudo apt update
             sudo apt-get update
             sudo apt-get install -y python3.6=3.6.9-1~18.04ubuntu1.4 python3-pip=9.0.1-2.3~ubuntu1.18.04.4
             sudo pip3 install -U pip==21.1.2
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Install Server Dependencies
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             sudo apt update
             sudo apt-get update
             sudo apt-get install -y git=1:2.17.1-1ubuntu0.8 nginx=1.14.0-0ubuntu1.9 lame=3.100-2 ffmpeg=7:3.4.8-0ubuntu0.2
@@ -66,27 +66,27 @@ jobs:
             sudo apt-get -y install nodejs=14.17.0-1nodesource1
             sudo apt install build-essential
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Checkout and Pull Changes
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             git checkout master | git pull origin master
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Load Environment Variables
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
 
             cat << EOF > .env
@@ -108,48 +108,48 @@ jobs:
             SENTRY_DNS=${{ env.SENTRY_DNS }}
             EOF
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Prepare Application Installation
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             sudo npm install --global yarn@1.22.10
 
             sudo yarn production:prep:install
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Install Application Dependencies
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             sudo yarn install
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
 
       - name: Launch Application
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             sudo yarn production
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
 
 
@@ -180,25 +180,25 @@ jobs:
       SENTRY_DNS: ${{ secrets.SENTRY_DNS_STAGING }}
     steps:
       - name: Install Python3
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
           # VM is Ubuntu 18.04
-          command: |
+          script: |
             sudo apt update
             sudo apt-get update
             sudo apt-get install -y python3.6=3.6.9-1~18.04ubuntu1.4 python3-pip=9.0.1-2.3~ubuntu1.18.04.4
             sudo pip3 install -U pip==21.1.2
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Install Server Dependencies
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             sudo apt update
             sudo apt-get update
             sudo apt-get install -y git=1:2.17.1-1ubuntu0.8 nginx=1.14.0-0ubuntu1.9 lame=3.100-2 ffmpeg=7:3.4.8-0ubuntu0.2
@@ -206,27 +206,27 @@ jobs:
             sudo apt-get -y install nodejs=14.17.0-1nodesource1
             sudo apt install build-essential
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Checkout and Pull Changes
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             git checkout staging | git pull origin staging
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Load Environment Variables
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
 
             cat << EOF > .env
@@ -248,45 +248,45 @@ jobs:
             SENTRY_DNS=${{ env.SENTRY_DNS }}
             EOF
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Prepare Application Installation
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             sudo npm install --global yarn@1.22.10
 
             sudo yarn production:prep:install
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
       - name: Install Application Dependencies
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             sudo yarn install
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
 
 
       - name: Launch Application
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         if: ${{ success() }}
         with:
-          command: |
+          script: |
             cd ~/drop-service
             sudo yarn production
           host: ${{ env.SERVER_IP }}
-          user: ${{ env.SSH_USERNAME }}
+          username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          script_stop: true
