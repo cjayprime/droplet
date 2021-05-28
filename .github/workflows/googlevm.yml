@@ -27,6 +27,20 @@ jobs:
       SERVER_IP: ${{ secrets.SERVER_IP_MASTER }}
       SSH_USERNAME: ${{ secrets.SSH_USERNAME_MASTER }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_MASTER }}
+      PORT: ${{ secrets.PORT_MASTER }}
+      DB_HOSTNAME: ${{ secrets.DB_HOSTNAME_MASTER }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME_MASTER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD_MASTER }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE_MASTER }}
+      DB_PORT: ${{ secrets.DB_PORT_MASTER }}
+
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_MASTER }}
+      GOOGLE_BUCKET_NAME: ${{ secrets.GOOGLE_BUCKET_NAME_MASTER }}
+      GOOGLE_KEYFILE: ${{ secrets.GOOGLE_KEYFILE_MASTER }}
+
+      FIREBASE_BUCKET_NAME: ${{ secrets.FIREBASE_BUCKET_NAME_MASTER }}
+      FIREBASE_KEYFILE: ${{ secrets.FIREBASE_KEYFILE_MASTER }}
+      SENTRY_DNS: ${{ secrets.SENTRY_DNS_MASTER }}
     steps:
       - name: SSH into the VM
         uses: fifsky/ssh-action@master
@@ -46,16 +60,35 @@ jobs:
 
             test ! -e ~/drop-service && mkdir ~/drop-service
             cd ~/drop-service
-            git pull origin master
+            git checkout master | git pull origin master
 
-            npm install --global yarn
+            cat << EOF > .env
+            NODE_ENV=production
+            PORT=${{ env.PORT }}
+            DB_HOSTNAME=${{ env.DB_HOSTNAME }}
+            DB_USERNAME=${{ env.DB_USERNAME }}
+            DB_PASSWORD=${{ env.DB_PASSWORD }}
+            DB_DATABASE=${{ env.DB_DATABASE }}
+            DB_PORT=${{ env.DB_PORT }}
 
-            yarn production:prep:install
-            yarn install
-            yarn production
+            GOOGLE_PROJECT_ID=${{ env.GOOGLE_PROJECT_ID }}
+            GOOGLE_BUCKET_NAME=${{ env.GOOGLE_BUCKET_NAME }}
+            GOOGLE_KEYFILE=${{ env.GOOGLE_KEYFILE }}
+
+            FIREBASE_BUCKET_NAME=${{ env.FIREBASE_BUCKET_NAME }}
+            FIREBASE_KEYFILE=${{ env.FIREBASE_KEYFILE }}
+            SENTRY_DNS=${{ env.SENTRY_DNS }}
+            EOF
+
+            sudo npm install --global yarn
+
+            sudo yarn production:prep:install
+            sudo yarn install
+            sudo yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
+          args: -tt
 
   deploy_staging:
     runs-on: ubuntu-latest
@@ -64,6 +97,20 @@ jobs:
       SERVER_IP: ${{ secrets.SERVER_IP_STAGING }}
       SSH_USERNAME: ${{ secrets.SSH_USERNAME_STAGING }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
+      PORT: ${{ secrets.PORT_STAGING }}
+      DB_HOSTNAME: ${{ secrets.DB_HOSTNAME_STAGING }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME_STAGING }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD_STAGING }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE_STAGING }}
+      DB_PORT: ${{ secrets.DB_PORT_STAGING }}
+
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STAGING }}
+      GOOGLE_BUCKET_NAME: ${{ secrets.GOOGLE_BUCKET_NAME_STAGING }}
+      GOOGLE_KEYFILE: ${{ secrets.GOOGLE_KEYFILE_STAGING }}
+
+      FIREBASE_BUCKET_NAME: ${{ secrets.FIREBASE_BUCKET_NAME_STAGING }}
+      FIREBASE_KEYFILE: ${{ secrets.FIREBASE_KEYFILE_STAGING }}
+      SENTRY_DNS: ${{ secrets.SENTRY_DNS_STAGING }}
     steps:
       - name: SSH into the VM
         uses: fifsky/ssh-action@master
@@ -83,13 +130,32 @@ jobs:
 
             test ! -e ~/drop-service && mkdir ~/drop-service
             cd ~/drop-service
-            git pull origin staging
+            git checkout staging | git pull origin staging
 
-            npm install --global yarn
+            cat << EOF > .env
+            NODE_ENV=staging
+            PORT=${{ env.PORT }}
+            DB_HOSTNAME=${{ env.DB_HOSTNAME }}
+            DB_USERNAME=${{ env.DB_USERNAME }}
+            DB_PASSWORD=${{ env.DB_PASSWORD }}
+            DB_DATABASE=${{ env.DB_DATABASE }}
+            DB_PORT=${{ env.DB_PORT }}
 
-            yarn production:prep:install
-            yarn install
-            yarn production
+            GOOGLE_PROJECT_ID=${{ env.GOOGLE_PROJECT_ID }}
+            GOOGLE_BUCKET_NAME=${{ env.GOOGLE_BUCKET_NAME }}
+            GOOGLE_KEYFILE=${{ env.GOOGLE_KEYFILE }}
+
+            FIREBASE_BUCKET_NAME=${{ env.FIREBASE_BUCKET_NAME }}
+            FIREBASE_KEYFILE=${{ env.FIREBASE_KEYFILE }}
+            SENTRY_DNS=${{ env.SENTRY_DNS }}
+            EOF
+
+            sudo npm install --global yarn
+
+            sudo yarn production:prep:install
+            sudo yarn install
+            sudo yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
+          args: -tt
