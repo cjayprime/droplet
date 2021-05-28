@@ -1,12 +1,19 @@
 import { Op } from 'sequelize';
 
-import { User as UserModel, Audio as AudioModel, SubCloud as SubCloudModel, Drop as DropModel } from '../models';
+import {
+  User as UserModel,
+  Audio as AudioModel,
+  SubCloud as SubCloudModel,
+  Drop as DropModel,
+  FilterUsage as FilterUsageModel
+} from '../models';
 
 class User {
   static includeForUser = [
     { model: UserModel, required: true },
     { model: AudioModel, required: true },
     { model: SubCloudModel, required: true },
+    { model: FilterUsageModel, required: false , foreignKey: 'audio_id', targetKey: 'audio_id' },
   ];
 
   /**
@@ -14,7 +21,7 @@ class User {
    */
   static associateForUser = () => {
     User.includeForUser.map(aInclude => {
-      User.generateAssociation(aInclude.model, DropModel);
+      User.generateAssociation(aInclude, aInclude.model, DropModel);
     });
   }
 
@@ -26,12 +33,13 @@ class User {
    * @param {Model} referenced 
    * @param {Model} ref 
    */
-  static generateAssociation = (referenced, ref) => {
+  static generateAssociation = (obj, referenced, ref) => {
     referenced.hasOne(ref, {
-      foreignKey: referenced.getTableName() + '_id',
+      foreignKey: obj.foreignKey || referenced.getTableName() + '_id',
     });
     ref.belongsTo(referenced, {
-      foreignKey: referenced.getTableName() + '_id',
+      foreignKey: obj.foreignKey || referenced.getTableName() + '_id',
+      targetKey: obj.targetKey,
     });
   }
 

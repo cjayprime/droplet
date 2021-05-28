@@ -272,14 +272,18 @@ class DropController extends Controller {
    * @return {void} void
    */
   single = [
-    param('tagORdrop_id')
+    param('audio_idORtagORdrop_id')
       .notEmpty()
-      .withMessage('must be a valid user_id.'),
+      .withMessage('must be a valid drop_id.'),
 
   	this.action(async (req, res, next) => {
-      const { query: { user_id }, params: { tagORdrop_id } } = req;
+      const { query: { user_id }, params: { audio_idORtagORdrop_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.single(tagORdrop_id, user_id);
+  		const response = await dropService.single(
+        audio_idORtagORdrop_id,
+        user_id,
+        req.originalUrl.indexOf('/drops') === 0 ? 'drop_id' : 'audio_id'
+      );
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

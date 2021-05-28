@@ -10,10 +10,11 @@ const filter = new Filter();
 
 export default {
   public: [
-    // Drop
+    // Drops
     { method: 'GET', path: '/drops', action: drop.feed },
     { method: 'GET', path: '/drops/user/:user_id', action: drop.feed },
-    { method: 'GET', path: '/drops/:tagORdrop_id', action: drop.single },
+    { method: 'GET', path: '/drops/:audio_idORtagORdrop_id', action: drop.single },
+    { method: 'GET', path: '/audio/:audio_idORtagORdrop_id', action: drop.single },
     { method: 'GET', path: '/featured', action: drop.featured },
     { method: 'GET', path: '/clouds', action: drop.getClouds },
     { method: 'GET', path: '/subclouds', action: drop.getSubClouds },

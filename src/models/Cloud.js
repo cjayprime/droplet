@@ -9,6 +9,7 @@ const Cloud = sequelize.define('cloud', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   color: {
     type: DataTypes.STRING(7),
