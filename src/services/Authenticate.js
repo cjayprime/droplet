@@ -25,7 +25,7 @@ class Authenticate {
         '../../firebase-services.json',
       );
       if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+        fs.writeFileSync(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
       }
       const firebaseConfig = {
         databaseURL: 'https://' + process.env.GOOGLE_PROJECT_ID + '.firebaseio.com',
@@ -42,7 +42,7 @@ class Authenticate {
 
   getUser = async (username, uid) => {
     if (!this.app) {
-      this.init();
+      await this.init();
     }
 
     const userSnapshot = await this.admin.firestore()

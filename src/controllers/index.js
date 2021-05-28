@@ -10,10 +10,27 @@ const filter = new Filter();
 
 export default {
   public: [
-    // Drop
+    // Authenticate
+    { method: 'POST', path: '/authenticate', action: authenticate.firebase },
+
+    // Health
+    { method: 'GET', path: '/health', action: /*authenticate.health*/ (_, res, next) => {
+      res.send('RUNNING');
+      next();
+    } },
+
+    // Statuses Checker
+    { method: 'GET', path: '/status', action: (req, res, next) => {
+      res.status(req.query.status).send('RUNNING');
+      next();
+    } },
+  ],
+  private: [
+    // Drops
     { method: 'GET', path: '/drops', action: drop.feed },
     { method: 'GET', path: '/drops/user/:user_id', action: drop.feed },
-    { method: 'GET', path: '/drops/:tagORdrop_id', action: drop.single },
+    { method: 'GET', path: '/drops/:audio_idORtagORdrop_id', action: drop.single },
+    { method: 'GET', path: '/audio/:audio_idORtagORdrop_id', action: drop.single },
     { method: 'GET', path: '/featured', action: drop.featured },
     { method: 'GET', path: '/clouds', action: drop.getClouds },
     { method: 'GET', path: '/subclouds', action: drop.getSubClouds },
@@ -32,21 +49,5 @@ export default {
     // Filters
     { method: 'POST', path: '/filter/duet', action: filter.duet },
     { method: 'POST', path: '/filter/export-video', action: filter.exportVideo },
-
-    // Authenticate
-    { method: 'POST', path: '/authenticate', action: authenticate.firebase },
-
-    // Health
-    { method: 'GET', path: '/health', action: /*authenticate.health*/ (_, res, next) => {
-      res.send('RUNNING');
-      next();
-    } },
-
-    // Statuses Checker
-    { method: 'GET', path: '/status', action: (req, res, next) => {
-      res.status(req.query.status).send('RUNNING');
-      next();
-    } },
   ],
-  private: [],
 };

@@ -14,7 +14,7 @@ class Notify {
    * @param {string} channel The slack channel to send to
   */
   info(message/*, channel = 'computer-says-no'*/) {
-    console.log('Notify.info - Logging this message', message);
+    console.log('\nNotify.info - Logging this message', message, '\n');
     if (process.env.NODE_ENV !== 'development') {
       Sentry.init({
         dsn: process.env.SENTRY_DNS,

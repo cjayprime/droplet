@@ -16,7 +16,6 @@ import {
   SubCloud as SubCloudModel,
   Like as LikeModel,
   Listen as ListenModel,
-  FilterUsage as FilterUsageModel,
 } from '../models';
 import { Notify } from '../shared';
 
@@ -239,7 +238,7 @@ class Drop {
   }
 
   loadClouds = async () => {
-    const clouds = await CloudModel.findAll();
+    const clouds = await CloudModel.findAll({ where: { status: '1' } });
     if (clouds.length === 0) {
       return {
         code: 400,
@@ -248,15 +247,18 @@ class Drop {
       };
     }
 
+    const all = {};
+    clouds.map(cloud => all[cloud.cloud_id] = cloud.get());
     return {
       code: 200,
       message: 'Clouds successfully loaded',
       data: clouds,
+      all,
     };
   }
 
   loadSubClouds = async () => {
-    const subClouds = await SubCloudModel.findAll();
+    const subClouds = await SubCloudModel.findAll({ where: { status: '1' } });
     if (subClouds.length === 0) {
       return {
         code: 400,
@@ -308,8 +310,8 @@ class Drop {
       if (cloud === null){
         return {
           code: 400,
-          message: 'The sub cloud does not exist.',
-          data: { tag },
+          message: 'The sub cloud (' + subCloudName + ') does not exist.',
+          data: { tag, subCloud: subCloudName },
         };
       }
       sub_cloud_id = cloud.cloud_id;
@@ -320,6 +322,16 @@ class Drop {
       return {
         code: 400,
         message: 'The user does not exist.',
+        data: { tag },
+      };
+    }
+
+    const fileName = AudioEngine.directory(tag, isTrimmed, filter);
+    const uploaded = await Drop.bucket('upload', fileName, tag);
+    if (!uploaded) {
+      return {
+        code: 400,
+        message: 'Unable to store the drop.',
         data: { tag },
       };
     }
@@ -336,16 +348,6 @@ class Drop {
         code: 400,
         message: 'Unfortunately we failed to create your drop. Try again.',
         data: { drop, tag },
-      };
-    }
-
-    const fileName = AudioEngine.directory(tag, isTrimmed, filter);
-    const uploaded = await Drop.bucket('upload', fileName, tag);
-    if (!uploaded) {
-      return {
-        code: 400,
-        message: 'Unable to store the drop.',
-        data: { tag },
       };
     }
 
@@ -377,7 +379,7 @@ class Drop {
         '../../google-services.json',
       );
       if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
+        fs.writeFileSync(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
       }
     } else if (from === 'firebase') {
       bucket = process.env.FIREBASE_BUCKET_NAME;
@@ -386,7 +388,7 @@ class Drop {
         '../../firebase-services.json',
       );
       if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+        fs.writeFileSync(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
       }
     }
 
@@ -451,19 +453,30 @@ class Drop {
     };
   }
 
-  single = async (tagORdrop_id, user_id) => {
-    const tag = tagORdrop_id;
+  /**
+   * 
+   * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
+   * @param {BigInt}      user_id                   A user's id
+   * @param {Enum}        getBy                     Flag - whether to treat `audio_idORtagORdrop_id` as an audio_id or drop_id
+   * @returns 
+   */
+  single = async (audio_idORtagORdrop_id, user_id, getBy) => {
+    const tag = audio_idORtagORdrop_id;
     let options = {
       include: UserService.includeForUser,
       where: {
-        [Op.or]: [
-          { '$audio.tag$': tag },
+        [Op.or]: getBy === 'drop_id' ? [
           { drop_id: tag },
+          { '$audio.tag$': tag },
+        ] : [
+          { '$audio.audio_id$': tag },
+          { '$audio.tag$': tag },
         ],
-      }
+      },
+      limit: 1,
     };
 
-    return await this.feed(user_id, null, null, null, options);
+    return await this.feed(user_id, null, null, 0, options);
   }
 
   /**
@@ -476,13 +489,13 @@ class Drop {
    * @param {Array|String} subCloud   A string or array of sub cloud names or ids 
    * @returns 
    */
-  feed = async (signedInUserID, selectForUserID, limit, offset, opt, subCloud) => {
+  feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
     if (!options) {
       const where = subCloud ? { [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : {};
       options = {
         where,
-        include: [...UserService.includeForUser, { model: FilterUsageModel, required: false }],
+        include: UserService.includeForUser,
         nest: true,
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
@@ -499,11 +512,11 @@ class Drop {
     }
 
     UserService.associateForUser();
-    FilterUsageModel.hasMany(DropModel, { foreignKey: 'audio_id' });
-    DropModel.belongsTo(FilterUsageModel, { foreignKey: 'audio_id', targetKey: 'audio_id' });
 
     const drops = await DropModel.findAll(options);
-    if (drops === null) {
+    const total = await DropModel.count(options);
+    const clouds = await this.loadClouds();
+    if (drops === null || !clouds.all) {
       return {
         code: 200,
         message: 'There are no drops to display within this range.',
@@ -511,11 +524,14 @@ class Drop {
       };
     }
 
-    UserService.generateAssociation(UserModel, LikeModel);
-    UserService.generateAssociation(UserModel, ListenModel);
+    UserService.generateAssociation({}, UserModel, LikeModel);
+    UserService.generateAssociation({}, UserModel, ListenModel);
     const dropsArray = await Promise.all(
       drops.map(async drop => {
         const dropData = drop.get();
+
+        // Clouds
+        dropData['cloud'] = clouds.all[dropData.sub_cloud.cloud_id];
 
         // Likes
         // Count all likes (whether or not it's the user making this request)
@@ -540,10 +556,6 @@ class Drop {
         });
         return {
           ...dropData,
-          audio: {
-            ...dropData.audio.get(),
-            duration: dropData.audio.get().duration / 1000,
-          },
           likes: likes,
           liked: !!(liked && liked.status === '1'),
           listens,
@@ -554,7 +566,11 @@ class Drop {
     return {
       code: 200,
       message: 'Successfully loaded drops.',
-      data: { drops: [...dropsArray] },
+      data: {
+        drops: [...dropsArray],
+        page: ((offset * limit) / limit) + 1,
+        total,
+      },
     };
   }
 }
