@@ -147,13 +147,18 @@ jobs:
         with:
           command: |
             cd ~/drop-service
-
             sudo yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: -tt
 
+
+
+
+
+
+          
   deploy_staging:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/staging' }}
@@ -281,7 +286,6 @@ jobs:
         with:
           command: |
             cd ~/drop-service
-
             sudo yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
