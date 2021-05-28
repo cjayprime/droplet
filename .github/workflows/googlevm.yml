@@ -77,6 +77,7 @@ jobs:
 
             FIREBASE_BUCKET_NAME=${{ env.FIREBASE_BUCKET_NAME }}
             FIREBASE_KEYFILE=${{ env.FIREBASE_KEYFILE }}
+
             SENTRY_DNS=${{ env.SENTRY_DNS }}
             EOF
 
@@ -147,6 +148,7 @@ jobs:
 
             FIREBASE_BUCKET_NAME=${{ env.FIREBASE_BUCKET_NAME }}
             FIREBASE_KEYFILE=${{ env.FIREBASE_KEYFILE }}
+
             SENTRY_DNS=${{ env.SENTRY_DNS }}
             EOF
 
