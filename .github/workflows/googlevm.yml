@@ -114,16 +114,40 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: -tt
 
+      - name: Prepare Application Installation
+        uses: fifsky/ssh-action@master
+        if: ${{ success() }}
+        with:
+          command: |
+            cd ~/drop-service
+            sudo npm install --global yarn@1.22.10
+
+            sudo yarn production:prep:install
+          host: ${{ env.SERVER_IP }}
+          user: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          args: -tt
+
       - name: Install Application Dependencies
         uses: fifsky/ssh-action@master
         if: ${{ success() }}
         with:
           command: |
             cd ~/drop-service
-            sudo npm install --global yarn
-
-            sudo yarn production:prep:install
             sudo yarn install
+          host: ${{ env.SERVER_IP }}
+          user: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          args: -tt
+
+
+      - name: Launch Application
+        uses: fifsky/ssh-action@master
+        if: ${{ success() }}
+        with:
+          command: |
+            cd ~/drop-service
+
             sudo yarn production
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
@@ -230,7 +254,7 @@ jobs:
         with:
           command: |
             cd ~/drop-service
-            sudo npm install --global yarn
+            sudo npm install --global yarn@1.22.10
 
             sudo yarn production:prep:install
           host: ${{ env.SERVER_IP }}
