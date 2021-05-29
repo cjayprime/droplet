@@ -211,7 +211,7 @@ const migrations = {
       usersSnapshot.forEach((doc) => {
         const data = doc.data();
         const { username, uid } = data;
-        if (!username || !uid) {
+        if (!username || !uid || username.length > 15) {
           totalBadData++;
           console.log('Invalid User', username, uid);
           return;

@@ -454,6 +454,8 @@ class Drop {
   }
 
   /**
+   * Get a single drop by audio_id, tag or drop_id AND optionally
+   * check if `user_id` has listened or liked it
    * 
    * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
    * @param {BigInt}      user_id                   A user's id
@@ -477,6 +479,37 @@ class Drop {
     };
 
     return await this.feed(user_id, null, null, 0, options);
+  }
+
+  /**
+   * Update a drop
+   * 
+   * @param {BigInt|UUID} drop_id    An audio_id, audio tag, or drop_id
+   * @param {BigInt}      user_id    The drop's caption
+   * @returns 
+   */
+  update = async (drop_id, caption) => {
+    const drop = await DropModel.update({
+      caption,
+    },{
+      where: {
+        drop_id,
+      },
+    }).catch(() => null);
+
+    if (!drop) {
+      return {
+        code: 400,
+        message: 'Unable to update drops.',
+        data: {},
+      };
+    }
+    
+    return {
+      code: 200,
+      message: 'Successfully updated the drop.',
+      data: {},
+    };
   }
 
   /**
@@ -563,6 +596,7 @@ class Drop {
         };
       })
     );
+
     return {
       code: 200,
       message: 'Successfully loaded drops.',
