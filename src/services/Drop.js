@@ -341,6 +341,7 @@ class Drop {
       audio_id: audio.audio_id,
       sub_cloud_id,
       caption,
+      status: '1',
       date: date || new Date(),
     });
     if (drop === null){
@@ -465,6 +466,7 @@ class Drop {
     let options = {
       include: UserService.includeForUser,
       where: {
+        status: '1',
         [Op.or]: getBy === 'drop_id' ? [
           { drop_id: tag },
           { '$audio.tag$': tag },
@@ -480,6 +482,40 @@ class Drop {
   }
 
   /**
+   * Update a drop
+   * 
+   * @param {BigInt|UUID} drop_id    An audio_id, audio tag, or drop_id
+   * @param {BigInt}      caption    The drop's caption
+   * @param {BigInt}      status    The drop's status
+   * @returns 
+   */
+  update = async (drop_id, caption, status = '1') => {
+    const [drop] = await DropModel.update({
+      caption,
+      status: status + '',
+    },{
+      where: {
+        drop_id,
+        status: '1',
+      },
+    }).catch(() => null);
+
+    if (!drop) {
+      return {
+        code: 400,
+        message: 'Unable to update the drop.' + (status == '0' ? ' You have already deleted it.' : ''),
+        data: {},
+      };
+    }
+    
+    return {
+      code: 200,
+      message: 'Successfully updated the drop.',
+      data: {},
+    };
+  }
+
+  /**
    * 
    * @param {*} signedInUserID 
    * @param {*} selectForUserID 
@@ -492,7 +528,7 @@ class Drop {
   feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
     if (!options) {
-      const where = subCloud ? { [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : {};
+      const where = subCloud ? { status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', };
       options = {
         where,
         include: UserService.includeForUser,
