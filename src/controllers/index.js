@@ -10,18 +10,15 @@ const filter = new Filter();
 
 export default {
   public: [
+    // Download
+    { method: 'GET', path: '/download', action: drop.download },
+
     // Authenticate
     { method: 'POST', path: '/authenticate', action: authenticate.firebase },
 
     // Health
     { method: 'GET', path: '/health', action: /*authenticate.health*/ (_, res, next) => {
       res.send('RUNNING');
-      next();
-    } },
-
-    // Statuses Checker
-    { method: 'GET', path: '/status', action: (req, res, next) => {
-      res.status(req.query.status).send('RUNNING');
       next();
     } },
   ],
@@ -35,7 +32,6 @@ export default {
     { method: 'GET', path: '/featured', action: drop.featured },
     { method: 'GET', path: '/clouds', action: drop.getClouds },
     { method: 'GET', path: '/subclouds', action: drop.getSubClouds },
-    { method: 'GET', path: '/download', action: drop.download },
     { method: 'GET', path: '/waveform', action: drop.waveform },
     { method: 'POST', path: '/validate', action: drop.validate },
     { method: 'POST', path: '/create', action: drop.create },
