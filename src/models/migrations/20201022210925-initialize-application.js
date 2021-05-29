@@ -33,6 +33,13 @@ const filters = [
 ];
 const migration = {
   up: async (queryInterface/*, Sequelize*/) => {
+    await queryInterface.sequelize.query(
+      {
+        query: 'ALTER DATABASE droplet CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;',
+        values: [],
+      },
+    );
+
     queryInterface.createTable('user', {
       user_id: {
         type: DataTypes.BIGINT,
@@ -82,6 +89,9 @@ const migration = {
         type: DataTypes.DATE,
         allowNull: false,
       },
+    }, {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_0900_ai_ci',
     });
 
     await queryInterface.createTable('sub_cloud', {
@@ -110,6 +120,9 @@ const migration = {
         type: DataTypes.DATE,
         allowNull: false,
       },
+    }, {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_0900_ai_ci',
     });
     
     await queryInterface.createTable('audio', {
@@ -179,6 +192,9 @@ const migration = {
         type: DataTypes.DATE(6),
         allowNull: false,
       },
+    }, {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_0900_ai_ci',
     });
     
     await queryInterface.createTable('like', {

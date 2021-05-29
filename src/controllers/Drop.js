@@ -297,6 +297,32 @@ class DropController extends Controller {
    * @param {Express.next}        next    Express callback to move to the next middleware
    * @return {void} void
    */
+  update = [
+    param('drop_id')
+      .isInt()
+      .withMessage('must be a valid drop_id.'),
+
+    body('caption')
+      .notEmpty()
+      .withMessage('must be a caption.'),
+
+  	this.action(async (req, res, next) => {
+      const { body: { caption }, params: { drop_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.update(drop_id, caption);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
   featured = [
   	this.action(async (_, res, next) => {
   		const dropService = new DropService();

@@ -30,6 +30,7 @@ export default {
     { method: 'GET', path: '/drops', action: drop.feed },
     { method: 'GET', path: '/drops/user/:user_id', action: drop.feed },
     { method: 'GET', path: '/drops/:audio_idORtagORdrop_id', action: drop.single },
+    { method: 'PUT', path: '/drops/:drop_id', action: drop.update },
     { method: 'GET', path: '/audio/:audio_idORtagORdrop_id', action: drop.single },
     { method: 'GET', path: '/featured', action: drop.featured },
     { method: 'GET', path: '/clouds', action: drop.getClouds },
