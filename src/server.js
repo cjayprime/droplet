@@ -100,7 +100,7 @@ setTimeout(async () => {
     //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '00ba23bd-17e1-4001-aac0-87603c8ea18f' }
     // }).set(headers); //0b73a901-f4d3-4476-a3ac-cb2d343c228d
     // const response = await request.get('/featured').send().set(headers);
-    // const response = await request.post('/authenticate').send({ username: 'sean', uid: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2' }).set(headers);
+    // const response = await request.post('/authenticate').send({ username: 'manavtest', uid: 'aOMFLQ9z6fSkllqnsP4bB7kc2UG2' }).set(headers);
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: 1 }).set(headers);
     // console.log('Request Response:', response.body); //, response.body.data.drops[0]);

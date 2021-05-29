@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
     },
     logging: function (str) {
       if (process.env.NODE_ENV === 'development') {
-        // console.log('\n-- SQL:', str, '\n');
+        console.log('\n-- SQL:', str, '\n');
       }
     },
   }

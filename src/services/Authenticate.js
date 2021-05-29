@@ -18,7 +18,7 @@ class Authenticate {
     this.init();
   }
 
-  init = async () => {
+  init = () => {
     if (firebaseAdmin.apps.length === 0) {
       const pathToFile = path.join(
         __dirname,
@@ -42,7 +42,7 @@ class Authenticate {
 
   getUser = async (username, uid) => {
     if (!this.app) {
-      await this.init();
+      this.init();
     }
 
     const userSnapshot = await this.admin.firestore()
@@ -82,7 +82,7 @@ class Authenticate {
   authenticate = async (username, uid, type) => {
     let authUser;
     if (type === 'firebase') {
-      authUser = this.getUser(username, uid);
+      authUser = await this.getUser(username, uid);
     }
 
     if (!authUser || (authUser.username !== username || authUser.uid !== uid)) {

@@ -455,6 +455,8 @@ class Drop {
   }
 
   /**
+   * Get a single drop by audio_id, tag or drop_id AND optionally
+   * check if `user_id` has listened or liked it
    * 
    * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
    * @param {BigInt}      user_id                   A user's id
@@ -599,6 +601,7 @@ class Drop {
         };
       })
     );
+
     return {
       code: 200,
       message: 'Successfully loaded drops.',
