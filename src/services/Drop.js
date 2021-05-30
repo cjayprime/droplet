@@ -455,6 +455,61 @@ class Drop {
   }
 
   /**
+   * Like a drop
+   * 
+   * @param {BigInt} uid 
+   * @param {BigInt} drop_id 
+   * @returns 
+   */
+  like = async (uid, drop_id) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
+    if (!user) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
+    const drop = await DropModel.findOne({ where: { drop_id } });
+    if (!drop) {
+      return {
+        code: 400,
+        message: 'The drop does not exist.',
+        data: {},
+      };
+    }
+
+    // If you've previously liked then this is an unlike action
+    const user_id = user.user_id;
+    const like = await LikeModel.findOne({ where: { user_id, drop_id } });
+    const [newLike] = await LikeModel.upsert({
+      like_id: like && like.like_id ? like.like_id : null,
+      user_id,
+      drop_id,
+      status: like && like.status === '1' ? '0' : '1',
+      date: new Date(),
+    });
+
+    if (newLike.drop_id != drop_id) {
+      return {
+        code: 400,
+        data: {},
+        message: 'Unable to record like.',
+      };
+    }
+
+    const likes = await LikeModel.count({
+      where: { drop_id: drop_id },
+    });
+    return {
+      code: 200,
+      data: { liked: newLike.status === '1', likes },
+      message: 'Successfully recorded the ' + (newLike.status === '1' ? 'unlike' : 'like') + '.',
+    };
+  }
+
+  /**
    * Get a single drop by audio_id, tag or drop_id AND optionally
    * check if `user_id` has listened or liked it
    * 

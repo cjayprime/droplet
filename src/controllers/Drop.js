@@ -264,6 +264,27 @@ class DropController extends Controller {
   ];
 
   /**
+   * Record a listen (to a drop) within the app
+   */
+  like = [
+    body('user_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.'),
+
+    body('drop_id')
+      .isInt()
+      .withMessage('must be a valid drop.'),
+
+    this.action(async (req, res, next) => {
+      const { body: { user_id, drop_id } } = req;
+      const dropService = new DropService();
+      const response = await dropService.like(user_id, drop_id);
+      this.response(res, response.code, response.data, response.message);
+      next();
+    })
+  ];
+
+  /**
    * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
    *
    * @param {Express.Response}    res     Express[.response] response object
