@@ -9,5 +9,5 @@ try {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  // console.log = () => null;
+  console.log = () => null;
 }
