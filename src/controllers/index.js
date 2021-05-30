@@ -36,10 +36,10 @@ export default {
     { method: 'POST', path: '/validate', action: drop.validate },
     { method: 'POST', path: '/create', action: drop.create },
     { method: 'PUT', path: '/trim', action: drop.trim },
+    { method: 'POST', path: '/like', action: drop.like },
 
     // Analytics
     { method: 'POST', path: '/listen', action: analytics.recordListen },
-    { method: 'POST', path: '/like', action: analytics.recordLike },
     { method: 'POST', path: '/interaction', action: analytics.recordInteraction },
     { method: 'GET', path: '/analytics', action: analytics.analyze },
 
