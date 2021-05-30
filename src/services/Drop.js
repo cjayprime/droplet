@@ -500,12 +500,12 @@ class Drop {
     }
 
     const likes = await LikeModel.count({
-      where: { drop_id: drop_id },
+      where: { drop_id },
     });
     return {
       code: 200,
       data: { liked: newLike.status === '1', likes },
-      message: 'Successfully recorded the ' + (newLike.status === '1' ? 'unlike' : 'like') + '.',
+      message: 'Successfully recorded the ' + (newLike.status === '1' ? 'like' : 'unlike') + '.',
     };
   }
 
