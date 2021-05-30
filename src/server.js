@@ -89,7 +89,7 @@ setTimeout(async () => {
     // const response = await request.get('/subclouds').send().set(headers);
     // const response = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '1bfa95ca-cd9f-4dc3-a681-cd695b044abf', caption: 'Test', subCloud: 'LoFi', isTrimmed: false }).set(headers);
     // const response = await request.post('/listen').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', drop_id: 1 }).set(headers);
-    // const response = await request.post('/like').send({ user_id: 'BHOqOcVUaVVbfRGT5ru3lYyLJTJ3', drop_id: 217 }).set(headers);
+    // const response = await request.post('/like').send({ user_id: 'BHOqOcVUaVVbfRGT5ru3lYyLJTJ3', drop_id: 1 }).set(headers);
     // const response = await request.get('/drops?offset=0&limit=37&subCloud=Poetry&subCloud=LoFi').send().set(headers);
     // const response = await request.get('/drops/user/Y1fvT3PbS7ZdmdENMB8SiJSc3W13?offset=1&limit=1&subCloud=Poetry&subCloud=LoFi').send().set(headers);
     // const response = await request.get('/drops/146'/*/drops/e73a0907-60e7-47ed-b278-917f401f93dc*/).send().set(headers);
