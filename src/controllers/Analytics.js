@@ -54,27 +54,6 @@ class AnalyticsController extends Controller {
     })
   ];
 
-  /**
-   * Record a listen (to a drop) within the app
-   */
-  recordLike = [
-    body('user_id')
-      .notEmpty()
-      .withMessage('must be a valid user_id.'),
-
-    body('drop_id')
-      .isInt()
-      .withMessage('must be a valid drop.'),
-
-    this.action(async (req, res, next) => {
-      const { body: { user_id, drop_id } } = req;
-      const anaylticsService = new AnalyticsService();
-      const response = await anaylticsService.recordLike(user_id, drop_id);
-      this.response(res, response.code, response.data, response.message);
-      next();
-    })
-  ];
-
   analyze = [
     this.action(async (_, res, next) => {
       const anaylticsService = new AnalyticsService();
