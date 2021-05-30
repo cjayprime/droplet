@@ -54,7 +54,7 @@ class User {
   static searchForUser = (user_id) => {
     return /*!user_id ? {} :*/ {
       [Op.or]: [
-        isNaN(user_id) ? { '$user.user_id$': user_id || '' }
+        !isNaN(user_id) ? { '$user.user_id$': user_id || '' }
           : { '$user.uid$': user_id || '' }, { '$user.username$': user_id || '' },
       ],
     };
