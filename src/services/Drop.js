@@ -306,15 +306,15 @@ class Drop {
 
     let sub_cloud_id = subCloudName;
     if (isNaN(sub_cloud_id)){
-      const cloud = await SubCloudModel.findOne({ attributes: ['cloud_id'], where: { name: subCloudName } });
-      if (cloud === null){
+      const subCloud = await SubCloudModel.findOne({ attributes: ['sub_cloud_id'], where: { name: subCloudName } });
+      if (subCloud === null){
         return {
           code: 400,
           message: 'The sub cloud (' + subCloudName + ') does not exist.',
           data: { tag, subCloud: subCloudName },
         };
       }
-      sub_cloud_id = cloud.cloud_id;
+      sub_cloud_id = subCloud.sub_cloud_id;
     }
 
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });

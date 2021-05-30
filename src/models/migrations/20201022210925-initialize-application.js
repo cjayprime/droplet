@@ -82,7 +82,7 @@ const migration = {
         allowNull: false,
       },
       status: {
-        type: DataTypes.ENUM('0', '1'),
+        type: DataTypes.ENUM('1', '0'),
         allowNull: false,
       },
       date: {
