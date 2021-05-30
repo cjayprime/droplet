@@ -53,7 +53,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Install Server Dependencies
         uses: fifsky/ssh-action@master
@@ -69,7 +69,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Checkout and Pull Changes
         uses: fifsky/ssh-action@master
@@ -81,7 +81,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Load Environment Variables
         uses: fifsky/ssh-action@master
@@ -111,7 +111,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Prepare Application Installation
         uses: fifsky/ssh-action@master
@@ -125,7 +125,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Install Application Dependencies
         uses: fifsky/ssh-action@master
@@ -137,7 +137,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
 
       - name: Launch Application
@@ -150,7 +150,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
 
 
@@ -193,7 +193,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Install Server Dependencies
         uses: fifsky/ssh-action@master
@@ -209,7 +209,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Checkout and Pull Changes
         uses: fifsky/ssh-action@master
@@ -221,7 +221,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Load Environment Variables
         uses: fifsky/ssh-action@master
@@ -251,7 +251,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Prepare Application Installation
         uses: fifsky/ssh-action@master
@@ -265,7 +265,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
       - name: Install Application Dependencies
         uses: fifsky/ssh-action@master
@@ -277,7 +277,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
 
 
       - name: Launch Application
@@ -290,4 +290,4 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-tt -vvv"
+          args: "-T -vvv"
