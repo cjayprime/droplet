@@ -47,7 +47,7 @@ export default {
     { method: "POST", path: "/authenticate", action: authenticate.firebase },
 
     // Sms
-    { method: "POST", path: "/sms/send", action: twilio.sendSms },
+    { method: "POST", path: "/twilio/sms/send", action: twilio.sendSms },
 
     // Health
     {
