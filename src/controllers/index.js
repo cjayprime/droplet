@@ -2,11 +2,13 @@ import Drop from './Drop';
 import Analytics from './Analytics';
 import Authenticate from './Authenticate';
 import Filter from './Filter';
+import User from './User';
 
 const drop = new Drop();
 const analytics = new Analytics();
 const authenticate = new Authenticate();
 const filter = new Filter();
+const user = new User();
 
 export default {
   public: [
@@ -37,6 +39,9 @@ export default {
     { method: 'POST', path: '/create', action: drop.create },
     { method: 'PUT', path: '/trim', action: drop.trim },
     { method: 'POST', path: '/like', action: drop.like },
+
+    // User
+    { method: 'PUT', path: '/user', action: user.update },
 
     // Analytics
     { method: 'POST', path: '/listen', action: analytics.recordListen },
