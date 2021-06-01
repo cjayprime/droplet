@@ -9,6 +9,14 @@ class Twilio {
       const data = await TwilioModel.findOne({ where: { phoneNumber } });
       if (!data) {
         const client = require("twilio")(accountSid, authToken);
+        const twilioUser = await TwilioModel.create({ phoneNumber });
+        if (!twilioUser) {
+          return {
+            message: "Error occured while creating twilio user",
+            data: { err },
+            code: 400,
+          };
+        }
         const message = await client.messages.create({
           body: "Join me on Droplet, the new short-form audio app! https://testflight.apple.com/join/Ye3X3sYu Have fun and please send any feedback to founders@joindroplet.com",
           from: twilioPhonenumber,
