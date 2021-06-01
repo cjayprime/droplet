@@ -58,12 +58,12 @@ class DropController extends Controller {
   		.withMessage('must be a valid tag.'),
 
     body('start')
-      .isInt()
-      .withMessage('must be a number.'),
+      .isNumeric()
+      .withMessage('must be a number in seconds.'),
 
     body('end')
-      .isInt()
-      .withMessage('must be a number.'),
+      .isNumeric()
+      .withMessage('must be a number in seconds.'),
 
     body('filter')
       .isAlphanumeric()

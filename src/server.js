@@ -103,6 +103,7 @@ setTimeout(async () => {
     // const response = await request.post('/authenticate').send({ username: 'manavtest', uid: 'aOMFLQ9z6fSkllqnsP4bB7kc2UG2' }).set(headers);
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: 1 }).set(headers);
+    // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
     // console.log('Request Response:', response.body); //, response.body.data.drops[0]);
 
 
