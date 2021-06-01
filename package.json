@@ -46,7 +46,8 @@
     "sequelize": "6.6.2",
     "sequelize-cli": "6.2.0",
     "uuid": "^8.3.2",
-    "web-audio-api": "^0.2.2"
+    "web-audio-api": "^0.2.2",
+    "twilio": "^3.63.0"
   },
   "devDependencies": {
     "@babel/preset-env": "7.12.1",
