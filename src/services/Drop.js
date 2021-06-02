@@ -502,7 +502,7 @@ class Drop {
     }
 
     const likes = await LikeModel.count({
-      where: { drop_id, status: '1' },
+      where: { drop_id: newLike.drop_id, status: '1' },
     });
     return {
       code: 200,
