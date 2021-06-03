@@ -171,11 +171,20 @@ class Drop {
         data: {},
         message: 'Sorry, we could not process the file.',
       };
-    } else if (duration <= this.recording.min) {
+    }
+    
+    const message = `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`;
+    if (duration <= this.recording.min) {
       return {
         code: 400,
-        data: {},
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
+        data: { duration, code: 'too-short' },
+        message,
+      };
+    } else if (duration > this.recording.max) {
+      return {
+        code: 400,
+        data: { duration, code: 'too-long' },
+        message,
       };
     }
 
@@ -198,13 +207,6 @@ class Drop {
       source,
       trimmed: '0',
     });
-    if (this.recording.max < duration) {
-      return {
-        code: 400, // 201,
-        data: { tag, duration, code: 'too-long' },
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
-      };
-    }
 
     return {
       code: 200,
