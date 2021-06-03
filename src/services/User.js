@@ -8,6 +8,8 @@ import {
   FilterUsage as FilterUsageModel
 } from '../models';
 
+import { Configuration } from '../shared';
+
 class User {
   static includeForUser = [
     { model: UserModel, required: true },
@@ -54,8 +56,51 @@ class User {
   static searchForUser = (user_id) => {
     return /*!user_id ? {} :*/ {
       [Op.or]: [
-        { '$user.user_id$': user_id || '' }, { '$user.uid$': user_id || '' }, { '$user.username$': user_id || '' },
+        !isNaN(user_id) ? { '$user.user_id$': user_id || '' }
+          : { '$user.uid$': user_id || '' }, { '$user.username$': user_id || '' },
       ],
+    };
+  }
+
+  static getUser = async (uid) => await UserModel.findOne({ where: { ...User.searchForUser(uid) }  });
+
+  /**
+   * Update a user
+   * 
+   * @param {String} username   Username of a user
+   * @param {String} user_id        user_id of a user from the AuthService
+   */
+  update = async (username, user_id) => {
+    const user = await User.getUser(user_id);
+    if (!user) {
+      return {
+        code: 400,
+        message: 'We were unable to find the user.',
+        data: {},
+      };
+    }
+
+    const [savedUser] = await UserModel.update({
+      username,
+    }, { where: { ...User.searchForUser(user_id) }  });
+    if (!savedUser) {
+      return {
+        code: 422,
+        message: 'We were unable to update your username.',
+        data: {},
+      };
+    }
+
+    const token = Configuration.sign({
+      user_id: user.user_id,
+      username: user.username,
+      uid: user.uid,
+      date: user.date,
+    });
+    return {
+      code: 200,
+      message:  'Successfully updated the user.',
+      data: { token },
     };
   }
 }

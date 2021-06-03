@@ -40,7 +40,7 @@ class Authenticate {
     return await firebaseAdmin.auth().listUsers(limit, offset);
   }
 
-  getUser = async (username, uid) => {
+  getFirebaseUser = async (username, uid) => {
     if (!this.app) {
       this.init();
     }
@@ -82,7 +82,7 @@ class Authenticate {
   authenticate = async (username, uid, type) => {
     let authUser;
     if (type === 'firebase') {
-      authUser = await this.getUser(username, uid);
+      authUser = await this.getFirebaseUser(username, uid);
     }
 
     if (!authUser || (authUser.username !== username || authUser.uid !== uid)) {
@@ -114,8 +114,7 @@ class Authenticate {
     });
     return {
       code: 200,
-      message:  'Successfully authenticated the user, simply use '+
-                'the attached token in the Authentication header of a request.',
+      message:  'Successfully authenticated the user.',
       data: { token, created },
     };
   }

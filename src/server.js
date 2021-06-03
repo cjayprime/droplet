@@ -96,13 +96,14 @@ setTimeout(async () => {
     // const response = await request.get('/audio/146'/*/drops/e73a0907-60e7-47ed-b278-917f401f93dc*/).send().set(headers);
     // const response = await request.put('/drops/14'/*/drops/e73a0907-60e7-47ed-b278-917f401f93dc*/).send({ caption: 'Yep', status: 0 }).set(headers);
     // const response = await request.post('/filter/duet').send({
-    //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '458103f1-a49b-4f8d-8f98-ee63ad4e3648', isTrimmed: false, },
-    //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '00ba23bd-17e1-4001-aac0-87603c8ea18f' }
+    //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: 'ce7850f1-0aef-46cb-a480-d42a343b0356', isTrimmed: false, },
+    //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: '96dc7566-a9c2-44f2-b443-628a684ff2f7' }
     // }).set(headers); //0b73a901-f4d3-4476-a3ac-cb2d343c228d
     // const response = await request.get('/featured').send().set(headers);
     // const response = await request.post('/authenticate').send({ username: 'manavtest', uid: 'aOMFLQ9z6fSkllqnsP4bB7kc2UG2' }).set(headers);
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: 1 }).set(headers);
+    // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
     // console.log('Request Response:', response.body); //, response.body.data.drops[0]);
 
 

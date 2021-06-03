@@ -49,10 +49,12 @@ class Drop {
       };
     }
 
-    // TRIM
+    // Translate the seconds mark to bytes
     const WAV_HEADER_OFFSET = 44;
-    const newStart = start >= 0 && start <= end ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * start) : undefined;
-    const newEnd = end > 0 ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * end) : undefined;
+    // const newStart = start >= 0 && start <= end ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * start) : undefined;
+    const newStart = WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * start);
+    // const newEnd = end > 0 ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * end) : undefined;
+    const newEnd = WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * end);
     const headerData = new Uint8Array(data.wav.slice(0, WAV_HEADER_OFFSET));
     const bodyData = new Uint8Array(data.wav.slice(
       newStart,
@@ -64,8 +66,8 @@ class Drop {
 
     // ------
     // After this, then the following is true:
-    // const enc = new TextDecoder("utf-8");
-    // enc.decode(newData.slice(44)) === enc.decode(bodyData)
+    // const enc = new TextDecoder('utf-8');
+    // console.log('Are equal', enc.decode(newData.slice(44)) === enc.decode(bodyData));
     // ------
 
     // CONVERT BACK TO MP3 AND SEND, WITH A NEW DROP ID
@@ -169,11 +171,20 @@ class Drop {
         data: {},
         message: 'Sorry, we could not process the file.',
       };
-    } else if (duration <= this.recording.min) {
+    }
+    
+    const message = `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`;
+    if (duration <= this.recording.min) {
       return {
         code: 400,
-        data: {},
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
+        data: { duration, code: 'too-short' },
+        message,
+      };
+    } else if (duration > this.recording.max) {
+      return {
+        code: 400,
+        data: { duration, code: 'too-long' },
+        message,
       };
     }
 
@@ -196,13 +207,6 @@ class Drop {
       source,
       trimmed: '0',
     });
-    if (this.recording.max < duration) {
-      return {
-        code: 400, // 201,
-        data: { tag, duration, code: 'too-long' },
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
-      };
-    }
 
     return {
       code: 200,
@@ -500,12 +504,12 @@ class Drop {
     }
 
     const likes = await LikeModel.count({
-      where: { drop_id: drop_id },
+      where: { drop_id: newLike.drop_id, status: '1' },
     });
     return {
       code: 200,
       data: { liked: newLike.status === '1', likes },
-      message: 'Successfully recorded the ' + (newLike.status === '1' ? 'unlike' : 'like') + '.',
+      message: 'Successfully recorded the ' + (newLike.status === '1' ? 'like' : 'unlike') + '.',
     };
   }
 
@@ -593,7 +597,7 @@ class Drop {
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
         order: [
-          ['drop_id', 'DESC'],
+          ['date', 'DESC'],
         ],
       };
       if (selectForUserID) {
