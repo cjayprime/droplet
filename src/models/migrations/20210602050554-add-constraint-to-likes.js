@@ -1,6 +1,7 @@
 const migration = {
   up: async (queryInterface) => {
     // Remove all repeating user_id and drop_id in likes
+    await queryInterface.sequelize.query('SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'))');
     await queryInterface.sequelize.query('DELETE FROM `like` WHERE `like_id` IN (SELECT * FROM (SELECT `like_id` FROM `like` GROUP BY `drop_id`, `user_id` HAVING COUNT(*) > 1) AS p)');
 
     // Add Constraint
