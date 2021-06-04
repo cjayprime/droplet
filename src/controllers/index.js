@@ -48,7 +48,7 @@ export default {
     { method: "POST", path: "/authenticate", action: authenticate.firebase },
 
     // Sms
-    { method: "POST", path: "/marketing", action: marketing.sendSms },
+    { method: "POST", path: "/market", action: marketing.sendSms },
 
     // Health
     {
