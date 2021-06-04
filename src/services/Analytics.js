@@ -175,45 +175,6 @@ class Analytics {
     };
   }
 
-  recordLike = async (uid, drop_id) => {
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
-    if (user === null) {
-      return {
-        code: 400,
-        message: 'The user does not exist.',
-        data: {},
-      };
-    }
-
-    // If you've previously liked then this is an unlike action
-    const user_id = user.user_id;
-    const like = await LikeModel.findOne({ where: { user_id, drop_id } });
-    const [newInteraction] = await LikeModel.upsert({
-      like_id: like && like.like_id ? like.like_id : null,
-      user_id,
-      drop_id,
-      status: like && like.status === '1' ? '0' : '1',
-      date: new Date(),
-    });
-
-    if (newInteraction.drop_id != drop_id) {
-      return {
-        code: 400,
-        data: {},
-        message: 'Unable to record like.',
-      };
-    }
-
-    const likes = await LikeModel.count({
-      where: { drop_id: like.drop_id },
-    });
-    return {
-      code: 200,
-      data: { liked: newInteraction.status === '1', likes },
-      message: 'Successfully recorded the ' + (newInteraction.status === '1' ? 'unlike' : 'like') + '.',
-    };
-  }
-
   generateCSV = async () => {
     const response = await this.analyze();
     const data = response.data.all;

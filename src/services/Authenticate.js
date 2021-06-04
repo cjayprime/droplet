@@ -18,14 +18,14 @@ class Authenticate {
     this.init();
   }
 
-  init = async () => {
+  init = () => {
     if (firebaseAdmin.apps.length === 0) {
       const pathToFile = path.join(
         __dirname,
         '../../firebase-services.json',
       );
       if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+        fs.writeFileSync(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
       }
       const firebaseConfig = {
         databaseURL: 'https://' + process.env.GOOGLE_PROJECT_ID + '.firebaseio.com',
@@ -40,7 +40,7 @@ class Authenticate {
     return await firebaseAdmin.auth().listUsers(limit, offset);
   }
 
-  getUser = async (username, uid) => {
+  getFirebaseUser = async (username, uid) => {
     if (!this.app) {
       this.init();
     }
@@ -82,7 +82,7 @@ class Authenticate {
   authenticate = async (username, uid, type) => {
     let authUser;
     if (type === 'firebase') {
-      authUser = this.getUser(username, uid);
+      authUser = await this.getFirebaseUser(username, uid);
     }
 
     if (!authUser || (authUser.username !== username || authUser.uid !== uid)) {
@@ -114,8 +114,7 @@ class Authenticate {
     });
     return {
       code: 200,
-      message:  'Successfully authenticated the user, simply use '+
-                'the attached token in the Authentication header of a request.',
+      message:  'Successfully authenticated the user.',
       data: { token, created },
     };
   }

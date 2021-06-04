@@ -10,9 +10,20 @@ const clouds = [
 ];
 const subClouds = [
   { name: 'LoFi', cloud_id: 2, description: 'For your 2AM late night vibes.' },
-  { name: 'Poetry', cloud_id: 4, description: 'Voice your creatively crafted words.' },
+  { name: 'Podcasters', cloud_id: 4, description: 'You do podcasts, but you want to try these new short form sound bites.' },
+  { name: 'Songwriters / Music Producers', cloud_id: 2, description: 'Rising producers, song covers, composers, jammin\' out. Collaborate in the most spontaneous way.' },
+  { name: 'Poetry and Spoken Word', cloud_id: 4, description: 'Voice your creatively crafted words.' },
+  { name: 'Foodies', cloud_id: 1, description: 'Chat about your favorite restaurants or recipes.' },
+  { name: 'Open Mic and Comedy', cloud_id: 3, description: 'Shoot your shot at a joke. even if people do laugh, you won\'t be able to hear it.' },
+  { name: 'Words of Wisdom', cloud_id: 4, description: 'Your potential quote of the day stems here – hear globally reknowned educators and experts.' },
+  { name: 'Stanford Students', cloud_id: 1, description: 'Class of 2025? Missed Connections? Share secrets about campus life, tips on best courses to take.' },
+  { name: 'College Acapella', cloud_id: 2, description: 'Duet across colleges, sing riffs, beat box! Is this a sing off challenge?' },
+  { name: 'Sport Highlights', cloud_id: 1, description: 'Trending highlights, news, and commentary. Audio bleacher report here.' },
+  { name: 'Workout', cloud_id: 1, description: 'Ready to do 30 sec HIIT workouts and share tips 🏋️‍♀️' },
+  { name: 'Relax', cloud_id: 4, description: 'Unwind and take a breath.' },
+  { name: 'Classical', cloud_id: 2, description: 'Play your favorite classical 🎻 melodies.' },
+  { name: 'Daily Update', cloud_id: 1, description: 'Something fun or interesting happen today? Share it!' },
   { name: 'Crypto', cloud_id: 1, description: 'Your cryptocurrency community here 💎🙌' },
-  { name: 'Standford Students', cloud_id: 1, description: 'Class of 2025? Missed Connections? Chat with your friends or ask about campus life.' },
   { name: 'Rant Zone', cloud_id: 3, description: 'Release the Karen 🤯 in you.' },
 ];
 const filters = [
@@ -22,6 +33,13 @@ const filters = [
 ];
 const migration = {
   up: async (queryInterface/*, Sequelize*/) => {
+    await queryInterface.sequelize.query(
+      {
+        query: 'ALTER DATABASE droplet CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;',
+        values: [],
+      },
+    );
+
     queryInterface.createTable('user', {
       user_id: {
         type: DataTypes.BIGINT,
@@ -53,6 +71,7 @@ const migration = {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       color: {
         type: DataTypes.STRING(7),
@@ -63,13 +82,16 @@ const migration = {
         allowNull: false,
       },
       status: {
-        type: DataTypes.ENUM('0', '1'),
+        type: DataTypes.ENUM('1', '0'),
         allowNull: false,
       },
       date: {
         type: DataTypes.DATE,
         allowNull: false,
       },
+    }, {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_0900_ai_ci',
     });
 
     await queryInterface.createTable('sub_cloud', {
@@ -98,6 +120,9 @@ const migration = {
         type: DataTypes.DATE,
         allowNull: false,
       },
+    }, {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_0900_ai_ci',
     });
     
     await queryInterface.createTable('audio', {
@@ -167,6 +192,9 @@ const migration = {
         type: DataTypes.DATE(6),
         allowNull: false,
       },
+    }, {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_0900_ai_ci',
     });
     
     await queryInterface.createTable('like', {
@@ -179,11 +207,13 @@ const migration = {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: { model: 'user', key: 'user_id' },
+        unique: 'one_user_like_per_drop',
       },
       drop_id: {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: { model: 'drop', key: 'drop_id' },
+        unique: 'one_user_like_per_drop',
       },
       status: {
         type: DataTypes.ENUM('0', '1'),

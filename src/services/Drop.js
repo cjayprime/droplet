@@ -16,7 +16,6 @@ import {
   SubCloud as SubCloudModel,
   Like as LikeModel,
   Listen as ListenModel,
-  FilterUsage as FilterUsageModel,
 } from '../models';
 import { Notify } from '../shared';
 
@@ -50,10 +49,12 @@ class Drop {
       };
     }
 
-    // TRIM
+    // Translate the seconds mark to bytes
     const WAV_HEADER_OFFSET = 44;
-    const newStart = start >= 0 && start <= end ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * start) : undefined;
-    const newEnd = end > 0 ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * end) : undefined;
+    // const newStart = start >= 0 && start <= end ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * start) : undefined;
+    const newStart = WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * start);
+    // const newEnd = end > 0 ? WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * end) : undefined;
+    const newEnd = WAV_HEADER_OFFSET + Math.floor(2 * data.numberOfChannels * data.sampleRate * end);
     const headerData = new Uint8Array(data.wav.slice(0, WAV_HEADER_OFFSET));
     const bodyData = new Uint8Array(data.wav.slice(
       newStart,
@@ -65,8 +66,8 @@ class Drop {
 
     // ------
     // After this, then the following is true:
-    // const enc = new TextDecoder("utf-8");
-    // enc.decode(newData.slice(44)) === enc.decode(bodyData)
+    // const enc = new TextDecoder('utf-8');
+    // console.log('Are equal', enc.decode(newData.slice(44)) === enc.decode(bodyData));
     // ------
 
     // CONVERT BACK TO MP3 AND SEND, WITH A NEW DROP ID
@@ -170,11 +171,20 @@ class Drop {
         data: {},
         message: 'Sorry, we could not process the file.',
       };
-    } else if (duration <= this.recording.min) {
+    }
+    
+    const message = `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`;
+    if (duration <= this.recording.min) {
       return {
         code: 400,
-        data: {},
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
+        data: { duration, code: 'too-short' },
+        message,
+      };
+    } else if (duration > this.recording.max) {
+      return {
+        code: 400,
+        data: { duration, code: 'too-long' },
+        message,
       };
     }
 
@@ -197,13 +207,6 @@ class Drop {
       source,
       trimmed: '0',
     });
-    if (this.recording.max < duration) {
-      return {
-        code: 400, // 201,
-        data: { tag, duration, code: 'too-long' },
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
-      };
-    }
 
     return {
       code: 200,
@@ -239,7 +242,7 @@ class Drop {
   }
 
   loadClouds = async () => {
-    const clouds = await CloudModel.findAll();
+    const clouds = await CloudModel.findAll({ where: { status: '1' } });
     if (clouds.length === 0) {
       return {
         code: 400,
@@ -248,15 +251,18 @@ class Drop {
       };
     }
 
+    const all = {};
+    clouds.map(cloud => all[cloud.cloud_id] = cloud.get());
     return {
       code: 200,
       message: 'Clouds successfully loaded',
       data: clouds,
+      all,
     };
   }
 
   loadSubClouds = async () => {
-    const subClouds = await SubCloudModel.findAll();
+    const subClouds = await SubCloudModel.findAll({ where: { status: '1' } });
     if (subClouds.length === 0) {
       return {
         code: 400,
@@ -304,15 +310,15 @@ class Drop {
 
     let sub_cloud_id = subCloudName;
     if (isNaN(sub_cloud_id)){
-      const cloud = await SubCloudModel.findOne({ attributes: ['cloud_id'], where: { name: subCloudName } });
-      if (cloud === null){
+      const subCloud = await SubCloudModel.findOne({ attributes: ['sub_cloud_id'], where: { name: subCloudName } });
+      if (subCloud === null){
         return {
           code: 400,
-          message: 'The sub cloud does not exist.',
-          data: { tag },
+          message: 'The sub cloud (' + subCloudName + ') does not exist.',
+          data: { tag, subCloud: subCloudName },
         };
       }
-      sub_cloud_id = cloud.cloud_id;
+      sub_cloud_id = subCloud.sub_cloud_id;
     }
 
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
@@ -324,21 +330,6 @@ class Drop {
       };
     }
 
-    const drop = await DropModel.create({
-      user_id: user.user_id,
-      audio_id: audio.audio_id,
-      sub_cloud_id,
-      caption,
-      date: date || new Date(),
-    });
-    if (drop === null){
-      return {
-        code: 400,
-        message: 'Unfortunately we failed to create your drop. Try again.',
-        data: { drop, tag },
-      };
-    }
-
     const fileName = AudioEngine.directory(tag, isTrimmed, filter);
     const uploaded = await Drop.bucket('upload', fileName, tag);
     if (!uploaded) {
@@ -346,6 +337,22 @@ class Drop {
         code: 400,
         message: 'Unable to store the drop.',
         data: { tag },
+      };
+    }
+
+    const drop = await DropModel.create({
+      user_id: user.user_id,
+      audio_id: audio.audio_id,
+      sub_cloud_id,
+      caption,
+      status: '1',
+      date: date || new Date(),
+    });
+    if (drop === null){
+      return {
+        code: 400,
+        message: 'Unfortunately we failed to create your drop. Try again.',
+        data: { drop, tag },
       };
     }
 
@@ -377,7 +384,7 @@ class Drop {
         '../../google-services.json',
       );
       if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
+        fs.writeFileSync(pathToFile, process.env.GOOGLE_KEYFILE, { flag: 'w' });
       }
     } else if (from === 'firebase') {
       bucket = process.env.FIREBASE_BUCKET_NAME;
@@ -386,7 +393,7 @@ class Drop {
         '../../firebase-services.json',
       );
       if (!fs.existsSync(pathToFile)){
-        await fs.promises.writeFile(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
+        fs.writeFileSync(pathToFile, process.env.FIREBASE_KEYFILE, { flag: 'w' });
       }
     }
 
@@ -451,19 +458,122 @@ class Drop {
     };
   }
 
-  single = async (tagORdrop_id, user_id) => {
-    const tag = tagORdrop_id;
+  /**
+   * Like a drop
+   * 
+   * @param {BigInt} uid 
+   * @param {BigInt} drop_id 
+   * @returns 
+   */
+  like = async (uid, drop_id) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
+    if (!user) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
+    const drop = await DropModel.findOne({ where: { drop_id } });
+    if (!drop) {
+      return {
+        code: 400,
+        message: 'The drop does not exist.',
+        data: {},
+      };
+    }
+
+    // If you've previously liked then this is an unlike action
+    const user_id = user.user_id;
+    const like = await LikeModel.findOne({ where: { user_id, drop_id } });
+    const [newLike] = await LikeModel.upsert({
+      like_id: like && like.like_id ? like.like_id : null,
+      user_id,
+      drop_id,
+      status: like && like.status === '1' ? '0' : '1',
+      date: new Date(),
+    });
+
+    if (newLike.drop_id != drop_id) {
+      return {
+        code: 400,
+        data: {},
+        message: 'Unable to record like.',
+      };
+    }
+
+    const likes = await LikeModel.count({
+      where: { drop_id: newLike.drop_id, status: '1' },
+    });
+    return {
+      code: 200,
+      data: { liked: newLike.status === '1', likes },
+      message: 'Successfully recorded the ' + (newLike.status === '1' ? 'like' : 'unlike') + '.',
+    };
+  }
+
+  /**
+   * Get a single drop by audio_id, tag or drop_id AND optionally
+   * check if `user_id` has listened or liked it
+   * 
+   * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
+   * @param {BigInt}      user_id                   A user's id
+   * @param {Enum}        getBy                     Flag - whether to treat `audio_idORtagORdrop_id` as an audio_id or drop_id
+   * @returns 
+   */
+  single = async (audio_idORtagORdrop_id, user_id, getBy) => {
+    const tag = audio_idORtagORdrop_id;
     let options = {
       include: UserService.includeForUser,
       where: {
-        [Op.or]: [
-          { '$audio.tag$': tag },
+        status: '1',
+        [Op.or]: getBy === 'drop_id' ? [
           { drop_id: tag },
+          { '$audio.tag$': tag },
+        ] : [
+          { '$audio.audio_id$': tag },
+          { '$audio.tag$': tag },
         ],
-      }
+      },
+      limit: 1,
     };
 
-    return await this.feed(user_id, null, null, null, options);
+    return await this.feed(user_id, null, null, 0, options);
+  }
+
+  /**
+   * Update a drop
+   * 
+   * @param {BigInt|UUID} drop_id    An audio_id, audio tag, or drop_id
+   * @param {BigInt}      caption    The drop's caption
+   * @param {BigInt}      status    The drop's status
+   * @returns 
+   */
+  update = async (drop_id, caption, status = '1') => {
+    const [drop] = await DropModel.update({
+      caption,
+      status: status + '',
+    },{
+      where: {
+        drop_id,
+        status: '1',
+      },
+    }).catch(() => null);
+
+    if (!drop) {
+      return {
+        code: 400,
+        message: 'Unable to update the drop.' + (status == '0' ? ' You have already deleted it.' : ''),
+        data: {},
+      };
+    }
+    
+    return {
+      code: 200,
+      message: 'Successfully updated the drop.',
+      data: {},
+    };
   }
 
   /**
@@ -476,18 +586,18 @@ class Drop {
    * @param {Array|String} subCloud   A string or array of sub cloud names or ids 
    * @returns 
    */
-  feed = async (signedInUserID, selectForUserID, limit, offset, opt, subCloud) => {
+  feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
     if (!options) {
-      const where = subCloud ? { [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : {};
+      const where = subCloud ? { status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', };
       options = {
         where,
-        include: [...UserService.includeForUser, { model: FilterUsageModel, required: false }],
+        include: UserService.includeForUser,
         nest: true,
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
         order: [
-          ['drop_id', 'DESC'],
+          ['date', 'DESC'],
         ],
       };
       if (selectForUserID) {
@@ -499,11 +609,11 @@ class Drop {
     }
 
     UserService.associateForUser();
-    FilterUsageModel.hasMany(DropModel, { foreignKey: 'audio_id' });
-    DropModel.belongsTo(FilterUsageModel, { foreignKey: 'audio_id', targetKey: 'audio_id' });
 
     const drops = await DropModel.findAll(options);
-    if (drops === null) {
+    const total = await DropModel.count(options);
+    const clouds = await this.loadClouds();
+    if (drops === null || !clouds.all) {
       return {
         code: 200,
         message: 'There are no drops to display within this range.',
@@ -511,11 +621,14 @@ class Drop {
       };
     }
 
-    UserService.generateAssociation(UserModel, LikeModel);
-    UserService.generateAssociation(UserModel, ListenModel);
+    UserService.generateAssociation({}, UserModel, LikeModel);
+    UserService.generateAssociation({}, UserModel, ListenModel);
     const dropsArray = await Promise.all(
       drops.map(async drop => {
         const dropData = drop.get();
+
+        // Clouds
+        dropData['cloud'] = clouds.all[dropData.sub_cloud.cloud_id];
 
         // Likes
         // Count all likes (whether or not it's the user making this request)
@@ -540,10 +653,6 @@ class Drop {
         });
         return {
           ...dropData,
-          audio: {
-            ...dropData.audio.get(),
-            duration: dropData.audio.get().duration / 1000,
-          },
           likes: likes,
           liked: !!(liked && liked.status === '1'),
           listens,
@@ -551,10 +660,15 @@ class Drop {
         };
       })
     );
+
     return {
       code: 200,
       message: 'Successfully loaded drops.',
-      data: { drops: [...dropsArray] },
+      data: {
+        drops: [...dropsArray],
+        page: ((offset * limit) / limit) + 1,
+        total,
+      },
     };
   }
 }
