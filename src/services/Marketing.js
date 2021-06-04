@@ -2,13 +2,13 @@ import { Marketing as MarketingModel } from "../models";
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhonenumber = process.env.TWILIO_NUMBER;
+const client = require("twilio")(accountSid, authToken);
 
 class Marketing {
   sendSms = async (phonenumber) => {
     try {
       const data = await MarketingModel.findOne({ where: { phonenumber } });
       if (!data) {
-        const client = require("twilio")(accountSid, authToken);
         const user = await MarketingModel.create({ phonenumber });
         if (!user) {
           return {
@@ -38,7 +38,7 @@ class Marketing {
     } catch (err) {
       return {
         message: "Error occured while sending sms",
-        data: { err },
+        data: { },
         code: 400,
       };
     }

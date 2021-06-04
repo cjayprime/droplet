@@ -4,7 +4,7 @@ import Controller from "./base";
 
 class MarketingController extends Controller {
   sendSms = [
-    body("phonenumber").notEmpty().withMessage("must be a valid phonenumber."),
+    body("phonenumber").isMobilePhone().withMessage("must be a valid phonenumber."),
     this.action(async (req, res, next) => {
       const { phonenumber } = req;
       const marketingService = new MarketingService();
