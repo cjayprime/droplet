@@ -1,18 +1,18 @@
 import sequelize, { DataTypes } from "./base";
 
-const Twilio = sequelize.define(
+const Marketing = sequelize.define(
   "marketing",
   {
-    phoneNumber: {
+    phonenumber: {
       type: DataTypes.STRING,
       autoIncrement: true,
       primaryKey: true,
     },
   },
   {
-    tableName: "twilio",
+    tableName: "marketing",
     timestamps: false,
   }
 );
 
-export default Twilio;
+export default Marketing;

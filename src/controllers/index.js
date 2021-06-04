@@ -2,13 +2,13 @@ import Drop from "./Drop";
 import Analytics from "./Analytics";
 import Authenticate from "./Authenticate";
 import Filter from "./Filter";
-import Twilio from "./Twilio";
+import Marketing from "./Marketing";
 
 const drop = new Drop();
 const analytics = new Analytics();
 const authenticate = new Authenticate();
 const filter = new Filter();
-const twilio = new Twilio();
+const marketing = new Marketing();
 
 export default {
   public: [
@@ -47,7 +47,7 @@ export default {
     { method: "POST", path: "/authenticate", action: authenticate.firebase },
 
     // Sms
-    { method: "POST", path: "/twilio/sms/send", action: twilio.sendSms },
+    { method: "POST", path: "/marketing", action: marketing.sendSms },
 
     // Health
     {
