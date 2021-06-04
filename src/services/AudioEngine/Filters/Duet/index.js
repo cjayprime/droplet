@@ -85,7 +85,7 @@ class Duet {
     const tag = current.tag;
     // Ensure that the pairings are accurate i.e. the onwer of a
     // drop (`user_id`) is the same as the onwer of a tag (`tag`)
-    UserService.generateAssociation(UserModel, AudioModel);
+    UserService.generateAssociation({}, UserModel, AudioModel);
     const ownerAudio = await AudioModel.findOne({
       attributes: ['audio_id', 'user_id'],
       where: {

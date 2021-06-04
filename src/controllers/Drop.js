@@ -58,12 +58,12 @@ class DropController extends Controller {
   		.withMessage('must be a valid tag.'),
 
     body('start')
-      .isInt()
-      .withMessage('must be a number.'),
+      .isNumeric()
+      .withMessage('must be a number in seconds.'),
 
     body('end')
-      .isInt()
-      .withMessage('must be a number.'),
+      .isNumeric()
+      .withMessage('must be a number in seconds.'),
 
     body('filter')
       .isAlphanumeric()
@@ -264,6 +264,27 @@ class DropController extends Controller {
   ];
 
   /**
+   * Record a listen (to a drop) within the app
+   */
+  like = [
+    body('user_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.'),
+
+    body('drop_id')
+      .isInt()
+      .withMessage('must be a valid drop.'),
+
+    this.action(async (req, res, next) => {
+      const { body: { user_id, drop_id } } = req;
+      const dropService = new DropService();
+      const response = await dropService.like(user_id, drop_id);
+      this.response(res, response.code, response.data, response.message);
+      next();
+    })
+  ];
+
+  /**
    * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
    *
    * @param {Express.Response}    res     Express[.response] response object
@@ -272,14 +293,49 @@ class DropController extends Controller {
    * @return {void} void
    */
   single = [
-    param('tagORdrop_id')
+    param('audio_idORtagORdrop_id')
       .notEmpty()
-      .withMessage('must be a valid user_id.'),
+      .withMessage('must be a valid drop_id.'),
 
   	this.action(async (req, res, next) => {
-      const { query: { user_id }, params: { tagORdrop_id } } = req;
+      const { query: { user_id }, params: { audio_idORtagORdrop_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.single(tagORdrop_id, user_id);
+  		const response = await dropService.single(
+        audio_idORtagORdrop_id,
+        user_id,
+        req.originalUrl.indexOf('/drops') === 0 ? 'drop_id' : 'audio_id'
+      );
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  /**
+   * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  update = [
+    param('drop_id')
+      .isInt()
+      .withMessage('must be a valid drop_id.'),
+
+    body('caption')
+      .notEmpty()
+      .withMessage('must be a caption.'),
+
+    body('status')
+      .isInt({ min: 0, max: 1 })
+      .withMessage('must be a valid status.')
+      .optional(),
+
+  	this.action(async (req, res, next) => {
+      const { body: { caption, status }, params: { drop_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.update(drop_id, caption, status);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
