@@ -1,7 +1,7 @@
 import sequelize, { DataTypes } from "./base";
 
 const Twilio = sequelize.define(
-  "twilio",
+  "marketing",
   {
     phoneNumber: {
       type: DataTypes.STRING,

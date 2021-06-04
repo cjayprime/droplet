@@ -31,7 +31,7 @@ class Twilio {
       } else {
         return {
           message: "Sms already sent",
-          data: {},
+          data: { err: "smsAlreadySent" },
           code: 400,
         };
       }
