@@ -2,25 +2,30 @@ import { Marketing as MarketingModel } from "../models";
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhonenumber = process.env.TWILIO_NUMBER;
+const client = require("twilio")(accountSid, authToken);
 
 class Marketing {
-  sendSms = async (phonenumber) => {
+  sendSms = async (phone_number) => {
     try {
-      const data = await MarketingModel.findOne({ where: { phonenumber } });
+      const data = await MarketingModel.findOne({ where: { phone_number } });
       if (!data) {
-        const client = require("twilio")(accountSid, authToken);
-        const user = await MarketingModel.create({ phonenumber });
+        if(phone_number > 15) return {
+            message: "The phone number is invalid",
+            data: { err: "invalidPhoneNumber" },
+            code: 400,
+          }
+        const user = await MarketingModel.create({ phone_number });
         if (!user) {
           return {
-            message: "Error occured while creating user",
-            data: { err },
+            message: "Couldnt store the phone number",
+            data: { },
             code: 400,
           };
         }
         const message = await client.messages.create({
           body: "Join me on Droplet, the new short-form audio app! https://testflight.apple.com/join/Ye3X3sYu Have fun and please send any feedback to founders@joindroplet.com",
           from: twilioPhonenumber,
-          to: phonenumber,
+          to: phone_number,
         });
         console.log("message", message);
         return {
@@ -38,7 +43,7 @@ class Marketing {
     } catch (err) {
       return {
         message: "Error occured while sending sms",
-        data: { err },
+        data: { },
         code: 400,
       };
     }
