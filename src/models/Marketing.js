@@ -3,8 +3,8 @@ import sequelize, { DataTypes } from "./base";
 const Marketing = sequelize.define(
   "marketing",
   {
-    phonenumber: {
-      type: DataTypes.STRING,
+    phone_number: {
+      type: DataTypes.VARCHAR(15),
       autoIncrement: true,
       primaryKey: true,
     },
