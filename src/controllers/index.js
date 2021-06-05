@@ -20,6 +20,9 @@ export default {
     // Authenticate
     { method: 'POST', path: '/authenticate', action: authenticate.firebase },
 
+    // Marketing
+    { method: 'POST', path: '/market', action: marketing.sendSms },
+
     // Health
     { method: 'GET', path: '/health', action: /*authenticate.health*/ (_, res, next) => {
       res.send('RUNNING');
@@ -49,9 +52,6 @@ export default {
     { method: 'POST', path: '/listen', action: analytics.recordListen },
     { method: 'POST', path: '/interaction', action: analytics.recordInteraction },
     { method: 'GET', path: '/analytics', action: analytics.analyze },
-
-    // Sms
-    { method: 'POST', path: '/market', action: marketing.sendSms },
 
     // Filters
     { method: 'POST', path: '/filter/duet', action: filter.duet },
