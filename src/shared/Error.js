@@ -8,7 +8,7 @@ class Error {
   static resolver = (err, req, res, next) => {
   	console.log('\n\n');
   	console.error('-----------------------FATAL BUT CAUGHT ERROR-----------------------');
-  	console.error('STRINGIFIED ERROR IS:', JSON.stringify(err), req.originalUrl);
+  	console.error('STRINGIFIED ERROR IS:', JSON.stringify(err), req.originalUrl, new Date());
   	console.log('THE RAW ERROR IS:', err);
   	console.error('--------------------------------------------------------------------');
   	console.log('\n\n');

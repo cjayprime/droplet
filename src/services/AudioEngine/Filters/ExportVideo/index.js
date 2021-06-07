@@ -76,6 +76,7 @@ class ExportVideo {
       where: { drop_id }, 
       include: UserService.includeForUser,
     });
+    console.log('The drop and drop_id:', drop, drop_id);
     if (!drop || drop.drop_id !== drop_id) {
       return {
         code: 400,
