@@ -1,16 +1,25 @@
-import sequelize, { DataTypes } from "./base";
+import sequelize, { DataTypes } from './base';
 
 const Marketing = sequelize.define(
-  "marketing",
+  'marketing',
   {
-    phone_number: {
-      type: DataTypes.VARCHAR(15),
+    marketing_id: {
+      type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
+    phone_number: {
+      type: DataTypes.STRING(15),
+      allowNull: false,
+      unique: true,
+    },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
   },
   {
-    tableName: "marketing",
+    tableName: 'marketing',
     timestamps: false,
   }
 );

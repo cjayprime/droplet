@@ -77,7 +77,7 @@ describe('/signin', () => {
     expect(res.body).toHaveProperty('status');
     expect(res.body).toHaveProperty('status', true);
     expect(res.body).toMatchObject(
-      {data: {token: expect.any(String)}}
+      { data: { token: expect.any(String) } }
     );
     token = res.body.data.token;
     done();
@@ -123,7 +123,7 @@ describe('/balance', () => {
     expect(res.body).toHaveProperty('status');
     expect(res.body).toHaveProperty('status', true);
     expect(res.body).toMatchObject(
-      {data: {balance: expect.any(Number)}}
+      { data: { balance: expect.any(Number) } }
     );
     balance = res.body.data.balance;
     done();
@@ -139,7 +139,7 @@ describe('/balance', () => {
     expect(res.body).toHaveProperty('status');
     expect(res.body).toHaveProperty('status', true);
     expect(res.body).toMatchObject(
-      {data: {balance: expect.any(Number)}}
+      { data: { balance: expect.any(Number) } }
     );
     expect(res.body.data.balance).toBe(amount + balance);
     done();
