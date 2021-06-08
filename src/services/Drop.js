@@ -154,7 +154,6 @@ class Drop {
    * @returns ResponseObject
    */
   validate = async (user_id, recording, source) => {
-    recording = Buffer.from(await fs.promises.readFile('C:\\Apps\\Droplet\\node.js\\src\\storage\\AUD-20210607-WA0012.m4a'));
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
     if (user === null) {
       return {
