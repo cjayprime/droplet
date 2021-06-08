@@ -36,7 +36,7 @@ class Application {
   }
 
   start() {
-  	this.app.listen(this.port, () => {
+  	const server = this.app.listen(this.port, () => {
   		console.log(
   			`The server is now running at http://localhost:${this.port} for ${process.env.NODE_ENV}`
   		);
@@ -70,6 +70,7 @@ class Application {
         Notify.error(e);
       }
   	});
+    server.timeout = 600;
   }
 }
 

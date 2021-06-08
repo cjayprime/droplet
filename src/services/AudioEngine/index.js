@@ -4,8 +4,11 @@ import audioDecode from 'audio-decode';
 import { AudioContext } from 'web-audio-api';
 import audioBufferToWav from 'audiobuffer-to-wav';
 import { Lame } from 'node-lame';
+import FFMpegCli from 'ffmpeg-cli';
 
 import { Duet, ExportVideo } from './Filters';
+
+import { Notify } from '../../shared';
 
 /**
  * AudioEngine
@@ -41,6 +44,16 @@ class AudioEngine {
     ) + filename + (extension ? '.' + extension : '')
   );
 
+  /**
+   * Retrieve the raw binary data of a file identifed by it's tag
+   * and it's location specified by filter, isTrimmed and extension
+   * 
+   * @param {String}  tag 
+   * @param {Boolean} isTrimmed   Whether to check for the file in the trimmed storage location
+   * @param {String}  filter      If specified the filter storage directory will be scanned
+   * @param {String}  extension   
+   * @returns 
+   */
   static getFile = async (tag, isTrimmed, filter, extension) => {
     const drop = AudioEngine.directory(tag, isTrimmed, filter, extension);
     if (!fs.existsSync(drop)){
@@ -72,12 +85,31 @@ class AudioEngine {
   };
 
   /**
-   * Processes an audio buffer (pcm, mp3 etc) and returns a .wav file
+   * FFMpeg CLI execution method
+   * 
+   * @param {String} command            CLI/Terminal command to execute
+   * @param {Promise.resolve} success   Callback to execute on success
+   * @param {Promise.reject}  error     Callback to execute on failure 
+   * @returns 
+   */
+  static ffMpegExec = async (command, success, error) => {
+    return await FFMpegCli.run(
+      // To view details logs use `-loglevel debug`
+      `-y ${process.env.NODE_ENV === 'development' ? '-nostats' : '-nostats'} ${command}`
+    ).then(success).catch(error);
+  }
+
+  static generateRandomString = (length = 6) => {
+    return Math.random().toString(20).substr(2, length);
+  };
+
+  /**
+   * Processes a wav file into an audio buffer and returns it
    *
    * @param {Buffer}      buffer      An audio buffer
    * @returns {AudioBuffer}
    */
-  getProcessedData = async (buffer) => {
+  parse = async (buffer) => {
     if (buffer || this.base64){
       let recordingData;
       recordingData = Buffer.from(buffer || this.base64, buffer ? undefined : 'base64');
@@ -98,13 +130,71 @@ class AudioEngine {
       }, (e) => {
         console.log('\n\nAn audio processing error occurred', e, '\n\n');
         reject(false);
+        return false;
       });
     }).catch(e => {
       console.log('Promise error while processing data', e);
       return false;
     });
+    // console.log('Now parsing:::::::::::::', result);
     return result;
   };
+
+  /**
+   * Processes a Buffer (of any format) and produces an AudioBuffer
+   * It processes a binary file or base64 string using ffmpeg and returns an AudioBuffer
+   * NB: Pass a binary buffer or it falls back to base64
+   * 
+   * @param {Buffer} buffer   Buffer to process.
+   * @returns {AudioBuffer}
+   */
+  getProcessedData = async (buffer) => {
+    this.buffer = buffer || Buffer.from(this.base64, 'base64');
+
+    // Create temp. files
+    const randomName = AudioEngine.generateRandomString();
+    const input = await this.storeFile('temp-' + randomName, null, null, 'wav');
+    const intermediateOutput = input.replace('temp-', '');
+    const output = await this.storeFile(randomName, null, null, 'mp3');
+
+    // From whatever the buffer might be to wav
+    const commandToWav = `-i "${input}" -vn -ac 2 -ar 16000 -acodec pcm_s16le "${intermediateOutput}"`;
+    // From the wav to mp3
+    const commandToMp3 = `-i "${intermediateOutput}" -vn -ac 2 -ar 16000 -b:a 192k  "${output}"`;
+
+    const result = await AudioEngine.ffMpegExec(commandToWav, async () => {
+      const success = await AudioEngine.ffMpegExec(commandToMp3, () => true, (e) => {
+        Notify.info('\nFFMpeg Error During Processing of Command 2', e);
+        Notify.error(e);
+        return false;
+      });
+      if (!success) {
+        return false;
+      }
+
+      const bufferMp3 = await AudioEngine.getFile(randomName, undefined, undefined, 'mp3');
+      const bufferWav = await AudioEngine.getFile(randomName, undefined, undefined, 'wav');
+
+      // Delete temp. files
+      await fs.promises.unlink(input);
+      await fs.promises.unlink(intermediateOutput);
+      await fs.promises.unlink(output);
+
+      const audioBuffer = await this.parse(bufferWav);
+      audioBuffer.mp3 = bufferMp3;
+      return audioBuffer;
+    }, e => {
+      Notify.info('\nFFMpeg Error During Processing of Command 1', e);
+      Notify.error(e);
+      return false;
+    });
+
+    if (result) {
+      this.buffer = result.mp3;
+    }
+    return result;
+  };
+    
 
   getDuration = async (dt) => {
     const data = dt || await this.getProcessedData();
