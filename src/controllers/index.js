@@ -2,12 +2,14 @@ import Drop from './Drop';
 import Analytics from './Analytics';
 import Authenticate from './Authenticate';
 import Filter from './Filter';
+import Marketing from './Marketing';
 import User from './User';
 
 const drop = new Drop();
 const analytics = new Analytics();
 const authenticate = new Authenticate();
 const filter = new Filter();
+const marketing = new Marketing();
 const user = new User();
 
 export default {
@@ -17,6 +19,9 @@ export default {
 
     // Authenticate
     { method: 'POST', path: '/authenticate', action: authenticate.firebase },
+
+    // Marketing
+    { method: 'POST', path: '/sms', action: marketing.sendSms },
 
     // Health
     { method: 'GET', path: '/health', action: /*authenticate.health*/ (_, res, next) => {

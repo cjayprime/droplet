@@ -31,6 +31,9 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD_MASTER }}
       DB_DATABASE: ${{ secrets.DB_DATABASE_MASTER }}
       DB_PORT: ${{ secrets.DB_PORT_MASTER }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_MASTER }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_MASTER }}
+      TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER_MASTER }}
 
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_MASTER }}
       GOOGLE_BUCKET_NAME: ${{ secrets.GOOGLE_BUCKET_NAME_MASTER }}
@@ -53,7 +56,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Install Server Dependencies
         uses: fifsky/ssh-action@master
@@ -69,7 +72,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Checkout and Pull Changes
         uses: fifsky/ssh-action@master
@@ -81,7 +84,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Load Environment Variables
         uses: fifsky/ssh-action@master
@@ -99,6 +102,10 @@ jobs:
             DB_DATABASE=${{ env.DB_DATABASE }}
             DB_PORT=${{ env.DB_PORT }}
 
+            TWILIO_ACCOUNT_SID=${{ env.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ env.TWILIO_AUTH_TOKEN }}
+            TWILIO_NUMBER=${{ env.TWILIO_NUMBER }}
+
             GOOGLE_PROJECT_ID=${{ env.GOOGLE_PROJECT_ID }}
             GOOGLE_BUCKET_NAME=${{ env.GOOGLE_BUCKET_NAME }}
             GOOGLE_KEYFILE=${{ env.GOOGLE_KEYFILE }}
@@ -111,7 +118,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Prepare Application Installation
         uses: fifsky/ssh-action@master
@@ -125,7 +132,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Install Application Dependencies
         uses: fifsky/ssh-action@master
@@ -137,7 +144,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
 
       - name: Launch Application
@@ -150,7 +157,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
 
 
@@ -171,6 +178,9 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD_STAGING }}
       DB_DATABASE: ${{ secrets.DB_DATABASE_STAGING }}
       DB_PORT: ${{ secrets.DB_PORT_STAGING }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_STAGING }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_STAGING }}
+      TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER_STAGING }}
 
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STAGING }}
       GOOGLE_BUCKET_NAME: ${{ secrets.GOOGLE_BUCKET_NAME_STAGING }}
@@ -193,7 +203,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Install Server Dependencies
         uses: fifsky/ssh-action@master
@@ -209,7 +219,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Checkout and Pull Changes
         uses: fifsky/ssh-action@master
@@ -221,7 +231,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Load Environment Variables
         uses: fifsky/ssh-action@master
@@ -239,6 +249,10 @@ jobs:
             DB_DATABASE=${{ env.DB_DATABASE }}
             DB_PORT=${{ env.DB_PORT }}
 
+            TWILIO_ACCOUNT_SID=${{ env.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ env.TWILIO_AUTH_TOKEN }}
+            TWILIO_NUMBER=${{ env.TWILIO_NUMBER }}
+
             GOOGLE_PROJECT_ID=${{ env.GOOGLE_PROJECT_ID }}
             GOOGLE_BUCKET_NAME=${{ env.GOOGLE_BUCKET_NAME }}
             GOOGLE_KEYFILE=${{ env.GOOGLE_KEYFILE }}
@@ -251,7 +265,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Prepare Application Installation
         uses: fifsky/ssh-action@master
@@ -265,7 +279,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
       - name: Install Application Dependencies
         uses: fifsky/ssh-action@master
@@ -277,7 +291,7 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"
 
 
       - name: Launch Application
@@ -290,4 +304,4 @@ jobs:
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          args: "-T -vvv"
+          args: "-T"

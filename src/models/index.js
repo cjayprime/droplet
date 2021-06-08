@@ -8,3 +8,4 @@ export { default as Interaction } from './Interaction';
 export { default as Filter } from './Filter';
 export { default as FilterUsage } from './FilterUsage';
 export { default as User } from './User';
+export { default as Marketing } from './Marketing';

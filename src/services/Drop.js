@@ -37,7 +37,7 @@ class Drop {
   trim = async (tag, start, end, filter) => {
     const recording = await AudioEngine.getFile(tag, null, filter);
     const audioEngine = new AudioEngine(recording, 'buffer');
-    const data = await audioEngine.getProcessedData();
+    const data = await audioEngine.getProcessedData(audioEngine.buffer);
     const duration = await audioEngine.getDuration(data) / 1000;
 
     console.log('TRIM RANGE:', start, end);
@@ -154,6 +154,7 @@ class Drop {
    * @returns ResponseObject
    */
   validate = async (user_id, recording, source) => {
+    recording = Buffer.from(await fs.promises.readFile('C:\\Apps\\Droplet\\node.js\\src\\storage\\AUD-20210607-WA0012.m4a'));
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
     if (user === null) {
       return {
@@ -171,11 +172,20 @@ class Drop {
         data: {},
         message: 'Sorry, we could not process the file.',
       };
-    } else if (duration <= this.recording.min) {
+    }
+
+    const message = `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`;
+    if (duration <= this.recording.min) {
       return {
         code: 400,
-        data: {},
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
+        data: { duration, code: 'too-short' },
+        message,
+      };
+    } else if (duration > this.recording.max) {
+      return {
+        code: 400,
+        data: { duration, code: 'too-long' },
+        message,
       };
     }
 
@@ -185,7 +195,7 @@ class Drop {
       return {
         code: 400,
         data: { tag, duration, code: 'too-long' },
-        message: 'We are unable to process the reqyest completely.',
+        message: 'We are unable to process the request completely.',
       };
     }
 
@@ -198,13 +208,6 @@ class Drop {
       source,
       trimmed: '0',
     });
-    if (this.recording.max < duration) {
-      return {
-        code: 400, // 201,
-        data: { tag, duration, code: 'too-long' },
-        message: `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`,
-      };
-    }
 
     return {
       code: 200,
@@ -502,7 +505,7 @@ class Drop {
     }
 
     const likes = await LikeModel.count({
-      where: { drop_id, status: '1' },
+      where: { drop_id: newLike.drop_id, status: '1' },
     });
     return {
       code: 200,
