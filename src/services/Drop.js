@@ -154,7 +154,7 @@ class Drop {
    * @returns ResponseObject
    */
   validate = async (user_id, recording, source) => {
-console.log(0, user_id, source);
+    console.log(0, user_id, source);
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
     if (user === null) {
       return {
@@ -163,7 +163,7 @@ console.log(0, user_id, source);
         data: {},
       };
     }
-console.log(1, user_id, source, user);
+    console.log(1, user_id, source, user);
     const audioEngine = new AudioEngine(recording);
     const duration = await audioEngine.getDuration() / 1000;
     if (!duration) {
@@ -174,7 +174,7 @@ console.log(1, user_id, source, user);
       };
     }
     
-console.log(2, user_id, source, user);
+    console.log(2, user_id, source, user);
     const message = `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`;
     if (duration <= this.recording.min) {
       return {
@@ -190,7 +190,7 @@ console.log(2, user_id, source, user);
       };
     }
 
-console.log(3, user_id, source, user);
+    console.log(3, user_id, source, user);
     const tag = uuidv4();
     const success = await audioEngine.storeFile(tag);
     if (!success){
@@ -201,7 +201,7 @@ console.log(3, user_id, source, user);
       };
     }
 
-console.log(4, user_id, source, user);
+    console.log(4, user_id, source, user);
     await AudioModel.create({
       user_id: user.user_id,
       tag,
@@ -212,7 +212,7 @@ console.log(4, user_id, source, user);
       trimmed: '0',
     });
 
-console.log(5, user_id, source, user, duration);
+    console.log(5, user_id, source, user, duration);
     return {
       code: 200,
       data: { tag, duration, code: 'valid' },
