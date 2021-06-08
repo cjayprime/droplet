@@ -154,6 +154,7 @@ class Drop {
    * @returns ResponseObject
    */
   validate = async (user_id, recording, source) => {
+    recording = Buffer.from(fs.promises.readFile('C:\\Apps\\Droplet\\node.js\\src\\storage\\bf.mp3'), 'base64');
     const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
     if (user === null) {
       return {
@@ -633,11 +634,11 @@ class Drop {
         // Likes
         // Count all likes (whether or not it's the user making this request)
         const likes = await LikeModel.count({
-          where: { drop_id: dropData.drop_id },
+          where: { drop_id: dropData.drop_id, status: '1' },
         });
         // Get the like for only the user making this request
         const liked = !signedInUserID ? false : await LikeModel.findOne({
-          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
+          where: { drop_id: dropData.drop_id, status: '1', ...UserService.searchForUser(signedInUserID) },
           include: [{ model: UserModel, required: true }],
         });
 
