@@ -70,7 +70,7 @@ class Application {
         Notify.error(e);
       }
   	});
-    server.timeout = 600;
+    server.timeout = 600000;
   }
 }
 
