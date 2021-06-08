@@ -112,7 +112,7 @@ class ExportVideo {
     }
 
     const username = drop.user.username;
-    const caption = this.emojiToText(this.wordWrap(drop.caption.toLowerCase(), 40));
+    const caption = this.wordWrap(drop.caption.toLowerCase(), 40);
 
     //&#xFE0E;
     const command1 = `-i "${this.files.input}" -i "${profilePicture}" -i "${this.files.mask}" -filter_complex [0]drawtext="fontfile='${this.files.font('Bold')}':text='@${username}': fontcolor=white: fontsize=44: line_spacing=20: box=1: boxcolor=black@0.0: boxborderw=5:x=(w-text_w)/2: y=580"[drawusername],[drawusername]drawtext="fontfile='${this.files.font('Regular')}':text='${caption}':fontcolor=white: fontsize=34: line_spacing=20: x=(w-text_w)/2: y=650"[drawcaption],[1]se=185:185[dp],[2]alphaextract[alfa],[dp][alfa]alphamerge[makecircular],[drawcaption][makecircular]overlay=444:306[applyprofilepicture] -map "[applyprofilepicture]" -hide_banner -pix_fmt yuv420p -codec:a copy "${this.files.intermediaryOutput(directory)}"`;
