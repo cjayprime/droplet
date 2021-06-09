@@ -80,8 +80,8 @@ jobs:
         with:
           command: |
             cd ~/drop-service
-            git stash && git stash drop
-            git checkout master | git pull origin master
+            sudo git stash && sudo git stash drop
+            sudo git checkout master | sudo git pull origin master
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
@@ -228,8 +228,8 @@ jobs:
         with:
           command: |
             cd ~/drop-service
-            git stash && git stash drop
-            git checkout staging | git pull origin staging
+            sudo git stash && sudo git stash drop
+            sudo git checkout staging | sudo git pull origin staging
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
