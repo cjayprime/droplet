@@ -80,6 +80,7 @@ jobs:
         with:
           command: |
             cd ~/drop-service
+            git stash && git stash drop
             git checkout master | git pull origin master
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
@@ -227,6 +228,7 @@ jobs:
         with:
           command: |
             cd ~/drop-service
+            git stash && git stash drop
             git checkout staging | git pull origin staging
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
