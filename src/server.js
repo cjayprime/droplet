@@ -105,7 +105,6 @@ setTimeout(async () => {
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: 1 }).set(headers);
     // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
-    // const response = await request.post('/sms').send({ phoneNumber: '+2348179222327' }).set(headers);
     // console.log('Request Response:', response.body); //, response.body.data.drops[0]);
 
 
