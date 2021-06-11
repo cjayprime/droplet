@@ -1,7 +1,5 @@
 # This workflow will do an install of node dependencies, and build the source code
 
-
-
 name: Droplet DropService API Node.js CI
 
 on:
