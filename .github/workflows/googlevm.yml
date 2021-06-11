@@ -1,6 +1,7 @@
 # This workflow will do an install of node dependencies, and build the source code
 
 
+
 name: Droplet DropService API Node.js CI
 
 on:
@@ -31,6 +32,9 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD_MASTER }}
       DB_DATABASE: ${{ secrets.DB_DATABASE_MASTER }}
       DB_PORT: ${{ secrets.DB_PORT_MASTER }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_MASTER }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_MASTER }}
+      TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER_MASTER }}
 
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_MASTER }}
       GOOGLE_BUCKET_NAME: ${{ secrets.GOOGLE_BUCKET_NAME_MASTER }}
@@ -77,6 +81,7 @@ jobs:
         with:
           command: |
             cd ~/drop-service
+            git stash && git stash drop
             git checkout master | git pull origin master
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
@@ -98,6 +103,10 @@ jobs:
             DB_PASSWORD=${{ env.DB_PASSWORD }}
             DB_DATABASE=${{ env.DB_DATABASE }}
             DB_PORT=${{ env.DB_PORT }}
+
+            TWILIO_ACCOUNT_SID=${{ env.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ env.TWILIO_AUTH_TOKEN }}
+            TWILIO_NUMBER=${{ env.TWILIO_NUMBER }}
 
             GOOGLE_PROJECT_ID=${{ env.GOOGLE_PROJECT_ID }}
             GOOGLE_BUCKET_NAME=${{ env.GOOGLE_BUCKET_NAME }}
@@ -171,6 +180,9 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD_STAGING }}
       DB_DATABASE: ${{ secrets.DB_DATABASE_STAGING }}
       DB_PORT: ${{ secrets.DB_PORT_STAGING }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_STAGING }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_STAGING }}
+      TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER_STAGING }}
 
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STAGING }}
       GOOGLE_BUCKET_NAME: ${{ secrets.GOOGLE_BUCKET_NAME_STAGING }}
@@ -217,6 +229,7 @@ jobs:
         with:
           command: |
             cd ~/drop-service
+            git stash && git stash drop
             git checkout staging | git pull origin staging
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
@@ -238,6 +251,10 @@ jobs:
             DB_PASSWORD=${{ env.DB_PASSWORD }}
             DB_DATABASE=${{ env.DB_DATABASE }}
             DB_PORT=${{ env.DB_PORT }}
+
+            TWILIO_ACCOUNT_SID=${{ env.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ env.TWILIO_AUTH_TOKEN }}
+            TWILIO_NUMBER=${{ env.TWILIO_NUMBER }}
 
             GOOGLE_PROJECT_ID=${{ env.GOOGLE_PROJECT_ID }}
             GOOGLE_BUCKET_NAME=${{ env.GOOGLE_BUCKET_NAME }}

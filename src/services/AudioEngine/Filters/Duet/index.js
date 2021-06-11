@@ -35,7 +35,7 @@ class Duet {
       };
     }
 
-    // Convert to wav
+    // Retrieve a wav
     const audioEngine = new AudioEngine();
     const audioData = await audioEngine.getProcessedData(buffer);
     if (!audioData) {
@@ -45,7 +45,7 @@ class Duet {
       };
     }
 
-    // Create a new file with .wav format from the buffer
+    // Create a new file with .wav format from the AudioBuffer
     audioEngine.buffer = Buffer.from(audioData.wav);
     const file = await audioEngine.storeFile(tag, isTrimmed, null, 'wav');
     if (!file) {
