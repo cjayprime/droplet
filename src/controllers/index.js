@@ -47,6 +47,7 @@ export default {
 
     // User
     { method: 'PUT', path: '/user', action: user.update },
+    { method: 'GET', path: '/user/:user_idORuidORusername', action: user.get },
 
     // Analytics
     { method: 'POST', path: '/listen', action: analytics.recordListen },
