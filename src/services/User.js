@@ -64,23 +64,6 @@ class User {
 
   static getUser = async (uid) => await UserModel.findOne({ where: { ...User.searchForUser(uid) }  });
 
-  get = async (uid) => {
-    const user = await User.getUser(uid);
-    if (!user) {
-      return {
-        code: 400,
-        message: 'We were unable to find the user.',
-        data: {},
-      };
-    }
-
-    return {
-      code: 400,
-      message: 'Successfully retrieved the user.',
-      data: { user },
-    };
-  }
-
   /**
    * Update a user
    * 
