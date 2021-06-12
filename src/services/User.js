@@ -75,7 +75,7 @@ class User {
     }
 
     return {
-      code: 400,
+      code: 200,
       message: 'Successfully retrieved the user.',
       data: { user },
     };
