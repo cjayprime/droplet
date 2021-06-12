@@ -105,6 +105,7 @@ setTimeout(async () => {
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: createResponse.body.data.drop.drop_id }).set(headers);
     // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
+    // const response = await request.put('/user/1').send().set(headers);
     // console.log('Request Response:', response.body); //, response.body.data.drops[0]);
 
     // const jwt = require('jsonwebtoken');
