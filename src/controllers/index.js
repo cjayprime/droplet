@@ -14,6 +14,9 @@ const user = new User();
 
 export default {
   public: [
+    // Analytics
+    { method: 'POST', path: '/interaction', action: analytics.recordInteraction },
+
     // Download
     { method: 'GET', path: '/download', action: drop.download },
 
@@ -51,7 +54,6 @@ export default {
 
     // Analytics
     { method: 'POST', path: '/listen', action: analytics.recordListen },
-    { method: 'POST', path: '/interaction', action: analytics.recordInteraction },
     { method: 'GET', path: '/analytics', action: analytics.analyze },
 
     // Filters

@@ -436,9 +436,9 @@ class Drop {
             'category': 'comedy',
             'desc': 'guess'
           },
-          'drelizabeth': {
-            'category': '',
-            'desc': 'Sample bio2'
+          'dr.elizabeth': {
+            'category': 'asmr',
+            'desc': 'Dr. Elizabeth: National Geographic Explorer'
           },
           'goodluigi': {
             'category': 'music',
@@ -452,6 +452,7 @@ class Drop {
             'category': 'convo',
             'desc': 'yannie is a composer at heart, and an ella fitzgerald lover'
           },
+                    
         }
       },
       message: 'Successfully retrieved the featured list'
