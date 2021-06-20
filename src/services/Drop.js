@@ -242,12 +242,7 @@ class Drop {
   }
 
   loadClouds = async () => {
-    const clouds = await CloudModel.findAll({
-      where: { status: '1' }, 
-      order: [
-        ['order', 'ASC'],
-      ],
-    });
+    const clouds = await CloudModel.findAll({ where: { status: '1' }, });
     if (clouds.length === 0) {
       return {
         code: 400,
@@ -267,7 +262,12 @@ class Drop {
   }
 
   loadSubClouds = async () => {
-    const subClouds = await SubCloudModel.findAll({ where: { status: '1' } });
+    const subClouds = await SubCloudModel.findAll({
+      where: { status: '1' },
+      order: [
+        ['order', 'ASC'],
+      ],
+    });
     if (subClouds.length === 0) {
       return {
         code: 400,
