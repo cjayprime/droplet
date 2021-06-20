@@ -242,7 +242,12 @@ class Drop {
   }
 
   loadClouds = async () => {
-    const clouds = await CloudModel.findAll({ where: { status: '1' } });
+    const clouds = await CloudModel.findAll({
+      where: { status: '1' }, 
+      order: [
+        ['order', 'ASC'],
+      ],
+    });
     if (clouds.length === 0) {
       return {
         code: 400,
