@@ -158,6 +158,23 @@ jobs:
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: "-T"
+    
+    
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
+
+
+      - name: Verify Application
+        uses: fifsky/ssh-action@master
+        if: ${{ success() }}
+        with:
+          command: |
+            curl --fail http://localhost:${{ env.PORT }}/health
+          host: ${{ env.SERVER_IP }}
+          user: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          args: "-T"
 
 
 
@@ -302,6 +319,23 @@ jobs:
           command: |
             cd ~/drop-service
             sudo yarn production
+          host: ${{ env.SERVER_IP }}
+          user: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          args: "-T"
+    
+    
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
+
+
+      - name: Verify Application
+        uses: fifsky/ssh-action@master
+        if: ${{ success() }}
+        with:
+          command: |
+            curl --fail http://localhost:${{ env.PORT }}/health
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}

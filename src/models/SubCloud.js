@@ -22,6 +22,10 @@ const SubCloud = sequelize.define('sub_cloud', {
     type: DataTypes.ENUM('0', '1'),
     allowNull: false,
   },
+  order: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+  },
   date: {
     type: DataTypes.DATE,
     allowNull: false,
