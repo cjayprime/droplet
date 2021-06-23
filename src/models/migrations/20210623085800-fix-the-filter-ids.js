@@ -6,7 +6,7 @@ const filters = [
 
 const migration = {
   up: async (queryInterface) => {
-    // Fixes the clouds colors
+    // Fixes the filter ids
     await queryInterface.sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
     
     await queryInterface.sequelize.query('TRUNCATE `filter`;');
