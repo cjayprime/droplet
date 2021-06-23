@@ -1,8 +1,8 @@
 const clouds = [
   { name: 'Blue', color: '#3894FF', altColor: '#2D76CC' },
-  { name: 'Yellow', color: '#3AC67B', altColor: '#2F9F63' },
-  { name: 'Purple', color: '#FDB446', altColor: '#CB9039' },
-  { name: 'Green', color: '#B15EE1', altColor: '#8E4CB5' },
+  { name: 'Yellow', color: '#FDB446', altColor: '#CB9039' },
+  { name: 'Purple', color: '#B15EE1', altColor: '#8E4CB5' },
+  { name: 'Green', color: '#3AC67B', altColor: '#2F9F63' },
 ];
 
 const migration = {
