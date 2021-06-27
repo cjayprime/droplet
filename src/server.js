@@ -101,6 +101,10 @@ setTimeout(async () => {
     //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: validateResponse.body.data.tag, isTrimmed: false, },
     //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: 'b7ceeb4a-a3ac-4277-ac31-000a988c91e9' }
     // }).set(headers); //0b73a901-f4d3-4476-a3ac-cb2d343c228d
+    // const response = await request.post('/filter/pitch-shift/baritone').send({
+    //   tag: 'b7ceeb4a-a3ac-4277-ac31-000a988c91e9',
+    //   isTrimmed: false,
+    // }).set(headers);
     // const response = await request.get('/featured').send().set(headers);
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: createResponse.body.data.drop.drop_id }).set(headers);
