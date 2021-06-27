@@ -10,14 +10,6 @@ const Filter = sequelize.define('filter', {
     type: DataTypes.STRING(30),
     allowNull: false,
   },
-  activeIcon: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  inActiveIcon: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   status: {
     type: DataTypes.ENUM('0', '1'),
     allowNull: false,
