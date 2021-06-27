@@ -18,7 +18,7 @@ const FilterUsage = sequelize.define('filter_usage', {
   },
   owner_audio_id: {
     type: DataTypes.BIGINT,
-    allowNull: false,
+    allowNull: true,
     references: { model: 'audio', key: 'audio_id' },
   },
   audio_id: {

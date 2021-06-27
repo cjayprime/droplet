@@ -121,6 +121,26 @@ src/storage/filters/export-video/*
 !src/storage/filters/export-video
 !src/storage/filters/export-video/README.md
 
+src/storage/filters/pitch-shift/*
+!src/storage/filters/pitch-shift
+!src/storage/filters/pitch-shift/README.md
+
+src/storage/filters/pitch-shift/baritone/*
+!src/storage/filters/pitch-shift/baritone
+!src/storage/filters/pitch-shift/baritone/README.md
+
+src/storage/filters/pitch-shift/helium/*
+!src/storage/filters/pitch-shift/helium
+!src/storage/filters/pitch-shift/helium/README.md
+
+src/storage/filters/pitch-shift/chipmunk/*
+!src/storage/filters/pitch-shift/chipmunk
+!src/storage/filters/pitch-shift/chipmunk/README.md
+
+src/storage/filters/pitch-shift/giant/*
+!src/storage/filters/pitch-shift/giant
+!src/storage/filters/pitch-shift/giant/README.md
+
 logs/*.log
 *.log
 !logs/

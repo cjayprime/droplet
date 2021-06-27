@@ -14,7 +14,7 @@ class Notify {
    * @param {string} channel The slack channel to send to
   */
   info(message/*, channel = 'computer-says-no'*/) {
-    console.log('\nNotify.info - Logging this message', message, '\n');
+    console.log('\x1b[47m%s\x1b[0m', '\nNotify.info - Logging this message', message, '\n');
     if (process.env.NODE_ENV !== 'development') {
       Sentry.init({
         dsn: process.env.SENTRY_DNS,
@@ -41,7 +41,7 @@ class Notify {
    * @param {string} message The message to send
    */
   error(err) {
-    console.log('\nNotify.error - This is a fatal level error that failed silently', err.message || err, '\n');
+    console.log('\x1b[41m%s\x1b[0m', '\nNotify.error - This is a fatal level error that failed silently', err.message || err, '\n');
     if (process.env.NODE_ENV !== 'development') {
       Sentry.init({
         dsn: process.env.SENTRY_DNS,

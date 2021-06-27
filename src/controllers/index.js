@@ -59,5 +59,6 @@ export default {
     // Filters
     { method: 'POST', path: '/filter/duet', action: filter.duet },
     { method: 'POST', path: '/filter/export-video', action: filter.exportVideo },
+    { method: 'POST', path: '/filter/pitch-shift/:type', action: filter.pitchShift },
   ],
 };

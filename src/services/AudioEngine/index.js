@@ -5,8 +5,9 @@ import { AudioContext } from 'web-audio-api';
 import audioBufferToWav from 'audiobuffer-to-wav';
 import { Lame } from 'node-lame';
 import FFMpegCli from 'ffmpeg-cli';
+import { PythonShell } from 'python-shell';
 
-import { Duet, ExportVideo } from './Filters';
+import { Duet, ExportVideo, PitchShift } from './Filters';
 
 import { Notify } from '../../shared';
 
@@ -97,6 +98,22 @@ class AudioEngine {
       // To view details logs use `-loglevel debug`
       `-y ${process.env.NODE_ENV === 'development' ? '-nostats' : '-nostats'} ${command}`
     ).then(success).catch(error);
+  }
+
+  static pythonExec = async (script, args, success, error) => {
+    return await new Promise((resolve, reject) => {
+      const options = {
+        mode: 'text',
+        args,
+      };
+
+      PythonShell.run(script, options, function (err, results) {
+        if (err) {
+          return reject(err);
+        }
+        resolve(results);
+      });
+    }).then(success).catch(error);
   }
 
   static generateRandomString = (length = 6) => {
@@ -308,6 +325,7 @@ class AudioEngine {
   filter = {
     duet: new Duet().make,
     exportVideo: new ExportVideo().make,
+    pitchShift: new PitchShift().make,
   };
 }
 
