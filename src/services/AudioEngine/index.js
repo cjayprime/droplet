@@ -9,6 +9,7 @@ import { PythonShell } from 'python-shell';
 
 import { Duet, ExportVideo, PitchShift } from './Filters';
 
+import { Filter as FilterModel } from '../../models';
 import { Notify } from '../../shared';
 
 /**
@@ -95,7 +96,7 @@ class AudioEngine {
    */
   static ffMpegExec = async (command, success, error) => {
     return await FFMpegCli.run(
-      // To view details logs use `-loglevel debug`
+      // To view detailed logs use `-loglevel debug`
       `-y ${process.env.NODE_ENV === 'development' ? '-nostats' : '-nostats'} ${command}`
     ).then(success).catch(error);
   }
@@ -323,6 +324,14 @@ class AudioEngine {
   };
 
   filter = {
+    all: async (status) => {
+      const filters = await FilterModel.findAll(!status ? undefined : { where: { status: status === 'true' ? '1' : '0' } });
+      return {
+        code: 200,
+        message: 'Successfully retrieved the filters.',
+        data: [...filters],
+      };
+    },
     duet: new Duet().make,
     exportVideo: new ExportVideo().make,
     pitchShift: new PitchShift().make,

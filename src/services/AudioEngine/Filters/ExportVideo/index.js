@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import FFMpegCli from 'ffmpeg-cli';
 
 import AudioEngine from '../..';
 import DropService from '../../../Drop';
@@ -111,12 +110,13 @@ class ExportVideo {
     const username = drop.user.username;
     const caption = this.wordWrap(drop.caption.toLowerCase(), 40);
 
-    const command1 = `-y -nostats -i "${this.files.input}" -i "${profilePicture}" -i "${this.files.mask}" -filter_complex [0]drawtext="fontfile='${this.files.font('Bold')}':text='@${username}': fontcolor=white: fontsize=44: line_spacing=20: box=1: boxcolor=black@0.0: boxborderw=5:x=(w-text_w)/2: y=580"[drawusername],[drawusername]drawtext="fontfile='${this.files.font('Regular')}':text='${caption}':fontcolor=white: fontsize=34: line_spacing=20: x=(w-text_w)/2: y=650"[drawcaption],[1]scale=185:185[dp],[2]alphaextract[alfa],[dp][alfa]alphamerge[makecircular],[drawcaption][makecircular]overlay=444:306[applyprofilepicture] -map "[applyprofilepicture]" -hide_banner -pix_fmt yuv420p -codec:a copy "${this.files.intermediaryOutput(directory)}"`;
-    const command2 = `-y -nostats -i "${this.files.intermediaryOutput(directory)}" -i "${this.files.audio(directory)}" -map 0:v -map 1:a -c:v copy -shortest -strict -2 "${this.files.output(directory)}"`;
 
-    const success1 = await FFMpegCli.run(command1).then(() => {
+    const command1 = `-i "${this.files.input}" -i "${profilePicture}" -i "${this.files.mask}" -filter_complex [0]drawtext="fontfile='${this.files.font('BoldItalic')}':text='dropped by @${username}': fontcolor=white: fontsize=40: line_spacing=20: box=1: boxcolor=black@0.0: boxborderw=5:x=(w-text_w)/2: y=790"[drawusername],[drawusername]drawtext="fontfile='${this.files.font('Regular')}':text='${caption}':fontcolor=white: fontsize=34: line_spacing=20: x=(w-text_w)/2: y=865"[drawcaption],[1]scale=185:185[dp],[2]alphaextract[alfa],[dp][alfa]alphamerge[makecircular],[drawcaption][makecircular]overlay=270:500[applyprofilepicture] -map "[applyprofilepicture]" -hide_banner -pix_fmt yuv420p -codec:a copy "${this.files.intermediaryOutput(directory)}"`;
+    const command2 = `-i "${this.files.intermediaryOutput(directory)}" -i "${this.files.audio(directory)}" -map 0:v -map 1:a -c:v copy -shortest -strict -2 "${this.files.output(directory)}"`;
+
+    const success1 = await AudioEngine.ffMpegExec(command1, () => {
       return true;
-    }).catch(e => {
+    }, e => {
       console.log('\nFFMpeg Error Occured 1', e);
       Notify.error(e);
       return null;
@@ -131,9 +131,9 @@ class ExportVideo {
       };
     }
 
-    const success2 = await FFMpegCli.run(command2).then(() => {
+    const success2 = await AudioEngine.ffMpegExec(command2, () => {
       return true;
-    }).catch(e => {
+    }, e => {
       console.log('\nFFMpeg Error Occured 2', e);
       Notify.error(e);
       return null;

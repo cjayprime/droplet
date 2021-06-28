@@ -10,6 +10,10 @@ const Filter = sequelize.define('filter', {
     type: DataTypes.STRING(30),
     allowNull: false,
   },
+  slug: {
+    type: DataTypes.STRING(30),
+    allowNull: false,
+  },
   status: {
     type: DataTypes.ENUM('0', '1'),
     allowNull: false,

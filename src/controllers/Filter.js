@@ -1,10 +1,33 @@
-import { body, param } from 'express-validator';
+import { body, query, param } from 'express-validator';
 
 import Controller from './base';
 
 import { AudioEngine } from '../services';
 
 class FilterController extends Controller {
+  /**
+   * List all filters
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  all = [
+    query('status')
+      .isBoolean(4)
+      .withMessage('must be a valid status.')
+      .optional(),
+
+  	this.action(async (req, res, next) => {
+      const { query: { status } } = req;
+  		const audioEngine = new AudioEngine();
+  		const response = await audioEngine.filter.all(status);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
   /**
    * Create a duet filter using details as specified below
    *

@@ -118,6 +118,25 @@ class Authenticate {
       data: { token, created },
     };
   }
+
+  /**
+   * Application Controls
+   * 
+   * @param {String} username   Username of a user
+   * @param {String} uid        UID of a user from the AuthService
+   */
+  controls = async () => {
+    const dropService = new DropService();
+    return {
+      code: 200,
+      message:  'Successfully retrieved the application options.',
+      data: { 
+        recording: {
+          ...dropService.recording,
+        }
+      },
+    };
+  }
 }
 
 export default Authenticate;
