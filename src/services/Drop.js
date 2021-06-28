@@ -436,27 +436,35 @@ class Drop {
     return {
       code: 200,
       data: {
-        users: {
+        users:{
           'yanniet': {
-            'category': 'convo',
-            'desc': 'Music YouTuber and Stanford student'
+            'category': 'music',
+            'desc': 'a composer at heart, and an ella fitzgerald lover 🌙'
           },
           'arpi': {
-            'category': 'comedy',
-            'desc': 'Stanford YouTuber'
+            'category': 'convo',
+            'desc': 'student and writer ✍🏼, occasional dancer 🕺'
           },
           'elenatheodora': {
             'category': 'music',
-            'desc': 'Stanford and NYU Music Technology PHD'
+            'desc': 'acapella enthusiast 🎶, music tech genius 🎧, duet master'
+          },
+          'jimmy': {
+            'category': 'music',
+            'desc': '#1 music producer and Dropper 🎹, Vandy ‘23'
+          },
+          'alix': {
+            'category': 'blue',
+            'desc': 'random thoughts enthusiast, occasionally funny 🥑'
           },
           'doubleohjohn': {
             'category': 'music',
-            'desc': 'Musician, beatboxer, creative'
+            'desc': 'musician at heart 🎸, beatboxer 🥁, vocal mixer, creative all around'
           },
           'dave': {
-            'category': 'comedy',
-            'desc': 'Harvard Student, best dad jokes ever'
-          },     
+            'category': 'yellow',
+            'desc': 'full time dad joker, part time harvard student 🍺'
+          },
         }
       },
       message: 'Successfully retrieved the featured list'
