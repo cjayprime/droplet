@@ -7,6 +7,19 @@ import { Authenticate as AuthenticateService } from '../services';
 
 class AuthenticateController extends Controller {
   /**
+   * Retrieve all options available for tweaking the functionality
+   * of the app
+   */
+  controls = [
+    this.action(async (_, res, next) => {
+      const authenticateService = new AuthenticateService();
+      const response = await authenticateService.controls();
+      this.response(res, response.code, response.data, response.message);
+      next();
+    })
+  ];
+
+  /**
    * Authenticate a user via firebase
    */
   firebase = [

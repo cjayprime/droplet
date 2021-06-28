@@ -14,14 +14,14 @@ const user = new User();
 
 export default {
   public: [
+    // Authenticate
+    { method: 'POST', path: '/authenticate', action: authenticate.firebase },
+
     // Analytics
     { method: 'POST', path: '/interaction', action: analytics.recordInteraction },
 
     // Download
     { method: 'GET', path: '/download', action: drop.download },
-
-    // Authenticate
-    { method: 'POST', path: '/authenticate', action: authenticate.firebase },
 
     // Marketing
     { method: 'POST', path: '/sms', action: marketing.sendSms },
@@ -33,6 +33,9 @@ export default {
     } },
   ],
   private: [
+    // Options
+    { method: 'GET', path: '/controls', action: authenticate.controls },
+
     // Drops
     { method: 'GET', path: '/drops', action: drop.feed },
     { method: 'GET', path: '/drops/user/:user_id', action: drop.feed },
@@ -57,8 +60,9 @@ export default {
     { method: 'GET', path: '/analytics', action: analytics.analyze },
 
     // Filters
+    { method: 'GET', path: '/filters', action: filter.all },
     { method: 'POST', path: '/filter/duet', action: filter.duet },
     { method: 'POST', path: '/filter/export-video', action: filter.exportVideo },
-    { method: 'POST', path: '/filter/pitch-shift/:type', action: filter.pitchShift },
+    { method: 'POST', path: '/filter/pitch-shift-:type', action: filter.pitchShift },
   ],
 };

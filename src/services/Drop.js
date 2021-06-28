@@ -22,7 +22,7 @@ import { Notify } from '../shared';
 class Drop {
   recording = {
     min: 2,
-    max: 60,
+    max: 90,
   };
 
   /**
@@ -437,27 +437,26 @@ class Drop {
       code: 200,
       data: {
         users: {
-          'arpi': {
-            'category': 'comedy',
-            'desc': 'guess'
-          },
-          'dr.elizabeth': {
-            'category': 'asmr',
-            'desc': 'Dr. Elizabeth: National Geographic Explorer'
-          },
-          'goodluigi': {
-            'category': 'music',
-            'desc': 'hello!'
-          },
-          'cyan': {
-            'category': 'convo',
-            'desc': 'stanford student and youtuber!'
-          },
           'yanniet': {
             'category': 'convo',
-            'desc': 'yannie is a composer at heart, and an ella fitzgerald lover'
+            'desc': 'Music YouTuber and Stanford student'
           },
-                    
+          'arpi': {
+            'category': 'comedy',
+            'desc': 'Stanford YouTuber'
+          },
+          'elenatheodora': {
+            'category': 'music',
+            'desc': 'Stanford and NYU Music Technology PHD'
+          },
+          'doubleohjohn': {
+            'category': 'music',
+            'desc': 'Musician, beatboxer, creative'
+          },
+          'dave': {
+            'category': 'comedy',
+            'desc': 'Harvard Student, best dad jokes ever'
+          },     
         }
       },
       message: 'Successfully retrieved the featured list'
