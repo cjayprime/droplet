@@ -176,9 +176,9 @@ class AudioEngine {
     const output = await this.storeFile(randomName, null, null, 'mp3');
 
     // From whatever the buffer might be to wav
-    const commandToWav = `-i "${input}" -vn -ac 2 -ar 16000 -acodec pcm_s16le "${intermediateOutput}"`;
+    const commandToWav = `-i "${input}" -vn -ac 2 -ar 44100 -acodec pcm_s16le "${intermediateOutput}"`;
     // From the wav to mp3
-    const commandToMp3 = `-i "${intermediateOutput}" -vn -ac 2 -ar 16000 -b:a 192k  "${output}"`;
+    const commandToMp3 = `-i "${intermediateOutput}" -vn -ac 2 -ar 44100 -b:a 320k "${output}"`;
 
     const result = await AudioEngine.ffMpegExec(commandToWav, async () => {
       const success = await AudioEngine.ffMpegExec(commandToMp3, () => true, (e) => {
