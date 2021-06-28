@@ -22,7 +22,7 @@ import { Notify } from '../shared';
 class Drop {
   recording = {
     min: 2,
-    max: 60,
+    max: 90,
   };
 
   /**
@@ -437,27 +437,26 @@ class Drop {
       code: 200,
       data: {
         users: {
-          'arpi': {
-            'category': 'comedy',
-            'desc': 'guess'
-          },
-          'dr.elizabeth': {
-            'category': 'asmr',
-            'desc': 'Dr. Elizabeth: National Geographic Explorer'
-          },
-          'goodluigi': {
-            'category': 'music',
-            'desc': 'hello!'
-          },
-          'cyan': {
-            'category': 'convo',
-            'desc': 'stanford student and youtuber!'
-          },
           'yanniet': {
             'category': 'convo',
-            'desc': 'yannie is a composer at heart, and an ella fitzgerald lover'
+            'desc': 'Music YouTuber and Stanford student'
           },
-                    
+          'arpi': {
+            'category': 'comedy',
+            'desc': 'Stanford YouTuber'
+          },
+          'elenatheodora': {
+            'category': 'music',
+            'desc': 'Stanford and NYU Music Technology PHD'
+          },
+          'doubleohjohn': {
+            'category': 'music',
+            'desc': 'Musician, beatboxer, creative'
+          },
+          'dave': {
+            'category': 'comedy',
+            'desc': 'Harvard Student, best dad jokes ever'
+          },     
         }
       },
       message: 'Successfully retrieved the featured list'
@@ -583,7 +582,28 @@ class Drop {
   }
 
   /**
-   * 
+   * Display the application feed
+      // ALGORITHMS
+      // 1. gauss-ranking
+      // result_n = gaussFn() * log(like_n + comment_n)10
+
+      // 2. followers-following-personalization
+      //
+
+      // 3. -----
+      // sort(drops) for largest comments
+      // sort(drops) for largest likes
+      // Math.pow(S.D, 2) = Math.pow(C, 2)
+      // f =  Math.exponential   (1 / (S.D * Math.root(2 * Math.PI)))
+
+      // public static double gaussian(double x, double mean, double sigma)
+      // {
+      //   double norm = 1 / (sigma * Math.sqrt(2 * Math.PI));
+      //   double  is = 1 / sigma;
+      //   double i2s2 = 0.5 * is * is;
+      //   double xMinusMean = x - mean;
+      //   return norm * Math.exp(-xMinusMean * xMinusMean * i2s2);
+      // }
    * @param {*} signedInUserID 
    * @param {*} selectForUserID 
    * @param {*} limit 

@@ -10,12 +10,8 @@ const Filter = sequelize.define('filter', {
     type: DataTypes.STRING(30),
     allowNull: false,
   },
-  activeIcon: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  inActiveIcon: {
-    type: DataTypes.STRING,
+  slug: {
+    type: DataTypes.STRING(30),
     allowNull: false,
   },
   status: {

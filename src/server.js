@@ -89,7 +89,7 @@ setTimeout(async () => {
     // const response = await request.get('/waveform?tag=' + validateResponse.body.data.tag + '&bars=10').send().set(headers);
     // const response = await request.get('/clouds').send().set(headers);
     // const response = await request.get('/subclouds').send().set(headers);
-    // const createResponse = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: validateResponse.body.data.tag, caption: 'Test 😭', subCloud: 'LoFi', isTrimmed: false }).set(headers);
+    // const createResponse = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: validateResponse.body.data.tag, caption: 'Test 😭', subCloud: 'podcasters', isTrimmed: false }).set(headers);
     // const response = await request.post('/listen').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', drop_id: 1 }).set(headers);
     // const response = await request.post('/like').send({ user_id: 'BHOqOcVUaVVbfRGT5ru3lYyLJTJ3', drop_id: 1 }).set(headers);
     // const response = await request.get('/drops?offset=0&limit=37&subCloud=Poetry&subCloud=LoFi').send().set(headers);
@@ -101,11 +101,17 @@ setTimeout(async () => {
     //   current: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: validateResponse.body.data.tag, isTrimmed: false, },
     //   owner: { user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: 'b7ceeb4a-a3ac-4277-ac31-000a988c91e9' }
     // }).set(headers); //0b73a901-f4d3-4476-a3ac-cb2d343c228d
+    // const response = await request.get('/filters').send().set(headers);
+    // const response = await request.post('/filter/pitch-shift-helium').send({
+    //   tag: 'b7ceeb4a-a3ac-4277-ac31-000a988c91e9',
+    //   isTrimmed: false,
+    // }).set(headers);
     // const response = await request.get('/featured').send().set(headers);
     // const response = await request.get('/analytics').send().set(adminHeaders);
     // const response = await request.post('/filter/export-video').send({ drop_id: createResponse.body.data.drop.drop_id }).set(headers);
     // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
     // const response = await request.get('/user/1').send().set(headers);
+    // const response = await request.get('/controls').send().set(headers);
     // console.log('Request Response:', response.body); //, response.body.data.drops[0]);
 
     // const jwt = require('jsonwebtoken');

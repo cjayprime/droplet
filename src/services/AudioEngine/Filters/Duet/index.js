@@ -186,7 +186,7 @@ class Duet {
 
     return {
       code: 200,
-      message: 'Successfully created a duet',
+      message: 'Successfully created a duet.',
       data: { tag },
     };
   }

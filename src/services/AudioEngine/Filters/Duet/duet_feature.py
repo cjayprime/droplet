@@ -21,12 +21,15 @@ def duet(track1, track2):
     both = a[0:length] + b[0:length]
     return both, fs
 
+# ------------------------ Commented out by Chijioke Nna ------------------------
 # track1 = "birds.wav"
 # track2 = "ocean.wav"
+# sf.write('duet.wav', duet_audio, fs)
+# ------------------------ Commented out by Chijioke Nna ------------------------
+
 track1 = sys.argv[1]
 track2 = sys.argv[2]
 path = sys.argv[3]
 duet_audio, fs = duet(track1, track2)
-# sf.write('duet.wav', duet_audio, fs)
 sf.write(path, duet_audio, fs)
 print('success')
