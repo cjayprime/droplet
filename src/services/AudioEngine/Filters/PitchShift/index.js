@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import AudioEngine from '../..';
@@ -9,8 +10,9 @@ class PitchShift {
   script = path.join(__dirname, 'pitch_shift.py');
 
   make = async (tag, type, isTrimmed) => {
+    const name = 'pitch-shift-' + type;
     const input = AudioEngine.directory(tag, isTrimmed);
-    const output = AudioEngine.directory(tag, false, 'pitch-shift/' + type, 'wav');
+    const output = AudioEngine.directory(tag, false, name, 'wav');
     const result = await AudioEngine.pythonExec(this.script, [type, input, output], (res) => {
       return res;
     }, (e) => {
@@ -27,8 +29,10 @@ class PitchShift {
       };
     }
 
-    const buffer = await AudioEngine.getFile(tag, false, 'pitch-shift/' + type, 'wav');
+    const buffer = await AudioEngine.getFile(tag, false, name, 'wav');
     const stored = await AudioEngine.toMp3(buffer, output);
+    // Delete .wav file
+    await fs.promises.unlink(output);
     if (!stored) {
       return {
         code: 400,
@@ -46,7 +50,7 @@ class PitchShift {
     });
     const filter = await FilterModel.findOne({
       attributes: ['filter_id'],
-      where: { name: 'pitch-shift-' + type },
+      where: { name },
     });
     await FilterUsageModel.create({
       user_id: audio.user_id,
