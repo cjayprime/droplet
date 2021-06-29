@@ -133,7 +133,7 @@ class Authenticate {
       data: { 
         recording: {
           ...dropService.recording,
-        }
+        },
       },
     };
   }
