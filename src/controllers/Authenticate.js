@@ -24,7 +24,44 @@ class AuthenticateController extends Controller {
    */
   firebase = [
     body('username')
-      .isAlphanumeric()
+      .custom(username => {
+        const displayError = () => {
+          throw new Error('must be a combination of alphabetic and numeric characters, it can also contain periods without repetitions.');
+        };
+
+        if (!username) {
+          return displayError();
+        }
+
+        let str = username;
+        if (str.length > 15) {
+          return displayError();
+        }
+        if (str.charCodeAt(str.length - 1) == 46 || str.charCodeAt(0) == 46) {
+          return displayError();
+        }
+
+        let found = false;
+        for (var i = 0; i < str.length; i++) {
+          let x = str.charCodeAt(i);
+          if ((x >= 48 && x <= 57) || (x >= 97 && x <= 122) || x == 46) {
+            found = true;
+          } else {
+            return displayError();
+          }
+          if (i != 0) {
+            if (str.charCodeAt(i) == 46 && str.charCodeAt(i - 1) == 46) {
+              return displayError();
+            }
+          }
+        }
+
+        if (!found) {
+          return displayError();
+        }
+
+        return found;
+      })
       .withMessage('must be alphanumeric.'),
 
     body('uid')
