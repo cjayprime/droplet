@@ -66,7 +66,9 @@ class DropController extends Controller {
       .withMessage('must be a number in seconds.'),
 
     body('filter')
-      .isAlphanumeric()
+      .isIn(
+        ['duet', 'pitch-shift-baritone', 'pitch-shift-helium', 'pitch-shift-chipmunk', 'pitch-shift-giant']
+      )
       .withMessage('must be a valid filter.')
       .optional(),
 

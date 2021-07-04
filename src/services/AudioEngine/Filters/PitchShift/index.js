@@ -23,20 +23,28 @@ class PitchShift {
     console.log('RESULT:', result);
     if (!result || result[0] !== 'success') {
       return {
-        code: 200,
-        message: 'Sorry we were unable to create the filter.',
+        code: 400,
+        message: 'Sorry we were unable to create the filter ' + type + '.',
         data: { tag },
       };
     }
 
     const buffer = await AudioEngine.getFile(tag, false, name, 'wav');
+    if (!buffer) {
+      return {
+        code: 400,
+        message: 'Sorry we were unable to create the ' + type + ' filter. Couldn\'t find the file.',
+        data: { tag },
+      };
+    }
+
     const stored = await AudioEngine.toMp3(buffer, output);
     // Delete .wav file
     await fs.promises.unlink(output);
     if (!stored) {
       return {
         code: 400,
-        message: 'File handling error.',
+        message: 'File handling error for ' + type + ' filter.',
         data: { tag },
       };
     }
@@ -63,7 +71,7 @@ class PitchShift {
 
     return {
       code: 200,
-      message: 'Successfully created a pitch shifted filter.',
+      message: 'Successfully created a pitch shifted ' + type + ' filter.',
       data: { tag },
     };
   }
