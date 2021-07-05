@@ -44,7 +44,7 @@ class PitchShift {
     if (!stored) {
       return {
         code: 400,
-        message: 'File handling error for ' + type + ' filter.',
+        message: 'File handling error for the pitch shifted ' + type + ' filter.',
         data: { tag },
       };
     }
@@ -52,9 +52,7 @@ class PitchShift {
     // Save to filter_usage table
     const audio = await AudioModel.findOne({
       attributes: ['audio_id', 'user_id'],
-      where: {
-        tag,
-      },
+      where: { tag },
     });
     const filter = await FilterModel.findOne({
       attributes: ['filter_id'],
