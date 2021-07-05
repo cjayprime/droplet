@@ -10,9 +10,9 @@ class PitchShift {
   script = path.join(__dirname, 'pitch_shift.py');
 
   make = async (tag, type, isTrimmed) => {
-    const name = 'pitch-shift-' + type;
+    const slug = 'pitch-shift-' + type;
     const input = AudioEngine.directory(tag, isTrimmed);
-    const output = AudioEngine.directory(tag, false, name, 'wav');
+    const output = AudioEngine.directory(tag, false, slug, 'wav');
     const result = await AudioEngine.pythonExec(this.script, [type, input, output], (res) => {
       return res;
     }, (e) => {
@@ -29,7 +29,7 @@ class PitchShift {
       };
     }
 
-    const buffer = await AudioEngine.getFile(tag, false, name, 'wav');
+    const buffer = await AudioEngine.getFile(tag, false, slug, 'wav');
     if (!buffer) {
       return {
         code: 400,
@@ -56,7 +56,7 @@ class PitchShift {
     });
     const filter = await FilterModel.findOne({
       attributes: ['filter_id'],
-      where: { name },
+      where: { slug },
     });
     await FilterUsageModel.create({
       user_id: audio.user_id,
