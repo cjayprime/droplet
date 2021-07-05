@@ -8,6 +8,7 @@ import { Op } from 'sequelize';
 import AudioEngine from './AudioEngine';
 import UserService from './User';
 
+import sequelize from '../models/base';
 import {
   User as UserModel,
   Audio as AudioModel,
@@ -628,6 +629,7 @@ class Drop {
         where,
         include: UserService.includeForUser,
         nest: true,
+        group: ['drop.drop_id'],
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
         order: [
@@ -643,6 +645,12 @@ class Drop {
     }
 
     UserService.associateForUser();
+
+    // GCP doesn't allow `GROUP BY` queries because `sql_mode` is set to `only_full_group_by` to fix it use:
+    // SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+    // note that 'SESSION' should be 'GLOBAL' and thus permanent but GCP again doesn't give the necessary 
+    // SUPER ADMIN permissions to make such a change
+    await sequelize.query('SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'));');
 
     const drops = await DropModel.findAll(options);
     const total = await DropModel.count(options);
@@ -685,6 +693,7 @@ class Drop {
           where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
           include: [{ model: UserModel, required: true }],
         });
+
         return {
           ...dropData,
           likes: likes,

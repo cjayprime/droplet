@@ -58,14 +58,23 @@ class PitchShift {
       attributes: ['filter_id'],
       where: { slug },
     });
-    await FilterUsageModel.create({
-      user_id: audio.user_id,
-      audio_id: audio.audio_id,
-      owner_audio_id: null,
-      owner_user_id: null,
-      filter_id: filter.filter_id,
-      date: new Date(),
-    });
+    const filterUsage = await FilterUsageModel.findOne({ where: { user_id: audio.user_id, audio_id: audio.audio_id } });
+    if (!filterUsage) {
+      await FilterUsageModel.create({
+        user_id: audio.user_id,
+        audio_id: audio.audio_id,
+        owner_audio_id: null,
+        owner_user_id: null,
+        filter_id: filter.filter_id,
+        date: new Date(),
+      });
+    } else {
+      await FilterUsageModel.update({
+        filter_id: filter.filter_id,
+      }, {
+        where: { filter_id: filterUsage.filter_id, }
+      });
+    }
 
     return {
       code: 200,
