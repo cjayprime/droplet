@@ -710,7 +710,7 @@ class Drop {
       data: {
         drops: [...dropsArray],
         page: ((offset * limit) / limit) + 1,
-        total,
+        total: total.length,
       },
     };
   }
