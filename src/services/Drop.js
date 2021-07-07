@@ -318,7 +318,7 @@ class Drop {
     }
 
     // Always save the original, or the duetted version of the trimmed version
-    const fileName = AudioEngine.directory(tag, isTrimmed, !isTrimmed && filter === 'duet' ? 'duet' : undefined);
+    const fileName = AudioEngine.directory(tag, isTrimmed, isTrimmed ? undefined : filter); //  !isTrimmed && filter === 'duet' ? 'duet' : undefined
     const uploaded = await Drop.bucket('upload', fileName, tag);
     if (!uploaded) {
       return {
