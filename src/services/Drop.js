@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { Lame } from 'node-lame';
 import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@google-cloud/storage';
 import { Op } from 'sequelize';
@@ -73,31 +72,13 @@ class Drop {
 
     // CONVERT BACK TO MP3 AND SEND, WITH A NEW DROP ID
     const mp3File = AudioEngine.directory(tag, true);
-    // NOTE: Lame will create the file
-    const encoder = new Lame({
-      output: mp3File,
-      bitrate: 192,
-      'little-endian': true,
-      mp3Input: false,
-      quality: 9,
-    }).setBuffer(Buffer.from(newData.buffer));
+    const resolved = AudioEngine.toMp3(newData.buffer, mp3File);
+    if (resolved) {
+      await AudioModel.update({
+        trimmed: '1',
+        duration: 1000 * (end - start),
+      }, { where: { tag } }).catch((e) => console.log('Couldn\'t update trim to "1" for', tag, e));
 
-    const resolved = await encoder.encode()
-      .then(() => {
-        (async () => {
-          await AudioModel.update({
-            trimmed: '1',
-            duration: 1000 * (end - start),
-          }, { where: { tag } }).catch((e) => console.log('Couldn\'t update trim to "1" for', tag, e));
-        })();
-        return true;
-      })
-      .catch((e) => {
-        console.log(e);
-        return false;
-      });
-
-    if (resolved){
       return {
         code: 200,
         message: 'Successfully trimmed your drop, you can now download it (GET /download?isTrimmed=true&tag=' + tag + ')',
@@ -336,7 +317,8 @@ class Drop {
       };
     }
 
-    const fileName = AudioEngine.directory(tag, isTrimmed, filter);
+    // Always save the original, or the duetted version of the trimmed version
+    const fileName = AudioEngine.directory(tag, isTrimmed, !isTrimmed && filter === 'duet' ? 'duet' : undefined);
     const uploaded = await Drop.bucket('upload', fileName, tag);
     if (!uploaded) {
       return {
