@@ -177,9 +177,9 @@ class Duet {
     });
     await FilterUsageModel.create({
       user_id: currentAudio.user_id,
+      audio_id: currentAudio.audio_id,
       owner_audio_id: ownerAudio.audio_id,
       owner_user_id: ownerAudio.user_id,
-      audio_id: currentAudio.audio_id,
       filter_id: filter.filter_id,
       date: new Date(),
     });

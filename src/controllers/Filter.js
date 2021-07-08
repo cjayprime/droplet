@@ -102,7 +102,7 @@ class FilterController extends Controller {
       .isUUID(4)
       .withMessage('must be a valid tag.'),
 
-    body('isTrimmed')
+    body('isDuet')
       .isBoolean()
       .withMessage('must be a boolean.'),
 
@@ -112,9 +112,9 @@ class FilterController extends Controller {
       .withMessage('must be a pitch shift type.'),
 
     this.action(async (req, res, next) => {
-      const { body: { tag, isTrimmed }, params: { type } } = req;
+      const { body: { tag, isDuet }, params: { type } } = req;
       const audioEngine = new AudioEngine();
-      const response = await audioEngine.filter.pitchShift(tag, type, isTrimmed);
+      const response = await audioEngine.filter.pitchShift(tag, type, isDuet);
       this.response(res, response.code, response.data, response.message);
       next();
     })

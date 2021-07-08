@@ -9,7 +9,7 @@ import { PythonShell } from 'python-shell';
 
 import { Duet, ExportVideo, PitchShift } from './Filters';
 
-import { Filter as FilterModel } from '../../models';
+import { Audio as AudioModel, Filter as FilterModel, FilterUsage as FilterUsageModel } from '../../models';
 import { Notify } from '../../shared';
 
 /**
@@ -176,9 +176,9 @@ class AudioEngine {
     const output = await this.storeFile(randomName, null, null, 'mp3');
 
     // From whatever the buffer might be to wav
-    const commandToWav = `-i "${input}" -vn -ac 2 -ar 16000 -acodec pcm_s16le "${intermediateOutput}"`;
+    const commandToWav = `-i "${input}" -vn -ac 2 -ar 44100 -acodec pcm_s16le "${intermediateOutput}"`;
     // From the wav to mp3
-    const commandToMp3 = `-i "${intermediateOutput}" -vn -ac 2 -ar 16000 -b:a 192k  "${output}"`;
+    const commandToMp3 = `-i "${intermediateOutput}" -vn -ac 2 -ar 44100 -b:a 320k "${output}"`;
 
     const result = await AudioEngine.ffMpegExec(commandToWav, async () => {
       const success = await AudioEngine.ffMpegExec(commandToMp3, () => true, (e) => {
@@ -303,6 +303,7 @@ class AudioEngine {
    * @returns
    */
   static toMp3 = async (buffer, storage) => {
+    // NOTE: Lame will create the file
     const encoder = new Lame({
       output: storage.replace(/\.wav$/, '.mp3'),
       bitrate: 192,
@@ -322,6 +323,40 @@ class AudioEngine {
 
     return resolved;
   };
+
+  /**
+   * Record a usage of a filter on the `filter_usage` table
+   *
+   * @param {String} tag    An audio tag
+   * @param {String} slug   A filter slug
+   */
+  static recordFilterUsage = async (tag, slug) => {
+    const audio = await AudioModel.findOne({
+      attributes: ['audio_id', 'user_id'],
+      where: { tag },
+    });
+    const filter = await FilterModel.findOne({
+      attributes: ['filter_id', 'slug'],
+      where: { slug },
+    });
+    const filterUsage = await FilterUsageModel.findOne({ where: { user_id: audio.user_id, audio_id: audio.audio_id } });
+    if (!filterUsage) {
+      await FilterUsageModel.create({
+        user_id: audio.user_id,
+        audio_id: audio.audio_id,
+        owner_audio_id: null,
+        owner_user_id: null,
+        filter_id: filter.filter_id,
+        date: new Date(),
+      });
+    } else if (filterUsage.filter_id !== 1 /*Never replace the duet tag*/) {
+      await FilterUsageModel.update({
+        filter_id: filter.filter_id,
+      }, {
+        where: { filter_id: filterUsage.filter_id, }
+      });
+    }
+  }
 
   filter = {
     all: async (status) => {

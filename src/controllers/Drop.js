@@ -24,7 +24,7 @@ class DropController extends Controller {
         .optional(),
 
       filter: types[type]('filter')
-        .isAlphanumeric()
+        .isSlug()
         .withMessage('must be a valid filter.')
         .optional(),
 
@@ -66,7 +66,7 @@ class DropController extends Controller {
       .withMessage('must be a number in seconds.'),
 
     body('filter')
-      .isAlphanumeric()
+      .isSlug()
       .withMessage('must be a valid filter.')
       .optional(),
 
@@ -173,7 +173,7 @@ class DropController extends Controller {
       .withMessage('must be a valid tag.'),
 
     query('filter')
-      .isAlphanumeric()
+      .isSlug()
       .withMessage('must be a valid filter.')
       .optional(),
 
@@ -250,7 +250,7 @@ class DropController extends Controller {
       .withMessage('must be a boolean.'),
 
     body('filter')
-      .isAlphanumeric()
+      .isSlug()
       .withMessage('must be a valid filter.')
       .optional(),
 
