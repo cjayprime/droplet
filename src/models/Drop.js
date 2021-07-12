@@ -28,6 +28,10 @@ const Drop = sequelize.define('drop', {
     type: DataTypes.STRING(70),
     allowNull: false,
   },
+  ranking: {
+    type: DataTypes.DECIMAL(50, 25),
+    allowNull: false,
+  },
   status: {
     type: DataTypes.ENUM('1', '0'),
     allowNull: false,
