@@ -23,7 +23,7 @@ class Cron {
      */
     action: async () => {
       const drops = [...await DropModel.findAll()];
-      const firstDropTime = new Date(drops[0].date).getTime();
+      const firstDropTime = 1623718861;
 
       await promiseAll(async drop => {
         const { drop_id, date } = drop;
@@ -47,7 +47,7 @@ class Cron {
         const comments = commentSnapshot.size + replies;
 
         // Get current drop timestamp
-        const currentDropTime = new Date(date).getTime();
+        const currentDropTime = Math.round(new Date(date).getTime() / 1000);
 
         // Get logarithmic ranking
         const ranking = Math.log10(likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200);
