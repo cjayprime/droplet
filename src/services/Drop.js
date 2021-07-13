@@ -606,7 +606,7 @@ class Drop {
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
         order: [
-          !selectForUserID ? ['ranking', 'DESC'] : ['date', 'DESC'],
+          !selectForUserID && !subCloud ? ['ranking', 'DESC'] : ['date', 'DESC'],
         ],
       };
       if (selectForUserID) {
