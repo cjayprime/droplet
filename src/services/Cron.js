@@ -29,7 +29,7 @@ class Cron {
         const { drop_id, date } = drop;
 
         // Get total likes
-        const likes = await LikeModel.count({ where: { drop_id } });
+        const likes = await LikeModel.count({ where: { drop_id, status: '1' } });
 
         // Get total comments
         const commentSnapshot = await firebaseAdmin.firestore()
@@ -37,13 +37,17 @@ class Cron {
           .where('drop_id', '==', drop_id)
           .get();
         let replies = 0;
-        commentSnapshot.forEach(async doc => {
+        const commentIDs = [];
+        await commentSnapshot.forEach(async doc => {
+          commentIDs.push(doc.id);
+        });
+        await promiseAll(async id => {
           const repliesSnapshot = await firebaseAdmin.firestore()
             .collection('Replies')
-            .where('comment_id', '==', doc.id)
+            .where('comment_id', '==', id)
             .get();
           replies += repliesSnapshot.size;
-        });
+        }, commentIDs);
         const comments = commentSnapshot.size + replies;
 
         // Get current drop timestamp
