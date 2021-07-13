@@ -16,7 +16,7 @@ class Cron {
   };
 
   rankDrops = {
-    schedule: process.env.NODE_ENV === 'production' ? '*/10 * * * *' : '*/30 * * * *',
+    schedule: process.env.NODE_ENV === 'production' ? '*/10 * * * *' : '*/1 * * * *',
     /**
      * Add drop rankings to all drops
      * f(l, c) = log (likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200)
@@ -26,7 +26,7 @@ class Cron {
       const firstDropTime = new Date(drops[0].date).getTime();
 
       await promiseAll(async drop => {
-        const { drop_id } = drop;
+        const { drop_id, date } = drop;
 
         // Get total likes
         const likes = await LikeModel.count({ where: { drop_id } });
@@ -36,10 +36,18 @@ class Cron {
           .collection('Comments')
           .where('drop_id', '==', drop_id)
           .get();
-        const comments = commentSnapshot.size;
+        let replies = 0;
+        commentSnapshot.forEach(async doc => {
+          const repliesSnapshot = await firebaseAdmin.firestore()
+            .collection('Replies')
+            .where('comment_id', '==', doc.id)
+            .get();
+          replies += repliesSnapshot.size;
+        });
+        const comments = commentSnapshot.size + replies;
 
         // Get current drop timestamp
-        const currentDropTime = new Date(drops[0].date).getTime();
+        const currentDropTime = new Date(date).getTime();
 
         // Get calculation
         const calculatedIndex = (likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200);
