@@ -51,7 +51,7 @@ class Cron {
 
         // Get logarithmic ranking
         const ranking = Math.log10(likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200);
-        console.log('ranking', drop_id, ranking, comments - replies, replies, likes, date, currentDropTime);
+        // console.log('ranking', drop_id, ranking, comments - replies, replies, likes, date, currentDropTime);
 
         await DropModel.update({ ranking }, { where: { drop_id } });
       }, drops);
