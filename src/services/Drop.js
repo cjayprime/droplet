@@ -333,6 +333,7 @@ class Drop {
       audio_id: audio.audio_id,
       sub_cloud_id,
       caption,
+      ranking: 0,
       status: '1',
       date: date || new Date(),
     });
