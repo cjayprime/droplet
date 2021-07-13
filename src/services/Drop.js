@@ -318,7 +318,7 @@ class Drop {
     }
 
     // Always save the original, or the duetted version of the trimmed version
-    const fileName = AudioEngine.directory(tag, isTrimmed, isTrimmed ? undefined : filter); //  !isTrimmed && filter === 'duet' ? 'duet' : undefined
+    const fileName = AudioEngine.directory(tag, isTrimmed, isTrimmed ? undefined : filter);
     const uploaded = await Drop.bucket('upload', fileName, tag);
     if (!uploaded) {
       return {
@@ -333,6 +333,7 @@ class Drop {
       audio_id: audio.audio_id,
       sub_cloud_id,
       caption,
+      ranking: 0,
       status: '1',
       date: date || new Date(),
     });
@@ -574,27 +575,17 @@ class Drop {
 
   /**
    * Display the application feed
-      // ALGORITHMS
-      // 1. gauss-ranking
-      // result_n = gaussFn() * log(like_n + comment_n)10
+    // ALGORITHMS
+    // 1. gauss-ranking
+    // result_n = gaussFn() * log(like_n + comment_n)10
 
-      // 2. followers-following-personalization
-      //
+    // 2. followers-following-personalization
 
-      // 3. -----
-      // sort(drops) for largest comments
-      // sort(drops) for largest likes
-      // Math.pow(S.D, 2) = Math.pow(C, 2)
-      // f =  Math.exponential   (1 / (S.D * Math.root(2 * Math.PI)))
-
-      // public static double gaussian(double x, double mean, double sigma)
-      // {
-      //   double norm = 1 / (sigma * Math.sqrt(2 * Math.PI));
-      //   double  is = 1 / sigma;
-      //   double i2s2 = 0.5 * is * is;
-      //   double xMinusMean = x - mean;
-      //   return norm * Math.exp(-xMinusMean * xMinusMean * i2s2);
-      // }
+    // 3.
+    // sort(drops) for largest comments
+    // sort(drops) for largest likes
+    // Math.pow(S.D, 2) = Math.pow(C, 2)
+    // f =  Math.exponential   (1 / (S.D * Math.root(2 * Math.PI)))
    * @param {*} signedInUserID 
    * @param {*} selectForUserID 
    * @param {*} limit 
@@ -615,7 +606,7 @@ class Drop {
         limit: parseInt(limit, 10),
         offset: parseInt(offset, 10),
         order: [
-          ['date', 'DESC'],
+          !selectForUserID && !subCloud ? ['ranking', 'DESC'] : ['date', 'DESC'],
         ],
       };
       if (selectForUserID) {

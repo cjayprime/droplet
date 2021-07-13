@@ -4,3 +4,4 @@ export { default as Error } from './Error';
 export { default as NotFound } from './NotFound';
 export { default as Notify } from './Notify';
 export { default as isJSON } from './isJSON';
+export { default as promiseAll } from './promiseAll';

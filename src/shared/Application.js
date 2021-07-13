@@ -41,34 +41,34 @@ class Application {
   			`The server is now running at http://localhost:${this.port} for ${process.env.NODE_ENV}`
   		);
 
-      try {
-        if (process.env.NODE_ENV === 'production'){
-          const throwError = (task) => {
-            throw new Error.make('The format of the cron job schedule string is invalid for the task: ' + task, 'CronJobError', false);
-          };
-          const timezone = 'Africa/Lagos';
-          Object.keys(this.cron).map(task => {
-            if (nodeCron.validate(this.cron[task].schedule)) {
-              console.log(
-                `The cron job '${task}' is now scheduled and will run ${cronstrue.toString(this.cron[task].schedule)}`,
-              );
-              nodeCron
-                .schedule(
-                  this.cron[task].schedule,
-                  () => {
-                    console.log('-- CRON ', this.cron[task].name || task);
-                    this.cron[task].action();
-                  },
-                  { timezone, scheduled: true },
-                ).start();
-            } else {
-              throwError(task);
-            }
-          });
+      const throwError = (task) => {
+        throw new Error.make('The format of the cron job schedule string is invalid for the task: ' + task, 'CronJobError', false);
+      };
+      const timezone = 'Africa/Lagos';
+      Object.keys(this.cron).map(task => {
+        if (nodeCron.validate(this.cron[task].schedule)) {
+          console.log(
+            `The cron job '${task}' is now scheduled and will run ${cronstrue.toString(this.cron[task].schedule).toLowerCase()}`,
+          );
+          nodeCron
+            .schedule(
+              this.cron[task].schedule,
+              async () => {
+                console.log(' \n -- CRON', this.cron[task].name || task, 'STARTED');
+                try {
+                  await this.cron[task].action();
+                } catch (e) {
+                  await Notify.info((this.cron[task].name || task) + ' failed because of a bug.');
+                  await Notify.error(e);
+                }
+                console.log(' -- CRON', this.cron[task].name || task, 'ENDED\n');
+              },
+              { timezone, scheduled: true },
+            ).start();
+        } else {
+          throwError(task);
         }
-      } catch (e) {
-        Notify.error(e);
-      }
+      });
   	});
     server.timeout = 600000;
   }
