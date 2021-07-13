@@ -49,11 +49,8 @@ class Cron {
         // Get current drop timestamp
         const currentDropTime = new Date(date).getTime();
 
-        // Get calculation
-        const calculatedIndex = (likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200);
-
         // Get logarithmic ranking
-        const ranking = Math.log(calculatedIndex) / Math.LN10;
+        const ranking = Math.log10(likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200);
 
         await DropModel.update({ ranking }, { where: { drop_id } });
       }, drops);
