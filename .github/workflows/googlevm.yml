@@ -165,7 +165,7 @@ jobs:
         shell: bash
 
 
-      - name: Verify Application
+      - name: Verify Application (Internal)
         uses: fifsky/ssh-action@master
         if: ${{ success() }}
         with:
@@ -176,6 +176,10 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: "-T"
 
+
+      - name: Verify Application (External)
+        if: ${{ success() }}
+        run: curl --fail http://${{ env.SERVER_IP }}:80/health
 
 
 
@@ -330,7 +334,7 @@ jobs:
         shell: bash
 
 
-      - name: Verify Application
+      - name: Verify Application (Internal)
         uses: fifsky/ssh-action@master
         if: ${{ success() }}
         with:
@@ -340,3 +344,8 @@ jobs:
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: "-T"
+
+
+      - name: Verify Application (External)
+        if: ${{ success() }}
+        run: curl --fail http://${{ env.SERVER_IP }}:80/health
