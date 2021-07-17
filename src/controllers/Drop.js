@@ -325,7 +325,8 @@ class DropController extends Controller {
 
     body('caption')
       .notEmpty()
-      .withMessage('must be a caption.'),
+      .withMessage('must be a caption.')
+      .optional(),
 
     body('status')
       .isInt({ min: 0, max: 1 })
