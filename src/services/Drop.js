@@ -420,36 +420,70 @@ class Drop {
     return {
       code: 200,
       data: {
-        users:{
+        users: {
           'yanniet': {
             'category': 'music',
-            'desc': 'a composer at heart, and an ella fitzgerald lover 🌙'
+            'desc': 'a composer at heart, and an ella fitzgerald lover 🌙',
+            'profilePicURL': '01iCSH6eAuRtpqugOj7X6CtHP5r2',
           },
           'arpi': {
             'category': 'convo',
-            'desc': 'student and writer ✍🏼, occasional dancer 🕺'
+            'desc': 'student and writer ✍🏼, occasional dancer 🕺',
+            'profilePicURL': 'HhyE7Ogh0MVpyOui2zdV211lBKg2',
           },
           'elenatheodora': {
             'category': 'music',
-            'desc': 'acapella enthusiast 🎶, music tech genius 🎧, duet master'
+            'desc': 'acapella enthusiast 🎶, music tech genius 🎧, duet master',
+            'profilePicURL': '',
           },
           'jimmy': {
             'category': 'music',
-            'desc': '#1 music producer and Dropper 🎹, Vandy ‘23'
+            'desc': '#1 music producer and Dropper 🎹, Vandy ‘23',
+            'profilePicURL': 'NpifdRRhFmVqYw7Va6N5lNkWGHF3',
           },
           'alix': {
             'category': 'blue',
-            'desc': 'random thoughts enthusiast, occasionally funny 🥑'
+            'desc': 'random thoughts enthusiast, occasionally funny 🥑',
+            'profilePicURL': '6ZdSOakPWFYaZYUjxahNRNgZFn82',
           },
           'doubleohjohn': {
             'category': 'music',
-            'desc': 'musician at heart 🎸, beatboxer 🥁, vocal mixer, creative all around'
+            'desc': 'musician at heart 🎸, beatboxer 🥁, vocal mixer, creative all around',
+            'profilePicURL': 'XfipHGrwn6TGoa6S4VQC1BSzyre2',
           },
           'dave': {
             'category': 'yellow',
-            'desc': 'full time dad joker, part time harvard student 🍺'
+            'desc': 'full time dad joker, part time harvard student 🍺',
+            'profilePicURL': 'y2cg7CDIvncGNV0PQ1GLwXjiCSv1',
           },
-        }
+        },
+        featured:{
+          'drop of the week': {
+            dropIDs: [252],
+          },
+          'featured cloud': {
+            cloudID: 6,
+          },
+          'top picks in convo': {
+            dropIDs: [377, 75, 353],
+            color: '#3894FF',
+          },
+          'top picks in music': {
+            dropIDs: [371, 334, 140],
+            color: '#B15EE1',
+          },
+          'top picks in comedy': {
+            dropIDs: [369, 332, 288],
+            color: '#FDB446',
+          },
+          'top picks in relax': {
+            dropIDs: [21, 389, 292],
+            color: '#3AC67B',
+          },
+          'sound meme of the week': {
+            dropIDs: [17],
+          },
+        },
       },
       message: 'Successfully retrieved the featured list'
     };
