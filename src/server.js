@@ -90,6 +90,9 @@ setTimeout(async () => {
     // const response = await request.get('/waveform?tag=' + validateResponse.body.data.tag + '&bars=10').send().set(headers);
     // const response = await request.get('/clouds').send().set(headers);
     // const response = await request.get('/subclouds').send().set(headers);
+    // const response = await request.post('/subclouds').send({ cloud_id: 1, name: 'A new cloud name', description: 'A new cloud description' }).set(headers);
+    // const response = await request.get('/subclouds/16').send().set(headers);
+    // const response = await request.put('/subclouds/16').send({ users: [4, 1, 19, 33, 10, 9], status: '1' }).set(headers);
     // const createResponse = await request.post('/create').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', tag: validateResponse.body.data.tag, caption: 'Test 😭', subCloud: 'podcasters', isTrimmed: false }).set(headers);
     // const response = await request.post('/listen').send({ user_id: '0sbfQ2A1DCU79XbPiuYpCy4NhAx2', drop_id: 1 }).set(headers);
     // const response = await request.post('/like').send({ user_id: 'BHOqOcVUaVVbfRGT5ru3lYyLJTJ3', drop_id: 1 }).set(headers);
@@ -113,7 +116,7 @@ setTimeout(async () => {
     // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
     // const response = await request.get('/user/1').send().set(headers);
     // const response = await request.get('/controls').send().set(headers);
-    // console.log('Request Response:', response.body); //, response.body.data.drops[0]);
+    // console.log('Request Response:', response.body, JSON.stringify(response.body.data));
 
     // const jwt = require('jsonwebtoken');
     // console.log(await jwt.verify(token, Configuration.privateKey(), {

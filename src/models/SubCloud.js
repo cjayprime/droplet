@@ -10,6 +10,10 @@ const SubCloud = sequelize.define('sub_cloud', {
     type: DataTypes.BIGINT,
     references: { model: 'cloud', key: 'cloud_id' },
   },
+  user_id: {
+    type: DataTypes.BIGINT,
+    references: { model: 'user', key: 'user_id' },
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,

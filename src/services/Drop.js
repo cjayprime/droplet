@@ -16,8 +16,9 @@ import {
   SubCloud as SubCloudModel,
   Like as LikeModel,
   Listen as ListenModel,
+  Group as GroupModel,
 } from '../models';
-import { Notify } from '../shared';
+import { Notify, promiseAll } from '../shared';
 
 class Drop {
   recording = {
@@ -223,8 +224,8 @@ class Drop {
     };
   }
 
-  loadClouds = async () => {
-    const clouds = await CloudModel.findAll({ where: { status: '1' }, });
+  loadClouds = async (isPrivate = false) => {
+    const clouds = await CloudModel.findAll({ where: isPrivate ? { status: '1', } : { status: '1', user_id: null }, });
     if (clouds.length === 0) {
       return {
         code: 400,
@@ -245,7 +246,7 @@ class Drop {
 
   loadSubClouds = async () => {
     const subClouds = await SubCloudModel.findAll({
-      where: { status: '1' },
+      where: { status: '1', user_id: null },
       order: [
         ['order', 'ASC'],
       ],
@@ -262,6 +263,92 @@ class Drop {
       code: 200,
       message: 'Sub clouds successfully loaded',
       data: subClouds,
+    };
+  }
+
+  createSubCloud = async (user_id, cloud_id, name, description) => {
+    const subClouds = await SubCloudModel.create({
+      cloud_id,
+      user_id,
+      name,
+      description,
+      status: '1',
+      order: '0',
+      date: new Date(),
+    });
+
+    return {
+      code: 200,
+      message: 'Sub cloud successfully created',
+      data: subClouds,
+    };
+  }
+
+  getSingleSubCloud = async (sub_cloud_id) => {
+    const subClouds = await SubCloudModel.findOne({
+      where: { sub_cloud_id },
+    });
+    if (subClouds.length === 0) {
+      return {
+        code: 400,
+        message: 'No sub clouds were found',
+        data: [],
+      };
+    }
+
+    const users = await GroupModel.findAll({ where: { sub_cloud_id } });
+    return {
+      code: 200,
+      message: 'Sub clouds successfully loaded',
+      data: { ...subClouds, users: !users ? users : users.map(user => user.get().user_id) },
+    };
+  }
+
+  addUsersToSubCloud = async (sub_cloud_id, users, status) => {
+    if (!Array.isArray(users) || users.length === 0) {
+      return {
+        code: 400,
+        message: 'No users were added to the cloud, because users were not selected.',
+        data: {},
+      };
+    }
+
+    const groups = [];
+    const date = new Date();
+    let count = await GroupModel.count({ where: { sub_cloud_id, } });
+    await promiseAll(async user_id => {
+      if (count < 100) {
+        const user = await UserService.getUser(user_id);
+        const [entry, created] = await GroupModel.findOrCreate({
+          where: { sub_cloud_id, user_id: user.user_id, },
+          defaults: { status, date, }
+        });
+        groups.push({ entry, created });
+
+        if (created) {
+          count++;
+        }
+      } else {
+        const user = await UserService.getUser(user_id);
+        const entry = await GroupModel.findOne({
+          where: { sub_cloud_id, user_id: user.user_id, },
+        });
+        groups.push({ entry, created: false });
+      }
+    }, users);
+
+    if (groups.length === 0) {
+      return {
+        code: 400,
+        message: 'Users were not added to the cloud. An error occcured.',
+        data: { group: groups },
+      };
+    }
+
+    return {
+      code: 200,
+      message: 'Users were successfully added to the cloud.',
+      data: { new: groups },
     };
   }
 
@@ -661,7 +748,7 @@ class Drop {
 
     const drops = await DropModel.findAll(options);
     const total = await DropModel.count(options);
-    const clouds = await this.loadClouds();
+    const clouds = await this.loadClouds(true);
     if (drops === null || !clouds.all) {
       return {
         code: 200,
