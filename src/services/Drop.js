@@ -224,8 +224,8 @@ class Drop {
     };
   }
 
-  loadClouds = async (isPrivate = false) => {
-    const clouds = await CloudModel.findAll({ where: isPrivate ? { status: '1', } : { status: '1', user_id: null }, });
+  loadClouds = async () => {
+    const clouds = await CloudModel.findAll({ where: { status: '1' }, });
     if (clouds.length === 0) {
       return {
         code: 400,
@@ -244,9 +244,9 @@ class Drop {
     };
   }
 
-  loadSubClouds = async () => {
+  loadSubClouds = async (user_id) => {
     const subClouds = await SubCloudModel.findAll({
-      where: { status: '1', user_id: null },
+      where: { status: '1', [Op.or]: [{ user_id: null }, { user_id }], },
       order: [
         ['order', 'ASC'],
       ],
@@ -259,10 +259,11 @@ class Drop {
       };
     }
 
+    const memberships = await GroupModel.findAll({ where: { user_id, status: '1' } });
     return {
       code: 200,
       message: 'Sub clouds successfully loaded',
-      data: subClouds,
+      data: { ...subClouds, memberships: !memberships ? [] : memberships.map(membership => membership.get().sub_cloud_id) },
     };
   }
 
@@ -277,6 +278,12 @@ class Drop {
       date: new Date(),
     });
 
+    await GroupModel.create({
+      sub_cloud_id: subClouds.sub_cloud_id,
+      user_id,
+      status: '1',
+      date: new Date(),
+    });
     return {
       code: 200,
       message: 'Sub cloud successfully created',
@@ -300,7 +307,7 @@ class Drop {
     return {
       code: 200,
       message: 'Sub clouds successfully loaded',
-      data: { ...subClouds, users: !users ? users : users.map(user => user.get().user_id) },
+      data: { ...subClouds, users: !users ? [] : users.map(user => user.get().user_id) },
     };
   }
 
@@ -317,12 +324,14 @@ class Drop {
     const date = new Date();
     let count = await GroupModel.count({ where: { sub_cloud_id, } });
     await promiseAll(async user_id => {
+      let group_id = 0;
       if (count < 100) {
         const user = await UserService.getUser(user_id);
         const [entry, created] = await GroupModel.findOrCreate({
           where: { sub_cloud_id, user_id: user.user_id, },
           defaults: { status, date, }
         });
+        group_id = entry.group_id;
         groups.push({ entry, created });
 
         if (created) {
@@ -333,7 +342,12 @@ class Drop {
         const entry = await GroupModel.findOne({
           where: { sub_cloud_id, user_id: user.user_id, },
         });
+        group_id = !entry ? 0 : entry.group_id;
         groups.push({ entry, created: false });
+      }
+
+      if (group_id) {
+        await GroupModel.update({ status }, { where: { group_id } });
       }
     }, users);
 
@@ -748,7 +762,7 @@ class Drop {
 
     const drops = await DropModel.findAll(options);
     const total = await DropModel.count(options);
-    const clouds = await this.loadClouds(true);
+    const clouds = await this.loadClouds();
     if (drops === null || !clouds.all) {
       return {
         code: 200,
