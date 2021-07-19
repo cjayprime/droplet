@@ -259,11 +259,19 @@ class Drop {
       };
     }
 
-    const memberships = await GroupModel.findAll({ where: { user_id, status: '1' } });
     return {
       code: 200,
       message: 'Sub clouds successfully loaded',
-      data: { ...subClouds, memberships: !memberships ? [] : memberships.map(membership => membership.get().sub_cloud_id) },
+      data: subClouds,
+    };
+  }
+
+  loadGroups = async (user_id) => {
+    const memberships = await GroupModel.findAll({ where: { user_id, status: '1' } });
+    return {
+      code: 200,
+      message: 'Groups successfully loaded',
+      data: { memberships: !memberships ? [] : memberships.map(membership => membership.get().sub_cloud_id) },
     };
   }
 
