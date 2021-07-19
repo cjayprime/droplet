@@ -220,6 +220,64 @@ class DropController extends Controller {
   	})
   ];
 
+  createSubCloud = [
+  	body('cloud_id')
+  		.isInt()
+  		.withMessage('must be a valid number.'),
+
+    body('name')
+      .notEmpty()
+      .withMessage('must be valid characters (it can include emojis).'),
+
+    body('description')
+      .notEmpty()
+      .withMessage('must be a valid subCloud (id or name).'),
+
+  	this.action(async (req, res, next) => {
+      const { body: { cloud_id, name, description }, account: { user_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.createSubCloud(user_id, cloud_id, name, description);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  getSingleSubCloud = [
+  	param('sub_cloud_id')
+  		.isInt()
+  		.withMessage('must be a valid number.'),
+
+  	this.action(async (req, res, next) => {
+      const { params: { sub_cloud_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.getSingleSubCloud(sub_cloud_id);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
+  addUsersToSubCloud = [
+  	param('sub_cloud_id')
+  		.isInt()
+  		.withMessage('must be a valid number.'),
+
+  	body('users')
+  		.isArray()
+  		.withMessage('must be an array of valid user_ids.'),
+
+    body('status')
+      .isInt({ min: 0, max: 1 })
+      .withMessage('must be either 0 or 1.'),
+
+  	this.action(async (req, res, next) => {
+      const { params: { sub_cloud_id }, body: { users, status } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.addUsersToSubCloud(sub_cloud_id, users, status);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
   /**
    * Create a drop using it's tag, and specify the bars to plot in the waveform
    *
