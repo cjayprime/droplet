@@ -221,6 +221,24 @@ class DropController extends Controller {
   	})
   ];
 
+  /**
+   * Get a user's subclouds membership
+   *
+   * @param {Express.Response}    res     Express[.response] response object
+   * @param {Express.Request}     req     Express[.request] request object
+   * @param {Express.next}        next    Express callback to move to the next middleware
+   * @return {void} void
+   */
+  getGroups = [
+  	this.action(async (req, res, next) => {
+      const { account: { user_id } } = req;
+  		const dropService = new DropService();
+  		const response = await dropService.loadGroups(user_id);
+      this.response(res, response.code, response.data, response.message);
+  		next();
+  	})
+  ];
+
   createSubCloud = [
   	body('cloud_id')
   		.isInt()
