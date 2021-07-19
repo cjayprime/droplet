@@ -212,9 +212,10 @@ class DropController extends Controller {
    * @return {void} void
    */
   getSubClouds = [
-  	this.action(async (_, res, next) => {
+  	this.action(async (req, res, next) => {
+      const { account: { user_id } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.loadSubClouds();
+  		const response = await dropService.loadSubClouds(user_id);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
