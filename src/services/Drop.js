@@ -24,6 +24,21 @@ class Drop {
   recording = {
     min: 2,
     max: 90,
+    soft: {
+      min: 2,
+      max: 90,
+    },
+    strict: true,
+  };
+
+  upload = {
+    min: 2,
+    max: 90,
+    soft: {
+      min: 2,
+      max: 300,
+    },
+    strict: false,
   };
 
   /**
@@ -156,14 +171,17 @@ class Drop {
       };
     }
 
-    const message = `Please record/select an audio file of between ${this.recording.min} and ${this.recording.max} seconds`;
-    if (duration <= this.recording.min) {
+    const audioSource = this[source];
+    const max = audioSource.strict ? audioSource.max : audioSource.soft.max;
+    const min = audioSource.strict ? audioSource.min : audioSource.soft.min;
+    const message = `Please ${source === 'recording' ? 'record' : 'upload'} an audio file between ${min} and ${max} seconds.`;
+    if (duration <= min) {
       return {
         code: 400,
         data: { duration, code: 'too-short' },
         message,
       };
-    } else if (duration > this.recording.max) {
+    } else if (duration > max) {
       return {
         code: 400,
         data: { duration, code: 'too-long' },
@@ -246,7 +264,7 @@ class Drop {
 
   loadSubClouds = async (user_id) => {
     const subClouds = await SubCloudModel.findAll({
-      where: { status: '1', [Op.or]: [{ user_id: null }, { user_id }], },
+      where: !user_id ? { status: '1' } : { status: '1', [Op.or]: [{ user_id: null }, { user_id }], },
       order: [
         ['order', 'ASC'],
       ],
@@ -760,13 +778,13 @@ class Drop {
       }
     }
 
-    UserService.associateForUser();
-
     // GCP doesn't allow `GROUP BY` queries because `sql_mode` is set to `only_full_group_by` to fix it use:
     // SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
     // note that 'SESSION' should be 'GLOBAL' and thus permanent but GCP again doesn't give the necessary 
     // SUPER ADMIN permissions to make such a change
     await sequelize.query('SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'));');
+
+    UserService.associateForUser();
 
     const drops = await DropModel.findAll(options);
     const total = await DropModel.count(options);

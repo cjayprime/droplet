@@ -130,9 +130,12 @@ class Authenticate {
     return {
       code: 200,
       message:  'Successfully retrieved the application options.',
-      data: { 
+      data: {
         recording: {
           ...dropService.recording,
+        },
+        upload: {
+          ...dropService.upload,
         },
       },
     };
