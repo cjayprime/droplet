@@ -1,6 +1,8 @@
 import nodeCron from 'node-cron';
 import cronstrue from 'cronstrue';
 
+import sequelize from '../models/base';
+
 import { Error, Notify } from '../shared';
 
 class Application {
@@ -35,7 +37,13 @@ class Application {
   	this.app.use(this.error);
   }
 
-  start() {
+  async start() {
+    // GCP doesn't allow `GROUP BY` queries because `sql_mode` is set to `only_full_group_by` to fix it use:
+    // SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+    // note that 'SESSION' should be 'GLOBAL' and thus permanent but GCP again doesn't give the necessary
+    // SUPER ADMIN permissions to make such a change
+    await sequelize.query('SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'));');
+
   	const server = this.app.listen(this.port, () => {
   		console.log(
   			`The server is now running at http://localhost:${this.port} for ${process.env.NODE_ENV}`
