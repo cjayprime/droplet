@@ -351,4 +351,5 @@ jobs:
         run: curl --fail http://${{ env.SERVER_IP }}:80/health
 
       - name: 'ubuntu'
+        uses: fifsky/ssh-action@master
         args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
