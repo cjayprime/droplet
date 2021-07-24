@@ -352,4 +352,5 @@ jobs:
 
       - name: 'ubuntu'
         uses: fifsky/ssh-action@master
-        args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
+        with: 
+          args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
