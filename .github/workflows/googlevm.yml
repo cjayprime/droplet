@@ -255,6 +255,11 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: "-T"
 
+      - name: 'ubuntu'
+        uses: fifsky/ssh-action@master
+        with: 
+          args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
+
       - name: Load Environment Variables
         uses: fifsky/ssh-action@master
         if: ${{ success() }}
@@ -349,8 +354,3 @@ jobs:
       - name: Verify Application (External)
         if: ${{ success() }}
         run: curl --fail http://${{ env.SERVER_IP }}:80/health
-
-      - name: 'ubuntu'
-        uses: fifsky/ssh-action@master
-        with: 
-          args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
