@@ -66,7 +66,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y git=1:2.17.1-1ubuntu0.8 nginx=1.14.0-0ubuntu1.9 lame=3.100-2 ffmpeg=7:3.4.8-0ubuntu0.2
             curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
-            sudo apt-get -y install nodejs=14.17.0-1nodesource1
+            sudo apt-get -y install nodejs=14.17.2-1nodesource1
             sudo apt install build-essential
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
@@ -235,7 +235,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y git=1:2.17.1-1ubuntu0.8 nginx=1.14.0-0ubuntu1.9 lame=3.100-2 ffmpeg=7:3.4.8-0ubuntu0.2
             curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
-            sudo apt-get -y install nodejs=14.17.0-1nodesource1
+            sudo apt-get -y install nodejs=14.17.2-1nodesource1
             sudo apt install build-essential
           host: ${{ env.SERVER_IP }}
           user: ${{ env.SSH_USERNAME }}
@@ -254,11 +254,6 @@ jobs:
           user: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           args: "-T"
-
-      - name: 'ubuntu'
-        uses: fifsky/ssh-action@master
-        with: 
-          args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
 
       - name: Load Environment Variables
         uses: fifsky/ssh-action@master
