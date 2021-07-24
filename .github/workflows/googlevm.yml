@@ -349,3 +349,6 @@ jobs:
       - name: Verify Application (External)
         if: ${{ success() }}
         run: curl --fail http://${{ env.SERVER_IP }}:80/health
+
+      - name: 'ubuntu'
+        args: ['sh', '-c', 'sysctl fs.inotify.max_user_watches=524288'] 
