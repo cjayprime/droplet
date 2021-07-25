@@ -262,9 +262,9 @@ class Drop {
     };
   }
 
-  loadSubClouds = async (user_id) => {
+  loadSubClouds = async () => {
     const subClouds = await SubCloudModel.findAll({
-      where: !user_id ? { status: '1' } : { status: '1', [Op.or]: [{ user_id: null }, { user_id }], },
+      where: { status: '1', user_id: null },
       order: [
         ['order', 'ASC'],
       ],
@@ -289,7 +289,7 @@ class Drop {
     return {
       code: 200,
       message: 'Groups successfully loaded',
-      data: { memberships: !memberships ? [] : memberships.map(membership => membership.get().sub_cloud_id) },
+      data: { memberships: !memberships ? [] : memberships.map(membership => membership.get()) },
     };
   }
 
@@ -329,11 +329,11 @@ class Drop {
       };
     }
 
-    const users = await GroupModel.findAll({ where: { sub_cloud_id } });
+    const users = await GroupModel.findAll({ where: { sub_cloud_id, status: '1' } });
     return {
       code: 200,
       message: 'Sub clouds successfully loaded',
-      data: { ...subClouds, users: !users ? [] : users.map(user => user.get().user_id) },
+      data: { sub_cloud: subClouds.get(), users: !users ? [] : users.map(user => user.get().user_id) },
     };
   }
 
@@ -373,7 +373,7 @@ class Drop {
       }
 
       if (group_id) {
-        await GroupModel.update({ status }, { where: { group_id } });
+        await GroupModel.update({ status: status === 1 ? '1' : '0' }, { where: { group_id } });
       }
     }, users);
 
@@ -387,8 +387,8 @@ class Drop {
 
     return {
       code: 200,
-      message: 'Users were successfully added to the cloud.',
-      data: { new: groups },
+      message: 'Users were successfully ' + status === 1 ? ' added to ' : ' removed from ' + 'the sub_cloud.',
+      data: { group: groups },
     };
   }
 
@@ -758,7 +758,7 @@ class Drop {
   feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
     if (!options) {
-      const where = subCloud ? { status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', };
+      const where = subCloud ? { user_id: null, status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { user_id: null, status: '1', };
       options = {
         where,
         include: UserService.includeForUser,
