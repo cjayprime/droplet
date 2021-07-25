@@ -758,7 +758,7 @@ class Drop {
   feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
     if (!options) {
-      const where = subCloud ? { status: '1', '$sub_cloud.user_id$': null, [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', '$sub_cloud.user_id$': null, };
+      const where = subCloud ? { status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', '$sub_cloud.user_id$': null, };
       options = {
         where,
         include: UserService.includeForUser,
