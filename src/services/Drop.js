@@ -289,7 +289,7 @@ class Drop {
     return {
       code: 200,
       message: 'Groups successfully loaded',
-      data: { memberships: !memberships ? [] : memberships.map(membership => membership.get()) },
+      data: { memberships: !memberships ? [] : memberships.map(membership => membership.get().sub_cloud_id) },
     };
   }
 
@@ -337,7 +337,7 @@ class Drop {
     };
   }
 
-  addUsersToSubCloud = async (sub_cloud_id, users, status) => {
+  toggleUserInSubCloud = async (sub_cloud_id, users, status) => {
     if (!Array.isArray(users) || users.length === 0) {
       return {
         code: 400,

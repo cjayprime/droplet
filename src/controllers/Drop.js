@@ -274,7 +274,7 @@ class DropController extends Controller {
   	})
   ];
 
-  addUsersToSubCloud = [
+  toggleUserInSubCloud = [
   	param('sub_cloud_id')
   		.isInt()
   		.withMessage('must be a valid number.'),
@@ -290,7 +290,7 @@ class DropController extends Controller {
   	this.action(async (req, res, next) => {
       const { params: { sub_cloud_id }, body: { users, status } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.addUsersToSubCloud(sub_cloud_id, users, status);
+  		const response = await dropService.toggleUserInSubCloud(sub_cloud_id, users, status);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
