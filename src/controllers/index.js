@@ -54,6 +54,7 @@ export default {
     { method: 'POST', path: '/create', action: drop.create },
     { method: 'PUT', path: '/trim', action: drop.trim },
     { method: 'POST', path: '/like', action: drop.like },
+    { method: 'POST', path: '/seen', action: drop.seen },
 
     // User
     { method: 'PUT', path: '/user', action: user.update },
