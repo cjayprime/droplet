@@ -388,7 +388,7 @@ class Drop {
 
     return {
       code: 200,
-      message: 'Users were successfully ' + (status === 1 ? 'added to ' : 'removed from ') + 'the sub_cloud.',
+      message: 'Users were successfully ' + (status === 1 ? 'added to' : 'removed from') + ' the sub_cloud.',
       data: { group: groups },
     };
   }
