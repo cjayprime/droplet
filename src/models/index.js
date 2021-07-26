@@ -10,3 +10,4 @@ export { default as FilterUsage } from './FilterUsage';
 export { default as User } from './User';
 export { default as Marketing } from './Marketing';
 export { default as Group } from './Group';
+export { default as Seen } from './Seen';

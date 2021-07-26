@@ -16,7 +16,7 @@ class Cron {
   };
 
   rankDrops = {
-    schedule: process.env.NODE_ENV === 'production' ? '*/10 * * * *' : '*/30 * * * *',
+    schedule: process.env.NODE_ENV === 'production' ? '*/10 * * * *' : '*/45 * * * *',
     /**
      * Add drop rankings to all drops
      * f(l, c) = log (likes + 0.5 * comments + 1) + ((currentDropTime - firstDropTime) / 43200)

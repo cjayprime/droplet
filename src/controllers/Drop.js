@@ -361,6 +361,23 @@ class DropController extends Controller {
   ];
 
   /**
+   * Record a listen (to a drop) within the app
+   */
+  seen = [
+    body('drop_id')
+      .notEmpty()
+      .withMessage('must be a valid drop_id.'),
+
+    this.action(async (req, res, next) => {
+      const { account: { user_id }, body: { drop_id } } = req;
+      const dropService = new DropService();
+      const response = await dropService.seen(user_id, drop_id);
+      this.response(res, response.code, response.data, response.message);
+      next();
+    })
+  ];
+
+  /**
    * Get a waveform for a drop using it's tag, and specify the bars to plot in the waveform
    *
    * @param {Express.Response}    res     Express[.response] response object
@@ -374,11 +391,11 @@ class DropController extends Controller {
       .withMessage('must be a valid drop_id.'),
 
   	this.action(async (req, res, next) => {
-      const { query: { user_id }, params: { audio_idORtagORdrop_id } } = req;
+      const { account: { user_id: UID }, query: { user_id }, params: { audio_idORtagORdrop_id } } = req;
   		const dropService = new DropService();
   		const response = await dropService.single(
         audio_idORtagORdrop_id,
-        user_id,
+        UID || user_id,
         req.originalUrl.indexOf('/drops') === 0 ? 'drop_id' : 'audio_id'
       );
       this.response(res, response.code, response.data, response.message);
@@ -468,7 +485,7 @@ class DropController extends Controller {
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { query: { limit, offset, subCloud, user_id: UID }, params: { user_id } } = req;
+      const { account: { user_id: UID }, query: { limit, offset, subCloud }, params: { user_id } } = req;
   		const dropService = new DropService();
   		const response = await dropService.feed(UID || user_id, user_id, limit, offset, null, typeof subCloud === 'string' ? [subCloud] : subCloud);
       this.response(res, response.code, response.data, response.message);
