@@ -147,7 +147,7 @@ class DropController extends Controller {
     ]),
 
   	this.action(async (req, res, next) => {
-      const { body: { user_id, recording, source } } = req;
+      const { account: { user_id }, body: { recording, source } } = req;
   		const dropService = new DropService();
   		const response = await dropService.validate(user_id, recording, source);
       this.response(res, response.code, response.data, response.message);
@@ -305,10 +305,6 @@ class DropController extends Controller {
    * @return {void} void
    */
   create = [
-  	body('user_id')
-      .notEmpty()
-  		.withMessage('must be a user_id.'),
-
   	body('tag')
       .isUUID(4)
       .withMessage('must be a valid tag.'),
@@ -331,7 +327,7 @@ class DropController extends Controller {
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { body: { user_id, tag, caption, subCloud, isTrimmed, filter } } = req;
+      const { account: { user_id }, body: { tag, caption, subCloud, isTrimmed, filter } } = req;
   		const dropService = new DropService();
   		const response = await dropService.create(user_id, tag, caption, subCloud, isTrimmed, filter);
       this.response(res, response.code, response.data, response.message);
@@ -343,16 +339,12 @@ class DropController extends Controller {
    * Record a listen (to a drop) within the app
    */
   like = [
-    body('user_id')
-      .notEmpty()
-      .withMessage('must be a valid user_id.'),
-
     body('drop_id')
       .isInt()
       .withMessage('must be a valid drop.'),
 
     this.action(async (req, res, next) => {
-      const { body: { user_id, drop_id } } = req;
+      const { account: { user_id }, body: { drop_id } } = req;
       const dropService = new DropService();
       const response = await dropService.like(user_id, drop_id);
       this.response(res, response.code, response.data, response.message);

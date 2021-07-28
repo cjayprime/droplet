@@ -456,12 +456,13 @@ class Drop {
       };
     }
 
+    const lastDrop = await DropModel.findOne({ attributes: ['ranking'], order: [['date', 'DESC']] });
     const drop = await DropModel.create({
       user_id: user.user_id,
       audio_id: audio.audio_id,
       sub_cloud_id,
       caption,
-      ranking: 9999999999,
+      ranking: (lastDrop ? parseInt(lastDrop.ranking) + 1 : 9999999999),
       status: '1',
       date: date || new Date(),
     });
