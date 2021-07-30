@@ -147,7 +147,7 @@ class DropController extends Controller {
     ]),
 
   	this.action(async (req, res, next) => {
-      const { body: { user_id, recording, source } } = req;
+      const { account: { user_id }, body: { recording, source } } = req;
   		const dropService = new DropService();
   		const response = await dropService.validate(user_id, recording, source);
       this.response(res, response.code, response.data, response.message);
@@ -212,10 +212,9 @@ class DropController extends Controller {
    * @return {void} void
    */
   getSubClouds = [
-  	this.action(async (req, res, next) => {
-      const { account: { user_id } } = req;
-  		const dropService = new DropService();
-  		const response = await dropService.loadSubClouds(user_id);
+  	this.action(async (_, res, next) => {
+      const dropService = new DropService();
+  		const response = await dropService.loadSubClouds();
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -275,7 +274,7 @@ class DropController extends Controller {
   	})
   ];
 
-  addUsersToSubCloud = [
+  toggleUserInSubCloud = [
   	param('sub_cloud_id')
   		.isInt()
   		.withMessage('must be a valid number.'),
@@ -291,7 +290,7 @@ class DropController extends Controller {
   	this.action(async (req, res, next) => {
       const { params: { sub_cloud_id }, body: { users, status } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.addUsersToSubCloud(sub_cloud_id, users, status);
+  		const response = await dropService.toggleUserInSubCloud(sub_cloud_id, users, status);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})
@@ -306,10 +305,6 @@ class DropController extends Controller {
    * @return {void} void
    */
   create = [
-  	body('user_id')
-      .notEmpty()
-  		.withMessage('must be a user_id.'),
-
   	body('tag')
       .isUUID(4)
       .withMessage('must be a valid tag.'),
@@ -332,7 +327,7 @@ class DropController extends Controller {
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { body: { user_id, tag, caption, subCloud, isTrimmed, filter } } = req;
+      const { account: { user_id }, body: { tag, caption, subCloud, isTrimmed, filter } } = req;
   		const dropService = new DropService();
   		const response = await dropService.create(user_id, tag, caption, subCloud, isTrimmed, filter);
       this.response(res, response.code, response.data, response.message);
@@ -344,18 +339,31 @@ class DropController extends Controller {
    * Record a listen (to a drop) within the app
    */
   like = [
-    body('user_id')
-      .notEmpty()
-      .withMessage('must be a valid user_id.'),
-
     body('drop_id')
       .isInt()
       .withMessage('must be a valid drop.'),
 
     this.action(async (req, res, next) => {
-      const { body: { user_id, drop_id } } = req;
+      const { account: { user_id }, body: { drop_id } } = req;
       const dropService = new DropService();
       const response = await dropService.like(user_id, drop_id);
+      this.response(res, response.code, response.data, response.message);
+      next();
+    })
+  ];
+
+  /**
+   * Record a listen (to a drop) within the app
+   */
+  seen = [
+    body('drop_id')
+      .notEmpty()
+      .withMessage('must be a valid drop_id.'),
+
+    this.action(async (req, res, next) => {
+      const { account: { user_id }, body: { drop_id } } = req;
+      const dropService = new DropService();
+      const response = await dropService.seen(user_id, drop_id);
       this.response(res, response.code, response.data, response.message);
       next();
     })
@@ -375,11 +383,11 @@ class DropController extends Controller {
       .withMessage('must be a valid drop_id.'),
 
   	this.action(async (req, res, next) => {
-      const { query: { user_id }, params: { audio_idORtagORdrop_id } } = req;
+      const { account: { user_id: UID }, query: { user_id }, params: { audio_idORtagORdrop_id } } = req;
   		const dropService = new DropService();
   		const response = await dropService.single(
         audio_idORtagORdrop_id,
-        user_id,
+        UID || user_id,
         req.originalUrl.indexOf('/drops') === 0 ? 'drop_id' : 'audio_id'
       );
       this.response(res, response.code, response.data, response.message);
@@ -469,7 +477,7 @@ class DropController extends Controller {
       .optional(),
 
   	this.action(async (req, res, next) => {
-      const { query: { limit, offset, subCloud, user_id: UID }, params: { user_id } } = req;
+      const { account: { user_id: UID }, query: { limit, offset, subCloud }, params: { user_id } } = req;
   		const dropService = new DropService();
   		const response = await dropService.feed(UID || user_id, user_id, limit, offset, null, typeof subCloud === 'string' ? [subCloud] : subCloud);
       this.response(res, response.code, response.data, response.message);

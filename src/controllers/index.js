@@ -47,13 +47,14 @@ export default {
     { method: 'GET', path: '/subclouds', action: drop.getSubClouds },
     { method: 'POST', path: '/subclouds', action: drop.createSubCloud },
     { method: 'GET', path: '/subclouds/:sub_cloud_id', action: drop.getSingleSubCloud },
-    { method: 'PUT', path: '/subclouds/:sub_cloud_id', action: drop.addUsersToSubCloud },
+    { method: 'PUT', path: '/subclouds/:sub_cloud_id', action: drop.toggleUserInSubCloud },
     { method: 'GET', path: '/groups', action: drop.getGroups },
     { method: 'GET', path: '/waveform', action: drop.waveform },
     { method: 'POST', path: '/validate', action: drop.validate },
     { method: 'POST', path: '/create', action: drop.create },
     { method: 'PUT', path: '/trim', action: drop.trim },
     { method: 'POST', path: '/like', action: drop.like },
+    { method: 'POST', path: '/seen', action: drop.seen },
 
     // User
     { method: 'PUT', path: '/user', action: user.update },

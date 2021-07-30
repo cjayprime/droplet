@@ -17,6 +17,7 @@ import {
   Like as LikeModel,
   Listen as ListenModel,
   Group as GroupModel,
+  Seen as SeenModel,
 } from '../models';
 import { Notify, promiseAll } from '../shared';
 
@@ -262,9 +263,9 @@ class Drop {
     };
   }
 
-  loadSubClouds = async (user_id) => {
+  loadSubClouds = async () => {
     const subClouds = await SubCloudModel.findAll({
-      where: !user_id ? { status: '1' } : { status: '1', [Op.or]: [{ user_id: null }, { user_id }], },
+      where: { status: '1', user_id: null },
       order: [
         ['order', 'ASC'],
       ],
@@ -329,15 +330,15 @@ class Drop {
       };
     }
 
-    const users = await GroupModel.findAll({ where: { sub_cloud_id } });
+    const users = await GroupModel.findAll({ where: { sub_cloud_id, status: '1' } });
     return {
       code: 200,
       message: 'Sub clouds successfully loaded',
-      data: { ...subClouds, users: !users ? [] : users.map(user => user.get().user_id) },
+      data: { sub_cloud: subClouds.get(), users: !users ? [] : users.map(user => user.get().user_id) },
     };
   }
 
-  addUsersToSubCloud = async (sub_cloud_id, users, status) => {
+  toggleUserInSubCloud = async (sub_cloud_id, users, status) => {
     if (!Array.isArray(users) || users.length === 0) {
       return {
         code: 400,
@@ -373,7 +374,7 @@ class Drop {
       }
 
       if (group_id) {
-        await GroupModel.update({ status }, { where: { group_id } });
+        await GroupModel.update({ status: status === 1 ? '1' : '0' }, { where: { group_id } });
       }
     }, users);
 
@@ -387,8 +388,8 @@ class Drop {
 
     return {
       code: 200,
-      message: 'Users were successfully added to the cloud.',
-      data: { new: groups },
+      message: 'Users were successfully ' + (status === 1 ? 'added to' : 'removed from') + ' the sub_cloud.',
+      data: { group: groups },
     };
   }
 
@@ -455,12 +456,13 @@ class Drop {
       };
     }
 
+    const lastDrop = await DropModel.findOne({ attributes: ['ranking'], order: [['date', 'DESC']] });
     const drop = await DropModel.create({
       user_id: user.user_id,
       audio_id: audio.audio_id,
       sub_cloud_id,
       caption,
-      ranking: 9999999999,
+      ranking: (lastDrop ? parseInt(lastDrop.ranking) + 1 : 9999999999),
       status: '1',
       date: date || new Date(),
     });
@@ -672,6 +674,53 @@ class Drop {
   }
 
   /**
+   * Mark a drop as seen
+   * 
+   * @param {BigInt} uid 
+   * @param {BigInt} drop_id 
+   * @returns 
+   */
+  seen = async (uid, drop_id) => {
+    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
+    if (!user) {
+      return {
+        code: 400,
+        message: 'The user does not exist.',
+        data: {},
+      };
+    }
+
+    const drop = await DropModel.findOne({ where: { drop_id } });
+    if (!drop) {
+      return {
+        code: 400,
+        message: 'The drop does not exist.',
+        data: {},
+      };
+    }
+
+    const user_id = user.user_id;
+    const [newSeen] = await SeenModel.findOrCreate({
+      where: { user_id, drop_id },
+      defaults: { date: new Date() },
+    });
+
+    if (newSeen.drop_id != drop_id) {
+      return {
+        code: 400,
+        data: {},
+        message: 'Unable to record seen.',
+      };
+    }
+
+    return {
+      code: 200,
+      data: { seen: true },
+      message: 'Successfully recorded the seen.',
+    };
+  }
+
+  /**
    * Get a single drop by audio_id, tag or drop_id AND optionally
    * check if `user_id` has listened or liked it
    * 
@@ -758,7 +807,7 @@ class Drop {
   feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
     if (!options) {
-      const where = subCloud ? { status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', };
+      const where = subCloud ? { status: '1', [Op.or]: { '$sub_cloud.name$': { [Op.in]: subCloud }, '$sub_cloud.sub_cloud_id$': { [Op.in]: subCloud } } } : { status: '1', '$sub_cloud.user_id$': null, };
       options = {
         where,
         include: UserService.includeForUser,
@@ -799,6 +848,7 @@ class Drop {
 
     UserService.generateAssociation({}, UserModel, LikeModel);
     UserService.generateAssociation({}, UserModel, ListenModel);
+    UserService.generateAssociation({}, UserModel, SeenModel);
     const dropsArray = await Promise.all(
       drops.map(async drop => {
         const dropData = drop.get();
@@ -828,12 +878,20 @@ class Drop {
           include: [{ model: UserModel, required: true }],
         });
 
+        // Seen
+        // Count all seen
+        const seen = await SeenModel.count({
+          where: { drop_id: dropData.drop_id, ...UserService.searchForUser(signedInUserID) },
+          include: [{ model: UserModel, required: true }],
+        });
+
         return {
           ...dropData,
           likes: likes,
           liked: !!(liked && liked.status === '1'),
           listens,
-          listened: !!listened
+          listened: !!listened,
+          seen: seen > 0,
         };
       })
     );
