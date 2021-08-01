@@ -19,10 +19,9 @@ class UserController extends Controller {
       .withMessage('must be a valid username.'),
 
     this.action(async (req, res, next) => {
-      const { body: { username } } = req;
-      const  { user_id } = req.account;
+      const { account: { user_id , uid }, body: { username } } = req;
       const userService = new UserService();
-      const response = await userService.update(username, user_id);
+      const response = await userService.update(username, user_id || uid);
       this.response(res, response.code, response.data, response.message);
       next();
     })

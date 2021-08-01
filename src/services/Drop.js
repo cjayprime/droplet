@@ -153,7 +153,7 @@ class Drop {
    * @returns ResponseObject
    */
   validate = async (user_id, recording, source) => {
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    const user = await UserService.getUser(user_id);
     if (user === null) {
       return {
         code: 400,
@@ -286,7 +286,8 @@ class Drop {
   }
 
   loadGroups = async (user_id) => {
-    const memberships = await GroupModel.findAll({ where: { user_id, status: '1' } });
+    const user = await UserService.getUser(user_id);
+    const memberships = await GroupModel.findAll({ where: { user_id: user.user_id, status: '1' } });
     return {
       code: 200,
       message: 'Groups successfully loaded',
@@ -295,9 +296,10 @@ class Drop {
   }
 
   createSubCloud = async (user_id, cloud_id, name, description) => {
+    const user = await UserService.getUser(user_id);
     const subClouds = await SubCloudModel.create({
       cloud_id,
-      user_id,
+      user_id: user.user_id,
       name,
       description,
       status: '1',
@@ -307,7 +309,7 @@ class Drop {
 
     await GroupModel.create({
       sub_cloud_id: subClouds.sub_cloud_id,
-      user_id,
+      user_id: user.user_id,
       status: '1',
       date: new Date(),
     });
@@ -436,7 +438,7 @@ class Drop {
       sub_cloud_id = subCloud.sub_cloud_id;
     }
 
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    const user = await UserService.getUser(user_id);
     if (user === null) {
       return {
         code: 400,
@@ -626,7 +628,7 @@ class Drop {
    * @returns 
    */
   like = async (uid, drop_id) => {
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
+    const user = await UserService.getUser(uid);
     if (!user) {
       return {
         code: 400,
@@ -681,7 +683,7 @@ class Drop {
    * @returns 
    */
   seen = async (uid, drop_id) => {
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(uid) }  });
+    const user = await UserService.getUser(uid);
     if (!user) {
       return {
         code: 400,
@@ -721,35 +723,6 @@ class Drop {
   }
 
   /**
-   * Get a single drop by audio_id, tag or drop_id AND optionally
-   * check if `user_id` has listened or liked it
-   * 
-   * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
-   * @param {BigInt}      user_id                   A user's id
-   * @param {Enum}        getBy                     Flag - whether to treat `audio_idORtagORdrop_id` as an audio_id or drop_id
-   * @returns 
-   */
-  single = async (audio_idORtagORdrop_id, user_id, getBy) => {
-    const tag = audio_idORtagORdrop_id;
-    let options = {
-      include: UserService.includeForUser,
-      where: {
-        status: '1',
-        [Op.or]: getBy === 'drop_id' ? [
-          { drop_id: tag },
-          { '$audio.tag$': tag },
-        ] : [
-          { '$audio.audio_id$': tag },
-          { '$audio.tag$': tag },
-        ],
-      },
-      limit: 1,
-    };
-
-    return await this.feed(user_id, null, null, 0, options);
-  }
-
-  /**
    * Update a drop
    * 
    * @param {BigInt|UUID} drop_id    An audio_id, audio tag, or drop_id
@@ -781,6 +754,35 @@ class Drop {
       message: 'Successfully updated the drop.',
       data: {},
     };
+  }
+
+  /**
+   * Get a single drop by audio_id, tag or drop_id AND optionally
+   * check if `user_id` has listened or liked it
+   * 
+   * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
+   * @param {BigInt}      user_id                   A user's id
+   * @param {Enum}        getBy                     Flag - whether to treat `audio_idORtagORdrop_id` as an audio_id or drop_id
+   * @returns 
+   */
+  single = async (audio_idORtagORdrop_id, user_id, getBy) => {
+    const tag = audio_idORtagORdrop_id;
+    let options = {
+      include: UserService.includeForUser,
+      where: {
+        status: '1',
+        [Op.or]: getBy === 'drop_id' ? [
+          { drop_id: tag },
+          { '$audio.tag$': tag },
+        ] : [
+          { '$audio.audio_id$': tag },
+          { '$audio.tag$': tag },
+        ],
+      },
+      limit: 1,
+    };
+
+    return await this.feed(user_id, null, null, 0, options);
   }
 
   /**

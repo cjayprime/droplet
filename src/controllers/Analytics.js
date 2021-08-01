@@ -16,18 +16,14 @@ class AnalyticsController extends Controller {
    * @return {void} void
    */
   recordInteraction = [
-    body('user_id')
-      .notEmpty()
-      .withMessage('must be a valid user_id.'),
-
     body('type')
       .notEmpty()
       .withMessage('must be a valid interaction type.'),
 
     this.action(async (req, res, next) => {
-      const { body: { type, user_id } } = req;
+      const { account: { user_id, uid }, body: { type } } = req;
       const anaylticsService = new AnalyticsService();
-      const response = await anaylticsService.recordInteraction(type, user_id);
+      const response = await anaylticsService.recordInteraction(type, user_id || uid);
       this.response(res, response.code, response.data, response.message);
       next();
     })
@@ -37,18 +33,14 @@ class AnalyticsController extends Controller {
    * Record a listen (to a drop) within the app
    */
   recordListen = [
-    body('user_id')
-      .notEmpty()
-      .withMessage('must be a valid user_id.'),
-
     body('drop_id')
       .isInt()
       .withMessage('must be a valid drop.'),
 
     this.action(async (req, res, next) => {
-      const { body: { user_id, drop_id } } = req;
+      const { account: { user_id, uid }, body: { drop_id } } = req;
       const anaylticsService = new AnalyticsService();
-      const response = await anaylticsService.recordListen(user_id, drop_id);
+      const response = await anaylticsService.recordListen(user_id || uid, drop_id);
       this.response(res, response.code, response.data, response.message);
       next();
     })
