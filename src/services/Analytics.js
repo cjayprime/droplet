@@ -3,7 +3,7 @@ import { createObjectCsvWriter } from 'csv-writer';
 import Authenticate from './Authenticate';
 import UserService from './User';
 
-import { Like as LikeModel, User as UserModel, Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, SubCloud as SubCloudModel } from '../models';
+import { Like as LikeModel, Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, SubCloud as SubCloudModel } from '../models';
 
 const authenticate = new Authenticate();
 class Analytics {
@@ -111,7 +111,7 @@ class Analytics {
   }
 
   recordInteraction = async (type, user_id) => {
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    const user = await UserService.getUser(user_id);
     if (user === null) {
       return {
         code: 400,
@@ -142,7 +142,7 @@ class Analytics {
   }
 
   recordListen = async (user_id, drop_id) => {
-    const user = await UserModel.findOne({ where: { ...UserService.searchForUser(user_id) }  });
+    const user = await UserService.getUser(user_id);
     if (user === null) {
       return {
         code: 400,
