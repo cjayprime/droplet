@@ -16,14 +16,18 @@ class AnalyticsController extends Controller {
    * @return {void} void
    */
   recordInteraction = [
+    body('user_id')
+      .notEmpty()
+      .withMessage('must be a valid user_id.'),
+
     body('type')
       .notEmpty()
       .withMessage('must be a valid interaction type.'),
 
     this.action(async (req, res, next) => {
-      const { account: { user_id, uid }, body: { type } } = req;
+      const { body: { type, user_id } } = req;
       const anaylticsService = new AnalyticsService();
-      const response = await anaylticsService.recordInteraction(type, user_id || uid);
+      const response = await anaylticsService.recordInteraction(type, user_id);
       this.response(res, response.code, response.data, response.message);
       next();
     })
