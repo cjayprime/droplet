@@ -142,10 +142,15 @@ class DropController extends Controller {
         .withMessage('must be a either "recording" or "upload".')
     ]),
 
+    body('type')
+      .isMimeType()
+      .withMessage('must be a valid mime type.')
+      .optional(),
+
   	this.action(async (req, res, next) => {
-      const { account: { user_id, uid }, body: { recording, source } } = req;
+      const { account: { user_id, uid }, body: { recording, source, type } } = req;
   		const dropService = new DropService();
-  		const response = await dropService.validate(user_id || uid, recording, source);
+  		const response = await dropService.validate(user_id || uid, recording, source, type);
       this.response(res, response.code, response.data, response.message);
   		next();
   	})

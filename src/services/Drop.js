@@ -148,11 +148,12 @@ class Drop {
    *
    * @param {String} user_id     Firebase uid
    * @param {String} recording   Audio recording encoded as base64
-   * @param {String} type        The source of recording (not related to audio source channel), useful for analytics
+   * @param {String} source      The source of recording (not related to audio source channel), useful for analytics
    *                             possible values are `recording` and `upload`
+   * @param {String} type        Mime type of the file
    * @returns ResponseObject
    */
-  validate = async (user_id, recording, source) => {
+  validate = async (user_id, recording, source, type = 'audio/aac') => {
     const user = await UserService.getUser(user_id);
     if (user === null) {
       return {
@@ -204,6 +205,7 @@ class Drop {
       user_id: user.user_id,
       tag,
       duration: duration * 1000,
+      type,
       filesize: audioEngine.size,
       date: new Date(),
       source,
