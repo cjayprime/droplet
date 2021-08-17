@@ -4,7 +4,7 @@ import { Notify } from '../shared';
 
 /**
  * Base controller from which all others are derived (extended)
- * 
+ *
  * @abstract
  */
 class Controller {
@@ -13,7 +13,7 @@ class Controller {
     /**
      * Validates an action, based on express-validator errors, before running it
      * Curries to an express callback
-     * 
+     *
      * @param {function}    Express.Action            callback to pass from a child class to express
      * @param {object}      Express.Request           The express(http) request object
      * @param {object}      Express.Response          The express(http) response object
@@ -42,7 +42,7 @@ class Controller {
 
     /**
      * Sends a response to the client (pre-determining the shape of all responses)
-     * 
+     *
      * @param {object}          Express.Response    The express(http) response object
      * @param {object}          HTTPStatusCode      The http status code
      * @param {object|array}    data                The data within the request
@@ -60,8 +60,8 @@ class Controller {
     		data = {
     			error: errArray.map(err => {
     				let report = 'The ' + err.param + ' ' + err.msg;
-    				if (err.param === '_error') { 
-    					// oneOf check failed, 
+    				if (err.param === '_error') {
+    					// oneOf check failed,
     					// only show errors from submission (identified
     					// by nestedError.value != undefined),
     					// if there are none show other errors

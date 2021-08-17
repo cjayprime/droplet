@@ -404,7 +404,7 @@ class Drop {
    * @param {UUID}    tag
    * @param {String}  caption
    * @param {String}  subCloudName    A sub cloud name or id
-   * @param {Boolean} isTrimmed   
+   * @param {Boolean} isTrimmed
    * @param {Boolean} filter
    * @param {Date}    date            A JS Date object to use in creating drops
    * @returns ResponseObject
@@ -624,10 +624,10 @@ class Drop {
 
   /**
    * Like a drop
-   * 
-   * @param {BigInt} uid 
-   * @param {BigInt} drop_id 
-   * @returns 
+   *
+   * @param {BigInt} uid
+   * @param {BigInt} drop_id
+   * @returns
    */
   like = async (uid, drop_id) => {
     const user = await UserService.getUser(uid);
@@ -679,10 +679,10 @@ class Drop {
 
   /**
    * Mark a drop as seen
-   * 
-   * @param {BigInt} uid 
-   * @param {BigInt} drop_id 
-   * @returns 
+   *
+   * @param {BigInt} uid
+   * @param {BigInt} drop_id
+   * @returns
    */
   seen = async (uid, drop_id) => {
     const user = await UserService.getUser(uid);
@@ -726,11 +726,11 @@ class Drop {
 
   /**
    * Update a drop
-   * 
+   *
    * @param {BigInt|UUID} drop_id    An audio_id, audio tag, or drop_id
    * @param {BigInt}      caption    The drop's caption
    * @param {BigInt}      status    The drop's status
-   * @returns 
+   * @returns
    */
   update = async (drop_id, caption, status = '1') => {
     let drop;
@@ -775,11 +775,11 @@ class Drop {
   /**
    * Get a single drop by audio_id, tag or drop_id AND optionally
    * check if `user_id` has listened or liked it
-   * 
+   *
    * @param {BigInt|UUID} audio_idORtagORdrop_id    An audio_id, audio tag, or drop_id
    * @param {BigInt}      user_id                   A user's id
    * @param {Enum}        getBy                     Flag - whether to treat `audio_idORtagORdrop_id` as an audio_id or drop_id
-   * @returns 
+   * @returns
    */
   single = async (audio_idORtagORdrop_id, user_id, getBy) => {
     const tag = audio_idORtagORdrop_id;
@@ -814,13 +814,13 @@ class Drop {
     // sort(drops) for largest likes
     // Math.pow(S.D, 2) = Math.pow(C, 2)
     // f =  Math.exponential   (1 / (S.D * Math.root(2 * Math.PI)))
-   * @param {*} signedInUserID 
-   * @param {*} selectForUserID 
-   * @param {*} limit 
-   * @param {*} offset 
-   * @param {*} opt 
-   * @param {Array|String} subCloud   A string or array of sub cloud names or ids 
-   * @returns 
+   * @param {*} signedInUserID
+   * @param {*} selectForUserID
+   * @param {*} limit
+   * @param {*} offset
+   * @param {*} opt
+   * @param {Array|String} subCloud   A string or array of sub cloud names or ids
+   * @returns
    */
   feed = async (signedInUserID, selectForUserID, limit = 10, offset = 0, opt, subCloud) => {
     let options = opt;
@@ -847,7 +847,7 @@ class Drop {
 
     // GCP doesn't allow `GROUP BY` queries because `sql_mode` is set to `only_full_group_by` to fix it use:
     // SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
-    // note that 'SESSION' should be 'GLOBAL' and thus permanent but GCP again doesn't give the necessary 
+    // note that 'SESSION' should be 'GLOBAL' and thus permanent but GCP again doesn't give the necessary
     // SUPER ADMIN permissions to make such a change
     await sequelize.query('SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'));');
 

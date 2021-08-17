@@ -51,7 +51,7 @@ class Authenticate {
       .where('username', '==', username)
       .limit(1)
       .get();
-    let authUser;  
+    let authUser;
     userSnapshot.forEach(doc => authUser = doc.data());
     return authUser;
   }
@@ -75,7 +75,7 @@ class Authenticate {
    * Check the authentication server (currently firebase) if a user with `username`
    * AND `uid` exist and are the same user. If they are then register the user, OR
    * if they are registered, sign them into this service
-   * 
+   *
    * @param {String} username   Username of a user
    * @param {String} uid        UID of a user from the AuthService
    */
@@ -121,7 +121,7 @@ class Authenticate {
 
   /**
    * Application Controls
-   * 
+   *
    * @param {String} username   Username of a user
    * @param {String} uid        UID of a user from the AuthService
    */

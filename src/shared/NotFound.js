@@ -2,9 +2,9 @@ import Controllers from '../controllers';
 
 class NotFound {
   /**
-   * Check the endpoints of the server if an endpoint 
+   * Check the endpoints of the server if an endpoint
    * being requested exists or not
-   * 
+   *
    * @param {Boolean} checkPublicOnly   Whether or not to limit the check to public endpoints
    * @returns {Express Middleware} The middleware in turn will return a boolean if
    *                               `checkPublicOnly` is true or Response with status 404 if it's false

@@ -35,7 +35,7 @@ class ExportVideo {
   wordWrap = (str, maxWidth) => {
     var newLineStr = '\f';
     let res = '';
-    while (str.length > maxWidth) {                 
+    while (str.length > maxWidth) {
       let found = false;
 
       // Inserts new line at first whitespace of the line
@@ -66,13 +66,13 @@ class ExportVideo {
 
   /**
    * Create a video that is later exportable
-   * 
+   *
    * @param {BigInt} drop_id    A drop_id to create an export video from
    */
   make = async (drop_id) => {
     UserService.associateForUser();
     const drop = await DropModel.findOne({
-      where: { drop_id }, 
+      where: { drop_id },
       include: UserService.includeForUser,
     });
     if (!drop || drop.drop_id !== drop_id) {
