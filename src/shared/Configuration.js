@@ -39,8 +39,8 @@ class Configuration {
 
     /**
      * Passes a data object to jwt.sign to sign and encode within a jwt
-     * 
-     * @see {jwt.sign}  
+     *
+     * @see {jwt.sign}
      */
     static sign = (data) => {
     	return jwt.sign(data, this.privateKey(), {

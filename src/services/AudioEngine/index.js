@@ -49,12 +49,12 @@ class AudioEngine {
   /**
    * Retrieve the raw binary data of a file identifed by it's tag
    * and it's location specified by filter, isTrimmed and extension
-   * 
-   * @param {String}  tag 
+   *
+   * @param {String}  tag
    * @param {Boolean} isTrimmed   Whether to check for the file in the trimmed storage location
    * @param {String}  filter      If specified the filter storage directory will be scanned
-   * @param {String}  extension   
-   * @returns 
+   * @param {String}  extension
+   * @returns
    */
   static getFile = async (tag, isTrimmed, filter, extension) => {
     const drop = AudioEngine.directory(tag, isTrimmed, filter, extension);
@@ -88,11 +88,11 @@ class AudioEngine {
 
   /**
    * FFMpeg CLI execution method
-   * 
+   *
    * @param {String} command            CLI/Terminal command to execute
    * @param {Promise.resolve} success   Callback to execute on success
-   * @param {Promise.reject}  error     Callback to execute on failure 
-   * @returns 
+   * @param {Promise.reject}  error     Callback to execute on failure
+   * @returns
    */
   static ffMpegExec = async (command, success, error) => {
     return await FFMpegCli.run(
@@ -162,7 +162,7 @@ class AudioEngine {
    * Processes a Buffer (of any format) and produces an AudioBuffer
    * It processes a binary file or base64 string using ffmpeg and returns an AudioBuffer
    * NB: Pass a binary buffer or it falls back to base64
-   * 
+   *
    * @param {Buffer} buffer   Buffer to process.
    * @returns {AudioBuffer}
    */

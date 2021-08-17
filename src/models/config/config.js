@@ -8,11 +8,11 @@ const {
   DB_HOSTNAME,
 } = process.env;
 
-const options = { 
+const options = {
   'username': DB_USERNAME,
   'password': DB_PASSWORD,
   'database': DB_DATABASE,
-  'host': DB_HOSTNAME, 
+  'host': DB_HOSTNAME,
   'dialect': 'mysql',
   'timezone': '+00:00', // for writing to database
   'migrationStorage': 'sequelize',

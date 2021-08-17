@@ -89,7 +89,7 @@ class FilterController extends Controller {
   ];
 
   /**
-   * Create a pitch shift filter (of any one of the following types: baritone, helium, chipmunk and giant) 
+   * Create a pitch shift filter (of any one of the following types: baritone, helium, chipmunk and giant)
    * using it's tag
    *
    * @param {Express.Response}    res     Express[.response] response object

@@ -2,14 +2,14 @@ import * as Sentry from '@sentry/node';
 
 /**
  * Notify class
- * 
- * Sends notification to slack, gsuite, whatsapp, and 
+ *
+ * Sends notification to slack, gsuite, whatsapp, and
  * text, to alert the tech team of (fatal) issues
  */
 class Notify {
   /**
    * Send a notification only to the notification board
-   * 
+   *
    * @param {string} message The message to send
    * @param {string} channel The slack channel to send to
   */
@@ -37,7 +37,7 @@ class Notify {
 
   /**
    * Send an error stack to the error reporting mechanism
-   * 
+   *
    * @param {string} message The message to send
    */
   error(err) {

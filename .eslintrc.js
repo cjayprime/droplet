@@ -32,6 +32,8 @@ module.exports = {
       'always'
     ],
     'object-curly-spacing': ['error', 'always'],
+    'no-trailing-spaces': ['error', { 'skipBlankLines': true }],
+    'no-irregular-whitespace': ['error', { 'skipComments': true }],
     // 'max-len': ['error', { 'code': 80, 'tabWidth': 4, 'comments': 80, 'ignoreComments': false, 'ignoreTrailingComments': false, 'ignoreStrings': false, 'ignoreTemplateLiterals': true, 'ignoreRegExpLiterals': true }],
   },
 };

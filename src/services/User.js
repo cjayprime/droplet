@@ -31,9 +31,9 @@ class User {
    * Generate an association (for sequelize), right before a join
    * NOTE:
    * DO NOT CALL sequelize.sync() in the same function as this
-   * 
-   * @param {Model} referenced 
-   * @param {Model} ref 
+   *
+   * @param {Model} referenced
+   * @param {Model} ref
    */
   static generateAssociation = (obj, referenced, ref) => {
     referenced.hasOne(ref, {
@@ -46,11 +46,11 @@ class User {
   }
 
   /**
-   * Find a user by user_id, important to note that the leftmost 
+   * Find a user by user_id, important to note that the leftmost
    * key MUST be the user_id (BIGINT) primary key
-   * 
+   *
    * @param {BigInt|String} user_id Generate a sequelize selection for
-   *                                use with the `where` key 
+   *                                use with the `where` key
    * @returns {Object}
    */
   static searchForUser = (user_id) => {
@@ -83,7 +83,7 @@ class User {
 
   /**
    * Update a user
-   * 
+   *
    * @param {String} username   Username of a user
    * @param {String} user_id        user_id of a user from the AuthService
    */
