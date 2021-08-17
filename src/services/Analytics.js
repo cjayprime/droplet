@@ -3,11 +3,41 @@ import { createObjectCsvWriter } from 'csv-writer';
 import Authenticate from './Authenticate';
 import UserService from './User';
 
-import { Like as LikeModel, Audio as AudioModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, SubCloud as SubCloudModel } from '../models';
+import { promiseAll } from '../shared';
+
+import { Like as LikeModel, Audio as AudioModel, Cloud as CloudModel, Interaction as InteractionModel, Listen as ListenModel, Drop as DropModel, SubCloud as SubCloudModel, Filter as FilterModel, FilterUsage as FilterUsageModel, Group as GroupModel, User as UserModel, Seen as SeenModel } from '../models';
 
 const authenticate = new Authenticate();
 class Analytics {
-  analyze = async (data = [], token) => {
+  analyze = async () => {
+    const privateClouds = await SubCloudModel.count({ where: {  user_id: null } });
+    const total = { privateClouds };
+    const models = [
+      AudioModel,
+      CloudModel,
+      DropModel, 
+      FilterModel,
+      FilterUsageModel,
+      GroupModel,
+      InteractionModel,
+      LikeModel,
+      ListenModel,
+      SeenModel,
+      SubCloudModel,
+      UserModel,
+    ];
+    await promiseAll(async (model) => {
+      total[model.getTableName()] = await model.count();
+    }, models);
+
+    return {
+      code: 200,
+      data: { total },
+      message: 'Successfully recorded listen.',
+    };
+  }
+
+  fullAnalyze = async ( data = [], token) => {
     const userData = await authenticate.getAllUsers(
       process.env.NODE_ENV === 'development' ? 10 : 1000,
       token
