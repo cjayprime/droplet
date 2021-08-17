@@ -48,7 +48,11 @@ class Application {
   		console.log(
   			`The server is now running at http://localhost:${this.port} for ${process.env.NODE_ENV}`
   		);
-
+      
+      if (process.env.RUN_CRON && process.env.RUN_CRON === 'false') {
+        return;
+      }        
+        
       const throwError = (task) => {
         throw new Error.make('The format of the cron job schedule string is invalid for the task: ' + task, 'CronJobError', false);
       };

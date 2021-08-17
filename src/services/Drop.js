@@ -731,15 +731,29 @@ class Drop {
    * @returns 
    */
   update = async (drop_id, caption, status = '1') => {
-    const [drop] = await DropModel.update({
-      caption,
-      status: status + '',
-    },{
-      where: {
-        drop_id,
-        status: '1',
-      },
-    }).catch(() => null);
+    let drop;
+    if (caption) {
+      const [dropUpdate] = await DropModel.update({
+        caption,
+        status: status + '',
+      }, {
+        where: {
+          drop_id,
+          status: '1',
+        },
+      }).catch(() => null);
+      drop = dropUpdate;
+    } else {
+      const [dropUpdate] = await DropModel.update({
+        status: status + '',
+      }, {
+        where: {
+          drop_id,
+          status: '1',
+        },
+      }).catch(() => null);
+      drop = dropUpdate;
+    }
 
     if (!drop) {
       return {
