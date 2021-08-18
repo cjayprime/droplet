@@ -113,7 +113,7 @@ setTimeout(async () => {
     //   isTrimmed: false,
     // }).set(headers);
     // const response = await request.get('/featured').send().set(headers);
-    // const response = await request.get('/analytics').send().set(adminHeaders);
+    // const response = await request.get('/analytics').send().set(headers);
     // const response = await request.post('/filter/export-video').send({ drop_id: createResponse.body.data.drop.drop_id }).set(headers);
     // const response = await request.put('/user').send({ username: 'cjayprime' }).set(headers);
     // const response = await request.get('/user/1').send().set(headers);

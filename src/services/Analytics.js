@@ -1,4 +1,5 @@
 import { createObjectCsvWriter } from 'csv-writer';
+import { Op } from 'sequelize';
 
 import Authenticate from './Authenticate';
 import UserService from './User';
@@ -10,12 +11,22 @@ import { Like as LikeModel, Audio as AudioModel, Cloud as CloudModel, Interactio
 const authenticate = new Authenticate();
 class Analytics {
   analyze = async () => {
-    const privateClouds = await SubCloudModel.count({ where: {  user_id: null } });
-    const total = { privateClouds };
+    UserService.generateAssociation({}, SubCloudModel, DropModel);
+    UserService.generateAssociation({}, DropModel, LikeModel);
+    UserService.generateAssociation({}, DropModel, ListenModel);
+    UserService.generateAssociation({}, DropModel, SeenModel);
+
+    const privateClouds = await SubCloudModel.count({ where: { user_id: null } });
+    const privateDrops = await DropModel.count({ include: [{ model: SubCloudModel, required: true }], where: { '$sub_cloud.user_id$': { [Op.not]: null } } });
+    const privateLikes = await DropModel.count({ include: [{ model: SubCloudModel, required: true }, { model: LikeModel, required: true }], where: { '$sub_cloud.user_id$': { [Op.not]: null } } });
+    const privateListens = await DropModel.count({ include: [{ model: SubCloudModel, required: true }, { model: ListenModel, required: true }], where: { '$sub_cloud.user_id$': { [Op.not]: null } } });
+    const privateSeen = await DropModel.count({ include: [{ model: SubCloudModel, required: true }, { model: SeenModel, required: true }], where: { '$sub_cloud.user_id$': { [Op.not]: null } } });
+
+    const total = { privateClouds, privateDrops, privateLikes, privateListens, privateSeen };
     const models = [
       AudioModel,
       CloudModel,
-      DropModel, 
+      DropModel,
       FilterModel,
       FilterUsageModel,
       GroupModel,
@@ -33,7 +44,7 @@ class Analytics {
     return {
       code: 200,
       data: { total },
-      message: 'Successfully recorded listen.',
+      message: 'Successfully generated analytics data.',
     };
   }
 

@@ -51,7 +51,7 @@ class Application {
       
       if (process.env.RUN_CRON && process.env.RUN_CRON === 'false') {
         return;
-      }        
+      }
         
       const throwError = (task) => {
         throw new Error.make('The format of the cron job schedule string is invalid for the task: ' + task, 'CronJobError', false);
